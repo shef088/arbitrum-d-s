@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.9;
 
 import {Script, console} from "forge-std/Script.sol";
-import {Forum} from "../src/Forum.sol";
+import {DisasterReliefFund} from "../src/DisasterReliefFund.sol";
 
-contract ForumScript is Script {
-    Forum public forum;
+contract DisasterReliefFundScript is Script {
+    DisasterReliefFund public fund;
 
     function setUp() public {}
 
     function run() public {
         vm.startBroadcast();
 
-        forum = new Forum();
+        fund = new DisasterReliefFund();
 
         vm.stopBroadcast();
     }

@@ -1,29 +1,17 @@
-This is a [RainbowKit](https://rainbowkit.com) + [wagmi](https://wagmi.sh) + [Next.js](https://nextjs.org/) project bootstrapped with [`create-rainbowkit`](/packages/create-rainbowkit).
+After cloning, run the following commands:
 
-## Getting Started
+pushd frontend
+rm -rf .git
+corepack enable
+yarn install
+popd
 
-First, run the development server:
+yarn wagmi generate
 
-```bash
-npm run dev
-```
+ create a new file called .env.development.local and add
+NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=e5b04ba83c50408d72eb248b01e1861e
+NEXT_PUBLIC_DEPLOYED_CONTRACT_ADDRESS=0x9db70C8F8Bb780CBAC3a3f99F030d99D5E52569d
+NEXT_PUBLIC_ENABLE_TESTNETS=true
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
-
-## Learn More
-
-To learn more about this stack, take a look at the following resources:
-
-- [RainbowKit Documentation](https://rainbowkit.com) - Learn how to customize your wallet connection flow.
-- [wagmi Documentation](https://wagmi.sh) - Learn how to interact with Ethereum.
-- [Next.js Documentation](https://nextjs.org/docs) - Learn how to build a Next.js application.
-
-You can check out [the RainbowKit GitHub repository](https://github.com/rainbow-me/rainbowkit) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out the [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+yarn dev
