@@ -14,36 +14,84 @@ contract DisasterReliefFundTest is Test {
 
     // Test proposal creation
     function testCreateProposal() public {
-        fund.createProposal("Aid for Earthquake Victims", 10 ether, 7 days);
-        DisasterReliefFund.Proposal memory proposal = fund.proposals(0);
-        assertEq(proposal.description, "Aid for Earthquake Victims");
-        assertEq(proposal.fundingGoal, 10 ether);
-        assertEq(proposal.isActive, true);
-    }
+        fund.createProposal("Aid for Earthquake Victims", "Providing aid to affected areas");
 
-    // Test donation to a proposal
-    function testDonateToProposal() public {
-        fund.createProposal("Aid for Flood Victims", 5 ether, 7 days);
-        fund.donateToProposal(0, {value: 1 ether});
-        DisasterReliefFund.Proposal memory proposal = fund.proposals(0);
-        assertEq(proposal.amountRaised, 1 ether);
+        // Access individual fields from the proposal
+        (
+            address proposer,
+            string memory title,
+            string memory description,
+            uint256 votesFor,
+            uint256 votesAgainst,
+            uint256 deadline,
+            bool executed
+        ) = fund.proposals(1);
+
+        assertEq(title, "Aid for Earthquake Victims");
+        assertEq(description, "Providing aid to affected areas");
+        assertEq(votesFor, 0);
+        assertEq(votesAgainst, 0);
+        assertEq(executed, false);
     }
 
     // Test voting on a proposal
     function testVoteOnProposal() public {
-        fund.createProposal("Support for Hurricane Relief", 8 ether, 7 days);
-        fund.voteOnProposal(0, true); // Vote in support
-        DisasterReliefFund.Proposal memory proposal = fund.proposals(0);
-        assertEq(proposal.votesFor, 1);
+        fund.createProposal("Support for Flood Relief", "Immediate flood response");
+        fund.vote(1, true); // Vote in support
+
+        // Access individual fields from the proposal
+        (
+            address proposer,
+            string memory title,
+            string memory description,
+            uint256 votesFor,
+            uint256 votesAgainst,
+            uint256 deadline,
+            bool executed
+        ) = fund.proposals(1);
+
+        assertEq(votesFor, 1);
+        assertEq(votesAgainst, 0);
     }
 
-    // Test approval of funding
-    function testApproveFunding() public {
-        fund.createProposal("Support for Wildfire Relief", 3 ether, 7 days);
-        fund.voteOnProposal(0, true); // Vote in support
-        fund.voteOnProposal(0, false); // Vote against
-        fund.approveFunding(0);
-        DisasterReliefFund.Proposal memory proposal = fund.proposals(0);
-        assertEq(proposal.isActive, false);
+    // Test proposal execution
+    function testExecuteProposal() public {
+        fund.createProposal("Aid for Wildfire Recovery", "Funds for wildfire victims");
+        fund.vote(1, true);  // Vote in support
+        vm.warp(block.timestamp + 2 days);  // Move forward in time
+        fund.executeProposal(1);
+
+        // Access individual fields from the proposal
+        (
+            address proposer,
+            string memory title,
+            string memory description,
+            uint256 votesFor,
+            uint256 votesAgainst,
+            uint256 deadline,
+            bool executed
+        ) = fund.proposals(1);
+
+        assertEq(executed, true);
+    }
+
+    // Test voting against a proposal
+    function testVoteAgainstProposal() public {
+        fund.createProposal("Aid for Hurricane Victims", "Hurricane relief efforts");
+        fund.vote(1, false); // Vote against
+
+        // Access individual fields from the proposal
+        (
+            address proposer,
+            string memory title,
+            string memory description,
+            uint256 votesFor,
+            uint256 votesAgainst,
+            uint256 deadline,
+            bool executed
+        ) = fund.proposals(1);
+
+        assertEq(votesAgainst, 1);
+        assertEq(votesFor, 0);
     }
 }

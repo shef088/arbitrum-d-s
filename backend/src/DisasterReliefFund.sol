@@ -1,4 +1,5 @@
-pragma solidity ^0.8.28;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.9;
 
 contract DisasterReliefFund {
     struct Proposal {
@@ -19,6 +20,7 @@ contract DisasterReliefFund {
     event ProposalCreated(uint256 proposalId, string title, string description);
     event Voted(uint256 proposalId, address voter, bool support);
 
+    // Function to create a new proposal
     function createProposal(string memory _title, string memory _description) public {
         proposalCount++;
         proposals[proposalCount] = Proposal({
@@ -33,6 +35,7 @@ contract DisasterReliefFund {
         emit ProposalCreated(proposalCount, _title, _description);
     }
 
+    // Function to vote on a proposal
     function vote(uint256 _proposalId, bool _support) public {
         require(_proposalId > 0 && _proposalId <= proposalCount, "Invalid proposal ID");
         require(block.timestamp < proposals[_proposalId].deadline, "Voting has ended");
@@ -56,11 +59,10 @@ contract DisasterReliefFund {
         require(block.timestamp >= proposals[_proposalId].deadline, "Voting has not ended");
         require(!proposals[_proposalId].executed, "Proposal already executed");
 
-        // Add logic to distribute funds or execute actions based on votes
-        // For example:
+        // Logic to determine if the proposal passes and should be executed
         if (proposals[_proposalId].votesFor > proposals[_proposalId].votesAgainst) {
-            // Execute the proposal
             proposals[_proposalId].executed = true;
+            // Implement fund distribution or other logic
         }
     }
 }

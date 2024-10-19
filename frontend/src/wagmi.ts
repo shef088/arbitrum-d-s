@@ -31,7 +31,7 @@ const localhost = defineChain({
 });
 
 const config = getDefaultConfig({
-	appName: "StackUp Forums",
+	appName: "DAPP",
 	projectId: projectId,
 	storage: createStorage({
 		storage: cookieStorage,

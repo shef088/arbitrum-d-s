@@ -6,292 +6,108 @@ import {
 } from 'wagmi/codegen'
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Forum
+// DisasterReliefFund
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export const forumAbi = [
+export const disasterReliefFundAbi = [
+  {
+    type: 'function',
+    inputs: [
+      { name: '_title', internalType: 'string', type: 'string' },
+      { name: '_description', internalType: 'string', type: 'string' },
+    ],
+    name: 'createProposal',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_proposalId', internalType: 'uint256', type: 'uint256' }],
+    name: 'executeProposal',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
   {
     type: 'function',
     inputs: [],
-    name: 'commentIdIncrement',
+    name: 'proposalCount',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     inputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    name: 'comments',
+    name: 'proposals',
     outputs: [
-      { name: 'owner', internalType: 'address', type: 'address' },
-      { name: 'id', internalType: 'uint256', type: 'uint256' },
+      { name: 'proposer', internalType: 'address', type: 'address' },
       { name: 'title', internalType: 'string', type: 'string' },
       { name: 'description', internalType: 'string', type: 'string' },
-      { name: 'spoil', internalType: 'bool', type: 'bool' },
-      { name: 'likes', internalType: 'uint256', type: 'uint256' },
-      { name: 'timestamp', internalType: 'uint256', type: 'uint256' },
+      { name: 'votesFor', internalType: 'uint256', type: 'uint256' },
+      { name: 'votesAgainst', internalType: 'uint256', type: 'uint256' },
+      { name: 'deadline', internalType: 'uint256', type: 'uint256' },
+      { name: 'executed', internalType: 'bool', type: 'bool' },
     ],
     stateMutability: 'view',
   },
   {
     type: 'function',
     inputs: [
-      { name: 's1', internalType: 'string', type: 'string' },
-      { name: 's2', internalType: 'string', type: 'string' },
+      { name: '_proposalId', internalType: 'uint256', type: 'uint256' },
+      { name: '_support', internalType: 'bool', type: 'bool' },
     ],
-    name: 'compareStringsbyBytes',
+    name: 'vote',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'uint256', type: 'uint256' },
+      { name: '', internalType: 'address', type: 'address' },
+    ],
+    name: 'votes',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'pure',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '_postId', internalType: 'uint256', type: 'uint256' },
-      { name: '_title', internalType: 'string', type: 'string' },
-      { name: '_description', internalType: 'string', type: 'string' },
-      { name: '_spoil', internalType: 'bool', type: 'bool' },
-    ],
-    name: 'createComment',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '_postId', internalType: 'uint256', type: 'uint256' },
-      { name: '_question', internalType: 'string', type: 'string' },
-      { name: '_option1', internalType: 'string', type: 'string' },
-      { name: '_option2', internalType: 'string', type: 'string' },
-    ],
-    name: 'createPoll',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '_title', internalType: 'string', type: 'string' },
-      { name: '_description', internalType: 'string', type: 'string' },
-      { name: '_spoil', internalType: 'bool', type: 'bool' },
-    ],
-    name: 'createPost',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '_commentId', internalType: 'uint256', type: 'uint256' }],
-    name: 'downVoteComment',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '_postId', internalType: 'uint256', type: 'uint256' }],
-    name: 'downVotePost',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '_commentId', internalType: 'uint256', type: 'uint256' }],
-    name: 'getComment',
-    outputs: [
-      {
-        name: '',
-        internalType: 'struct Forum.Comment',
-        type: 'tuple',
-        components: [
-          { name: 'owner', internalType: 'address', type: 'address' },
-          { name: 'id', internalType: 'uint256', type: 'uint256' },
-          { name: 'title', internalType: 'string', type: 'string' },
-          { name: 'description', internalType: 'string', type: 'string' },
-          { name: 'spoil', internalType: 'bool', type: 'bool' },
-          { name: 'likes', internalType: 'uint256', type: 'uint256' },
-          { name: 'timestamp', internalType: 'uint256', type: 'uint256' },
-        ],
-      },
-    ],
     stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '_postId', internalType: 'uint256', type: 'uint256' }],
-    name: 'getCommentsFromPost',
-    outputs: [{ name: '', internalType: 'uint256[]', type: 'uint256[]' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '_pollId', internalType: 'uint256', type: 'uint256' }],
-    name: 'getPoll',
-    outputs: [
-      {
-        name: '',
-        internalType: 'struct Forum.Poll',
-        type: 'tuple',
-        components: [
-          { name: 'id', internalType: 'uint256', type: 'uint256' },
-          { name: 'question', internalType: 'string', type: 'string' },
-          { name: 'option1', internalType: 'string', type: 'string' },
-          { name: 'option2', internalType: 'string', type: 'string' },
-          { name: 'option1Counter', internalType: 'uint256', type: 'uint256' },
-          { name: 'option2Counter', internalType: 'uint256', type: 'uint256' },
-        ],
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '_postId', internalType: 'uint256', type: 'uint256' }],
-    name: 'getPollFromPost',
-    outputs: [
-      {
-        name: '',
-        internalType: 'struct Forum.Poll',
-        type: 'tuple',
-        components: [
-          { name: 'id', internalType: 'uint256', type: 'uint256' },
-          { name: 'question', internalType: 'string', type: 'string' },
-          { name: 'option1', internalType: 'string', type: 'string' },
-          { name: 'option2', internalType: 'string', type: 'string' },
-          { name: 'option1Counter', internalType: 'uint256', type: 'uint256' },
-          { name: 'option2Counter', internalType: 'uint256', type: 'uint256' },
-        ],
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '_postId', internalType: 'uint256', type: 'uint256' }],
-    name: 'getPost',
-    outputs: [
-      {
-        name: '',
-        internalType: 'struct Forum.Post',
-        type: 'tuple',
-        components: [
-          { name: 'owner', internalType: 'address', type: 'address' },
-          { name: 'id', internalType: 'uint256', type: 'uint256' },
-          { name: 'title', internalType: 'string', type: 'string' },
-          { name: 'description', internalType: 'string', type: 'string' },
-          { name: 'spoil', internalType: 'bool', type: 'bool' },
-          { name: 'likes', internalType: 'uint256', type: 'uint256' },
-          { name: 'timestamp', internalType: 'uint256', type: 'uint256' },
-        ],
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '_user', internalType: 'address', type: 'address' }],
-    name: 'getPostsFromAddress',
-    outputs: [{ name: '', internalType: 'uint256[]', type: 'uint256[]' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'pollIdIncrement',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    name: 'polls',
-    outputs: [
-      { name: 'id', internalType: 'uint256', type: 'uint256' },
-      { name: 'question', internalType: 'string', type: 'string' },
-      { name: 'option1', internalType: 'string', type: 'string' },
-      { name: 'option2', internalType: 'string', type: 'string' },
-      { name: 'option1Counter', internalType: 'uint256', type: 'uint256' },
-      { name: 'option2Counter', internalType: 'uint256', type: 'uint256' },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'postIdIncrement',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    name: 'postToPoll',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    name: 'posts',
-    outputs: [
-      { name: 'owner', internalType: 'address', type: 'address' },
-      { name: 'id', internalType: 'uint256', type: 'uint256' },
-      { name: 'title', internalType: 'string', type: 'string' },
-      { name: 'description', internalType: 'string', type: 'string' },
-      { name: 'spoil', internalType: 'bool', type: 'bool' },
-      { name: 'likes', internalType: 'uint256', type: 'uint256' },
-      { name: 'timestamp', internalType: 'uint256', type: 'uint256' },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '_commentId', internalType: 'uint256', type: 'uint256' }],
-    name: 'upVoteComment',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '_postId', internalType: 'uint256', type: 'uint256' },
-      { name: 'option', internalType: 'string', type: 'string' },
-    ],
-    name: 'upVotePollOption',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '_postId', internalType: 'uint256', type: 'uint256' }],
-    name: 'upVotePost',
-    outputs: [],
-    stateMutability: 'nonpayable',
   },
   {
     type: 'event',
     anonymous: false,
     inputs: [
       {
-        name: 'userAddress',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
+        name: 'proposalId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
       },
+      { name: 'title', internalType: 'string', type: 'string', indexed: false },
       {
-        name: 'post',
-        internalType: 'struct Forum.Post',
-        type: 'tuple',
-        components: [
-          { name: 'owner', internalType: 'address', type: 'address' },
-          { name: 'id', internalType: 'uint256', type: 'uint256' },
-          { name: 'title', internalType: 'string', type: 'string' },
-          { name: 'description', internalType: 'string', type: 'string' },
-          { name: 'spoil', internalType: 'bool', type: 'bool' },
-          { name: 'likes', internalType: 'uint256', type: 'uint256' },
-          { name: 'timestamp', internalType: 'uint256', type: 'uint256' },
-        ],
+        name: 'description',
+        internalType: 'string',
+        type: 'string',
         indexed: false,
       },
     ],
-    name: 'PostSubmitted',
+    name: 'ProposalCreated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'proposalId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'voter',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      { name: 'support', internalType: 'bool', type: 'bool', indexed: false },
+    ],
+    name: 'Voted',
   },
 ] as const
 
@@ -543,293 +359,126 @@ export const iMulticall3Abi = [
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link forumAbi}__
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__
  */
-export const useReadForumundefined = /*#__PURE__*/ createUseReadContract({
-  abi: forumAbi,
-})
+export const useReadDisasterReliefFundundefined =
+  /*#__PURE__*/ createUseReadContract({ abi: disasterReliefFundAbi })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"commentIdIncrement"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"proposalCount"`
  */
-export const useReadForumCommentIdIncrement =
+export const useReadDisasterReliefFundProposalCount =
   /*#__PURE__*/ createUseReadContract({
-    abi: forumAbi,
-    functionName: 'commentIdIncrement',
+    abi: disasterReliefFundAbi,
+    functionName: 'proposalCount',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"comments"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"proposals"`
  */
-export const useReadForumComments = /*#__PURE__*/ createUseReadContract({
-  abi: forumAbi,
-  functionName: 'comments',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"compareStringsbyBytes"`
- */
-export const useReadForumCompareStringsbyBytes =
+export const useReadDisasterReliefFundProposals =
   /*#__PURE__*/ createUseReadContract({
-    abi: forumAbi,
-    functionName: 'compareStringsbyBytes',
+    abi: disasterReliefFundAbi,
+    functionName: 'proposals',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"getComment"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"votes"`
  */
-export const useReadForumGetComment = /*#__PURE__*/ createUseReadContract({
-  abi: forumAbi,
-  functionName: 'getComment',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"getCommentsFromPost"`
- */
-export const useReadForumGetCommentsFromPost =
+export const useReadDisasterReliefFundVotes =
   /*#__PURE__*/ createUseReadContract({
-    abi: forumAbi,
-    functionName: 'getCommentsFromPost',
+    abi: disasterReliefFundAbi,
+    functionName: 'votes',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"getPoll"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disasterReliefFundAbi}__
  */
-export const useReadForumGetPoll = /*#__PURE__*/ createUseReadContract({
-  abi: forumAbi,
-  functionName: 'getPoll',
-})
+export const useWriteDisasterReliefFundundefined =
+  /*#__PURE__*/ createUseWriteContract({ abi: disasterReliefFundAbi })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"getPollFromPost"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"createProposal"`
  */
-export const useReadForumGetPollFromPost = /*#__PURE__*/ createUseReadContract({
-  abi: forumAbi,
-  functionName: 'getPollFromPost',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"getPost"`
- */
-export const useReadForumGetPost = /*#__PURE__*/ createUseReadContract({
-  abi: forumAbi,
-  functionName: 'getPost',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"getPostsFromAddress"`
- */
-export const useReadForumGetPostsFromAddress =
-  /*#__PURE__*/ createUseReadContract({
-    abi: forumAbi,
-    functionName: 'getPostsFromAddress',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"pollIdIncrement"`
- */
-export const useReadForumPollIdIncrement = /*#__PURE__*/ createUseReadContract({
-  abi: forumAbi,
-  functionName: 'pollIdIncrement',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"polls"`
- */
-export const useReadForumPolls = /*#__PURE__*/ createUseReadContract({
-  abi: forumAbi,
-  functionName: 'polls',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"postIdIncrement"`
- */
-export const useReadForumPostIdIncrement = /*#__PURE__*/ createUseReadContract({
-  abi: forumAbi,
-  functionName: 'postIdIncrement',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"postToPoll"`
- */
-export const useReadForumPostToPoll = /*#__PURE__*/ createUseReadContract({
-  abi: forumAbi,
-  functionName: 'postToPoll',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"posts"`
- */
-export const useReadForumPosts = /*#__PURE__*/ createUseReadContract({
-  abi: forumAbi,
-  functionName: 'posts',
-})
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link forumAbi}__
- */
-export const useWriteForumundefined = /*#__PURE__*/ createUseWriteContract({
-  abi: forumAbi,
-})
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"createComment"`
- */
-export const useWriteForumCreateComment = /*#__PURE__*/ createUseWriteContract({
-  abi: forumAbi,
-  functionName: 'createComment',
-})
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"createPoll"`
- */
-export const useWriteForumCreatePoll = /*#__PURE__*/ createUseWriteContract({
-  abi: forumAbi,
-  functionName: 'createPoll',
-})
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"createPost"`
- */
-export const useWriteForumCreatePost = /*#__PURE__*/ createUseWriteContract({
-  abi: forumAbi,
-  functionName: 'createPost',
-})
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"downVoteComment"`
- */
-export const useWriteForumDownVoteComment =
+export const useWriteDisasterReliefFundCreateProposal =
   /*#__PURE__*/ createUseWriteContract({
-    abi: forumAbi,
-    functionName: 'downVoteComment',
+    abi: disasterReliefFundAbi,
+    functionName: 'createProposal',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"downVotePost"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"executeProposal"`
  */
-export const useWriteForumDownVotePost = /*#__PURE__*/ createUseWriteContract({
-  abi: forumAbi,
-  functionName: 'downVotePost',
-})
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"upVoteComment"`
- */
-export const useWriteForumUpVoteComment = /*#__PURE__*/ createUseWriteContract({
-  abi: forumAbi,
-  functionName: 'upVoteComment',
-})
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"upVotePollOption"`
- */
-export const useWriteForumUpVotePollOption =
+export const useWriteDisasterReliefFundExecuteProposal =
   /*#__PURE__*/ createUseWriteContract({
-    abi: forumAbi,
-    functionName: 'upVotePollOption',
+    abi: disasterReliefFundAbi,
+    functionName: 'executeProposal',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"upVotePost"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"vote"`
  */
-export const useWriteForumUpVotePost = /*#__PURE__*/ createUseWriteContract({
-  abi: forumAbi,
-  functionName: 'upVotePost',
-})
+export const useWriteDisasterReliefFundVote =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'vote',
+  })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link forumAbi}__
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disasterReliefFundAbi}__
  */
-export const useSimulateForumundefined =
-  /*#__PURE__*/ createUseSimulateContract({ abi: forumAbi })
+export const useSimulateDisasterReliefFundundefined =
+  /*#__PURE__*/ createUseSimulateContract({ abi: disasterReliefFundAbi })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"createComment"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"createProposal"`
  */
-export const useSimulateForumCreateComment =
+export const useSimulateDisasterReliefFundCreateProposal =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: forumAbi,
-    functionName: 'createComment',
+    abi: disasterReliefFundAbi,
+    functionName: 'createProposal',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"createPoll"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"executeProposal"`
  */
-export const useSimulateForumCreatePoll =
+export const useSimulateDisasterReliefFundExecuteProposal =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: forumAbi,
-    functionName: 'createPoll',
+    abi: disasterReliefFundAbi,
+    functionName: 'executeProposal',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"createPost"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"vote"`
  */
-export const useSimulateForumCreatePost =
+export const useSimulateDisasterReliefFundVote =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: forumAbi,
-    functionName: 'createPost',
+    abi: disasterReliefFundAbi,
+    functionName: 'vote',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"downVoteComment"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disasterReliefFundAbi}__
  */
-export const useSimulateForumDownVoteComment =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: forumAbi,
-    functionName: 'downVoteComment',
-  })
+export const useWatchDisasterReliefFundundefined =
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: disasterReliefFundAbi })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"downVotePost"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `eventName` set to `"ProposalCreated"`
  */
-export const useSimulateForumDownVotePost =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: forumAbi,
-    functionName: 'downVotePost',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"upVoteComment"`
- */
-export const useSimulateForumUpVoteComment =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: forumAbi,
-    functionName: 'upVoteComment',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"upVotePollOption"`
- */
-export const useSimulateForumUpVotePollOption =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: forumAbi,
-    functionName: 'upVotePollOption',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link forumAbi}__ and `functionName` set to `"upVotePost"`
- */
-export const useSimulateForumUpVotePost =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: forumAbi,
-    functionName: 'upVotePost',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link forumAbi}__
- */
-export const useWatchForumundefined = /*#__PURE__*/ createUseWatchContractEvent(
-  { abi: forumAbi },
-)
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link forumAbi}__ and `eventName` set to `"PostSubmitted"`
- */
-export const useWatchForumPostSubmitted =
+export const useWatchDisasterReliefFundProposalCreated =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: forumAbi,
-    eventName: 'PostSubmitted',
+    abi: disasterReliefFundAbi,
+    eventName: 'ProposalCreated',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `eventName` set to `"Voted"`
+ */
+export const useWatchDisasterReliefFundVoted =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: disasterReliefFundAbi,
+    eventName: 'Voted',
   })
 
 /**

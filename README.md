@@ -3,6 +3,8 @@ foundryup
 forge init backend --no-git --no-commit 
 cd backend
 
+forge build
+forge test
 
 source .env
 forge create --rpc-url "arbitrumSepolia" --private-key "${PRIVATE_KEY}" --verifier-url "https://api-sepolia.arbiscan.io/api" -e "${API_KEY}" --verify src/DisasterReliefFund.sol:DisasterReliefFund
@@ -16,3 +18,4 @@ git add forum_dapp/.gitignore frontend/.gitignore
 git commit -m 'add .gitignore files'
 git add -A
 git commit -m 'ready for deployment'
+git push -u origin main

@@ -12,7 +12,7 @@ export default defineConfig({
 	contracts: [],
 	plugins: [
 		foundry({
-			project: "../forum_dapp",
+			project: "../backend",
 		}),
 		react({
 			getHookName(options) {
