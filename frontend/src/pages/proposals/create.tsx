@@ -1,71 +1,64 @@
-import { useState } from "react";
-import { writeContract, waitForTransactionReceipt } from "@wagmi/core";
-import { deployedAddress, ABI } from "../../contracts/deployed-contract";
-import { useAccount } from "wagmi";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import React, { useState } from 'react';
+import {
+  useWriteDisasterReliefFundCreateProposal,
+  disasterReliefFundAbi,
+} from "../../contracts/generated";
+import { useWaitForTransactionReceipt } from "wagmi";
 
+const CreateProposal: React.FC = () => {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
 
-const CreateProposal = () => {
-    const { address } = useAccount();
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [isSubmitting, setIsSubmitting] = useState(false);
+  // Destructure the writeContractAsync function and transaction data
+  const { data: txHash, writeContractAsync: writeProposal } =
+    useWriteDisasterReliefFundCreateProposal();
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (!address) {
-            alert("Please connect your wallet to create a proposal.");
-            return;
-        }
+  // Use useWaitForTransactionReceipt to monitor transaction confirmation
+  const { isLoading, isSuccess, isError } = useWaitForTransactionReceipt({
+    hash: txHash,
+  });
 
-        setIsSubmitting(true);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const tx = await writeProposal({
+        args: [title, description],
+      });
+      console.log('Transaction sent:', tx);
+    } catch (error) {
+      console.error('Error creating proposal:', error);
+    }
+  };
 
-        try {
-            const txHash = await writeContract({
-                address: deployedAddress,
-                abi: ABI,
-                functionName: "createProposal",
-                args: [title, description],
-            });
-
-            await waitForTransactionReceipt({ hash: txHash });
-            alert("Proposal created successfully!");
-        } catch (error) {
-            console.error(error);
-            alert("Failed to create proposal.");
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    return (
-        <div className="main">
-            <ConnectButton />
-            <h1>Create Proposal</h1>
-            <form onSubmit={handleSubmit} className="form">
-                <label>
-                    Title:
-                    <input
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        required
-                    />
-                </label>
-                <label>
-                    Description:
-                    <textarea
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        required
-                    />
-                </label>
-                <button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? "Submitting..." : "Create Proposal"}
-                </button>
-            </form>
-        </div>
-    );
+  return (
+    <form onSubmit={handleSubmit}>
+      <h1>Create Proposal</h1>
+      <div>
+        <label>
+          Title:
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
+        </label>
+      </div>
+      <div>
+        <label>
+          Description:
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+          />
+        </label>
+      </div>
+      <button type="submit" disabled={isLoading}>Create Proposal</button>
+      {isSuccess && <p>Proposal created successfully!</p>}
+      {isError && <p>There was an error confirming the transaction.</p>}
+    </form>
+  );
 };
 
 export default CreateProposal;

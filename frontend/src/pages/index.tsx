@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
-yyyy
+
 
 const Home = () => {
     const { isConnected } = useAccount();
@@ -13,10 +13,10 @@ const Home = () => {
             {isConnected && (
                 <>
                     <Link href="/proposals/create">
-                        <a>Create a Proposal</a>
+                        <span>Create a Proposal</span>
                     </Link>
                     <Link href="/proposals">
-                        <a>View Proposals</a>
+                        <span>View Proposals</span>
                     </Link>
                 </>
             )}

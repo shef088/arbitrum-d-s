@@ -10,7 +10,7 @@ const allPosts = async () => {
     	functionName: "postIdIncrement",
     	args: [],
 	})) as bigint;
-
+ 
 	const posts: Promise<PostDetails | undefined>[] = [];
 	// the first post was already initialised with 0x000000000
 	for (let i = 1; i < postIdIncrement; i++) {
