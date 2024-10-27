@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
-  useWriteDisasterReliefFundCreateProposal,
-  disasterReliefFundAbi,
+  useWriteDisasterReliefFundCreateProposal 
 } from "../../contracts/generated";
 import { useWaitForTransactionReceipt } from "wagmi";
 

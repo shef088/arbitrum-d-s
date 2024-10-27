@@ -24,7 +24,8 @@ contract DisasterReliefFundTest is Test {
             uint256 votesFor,
             uint256 votesAgainst,
             uint256 deadline,
-            bool executed
+            bool executed,
+            bool archived
         ) = fund.proposals(1);
 
         assertEq(title, "Aid for Earthquake Victims");
@@ -32,6 +33,7 @@ contract DisasterReliefFundTest is Test {
         assertEq(votesFor, 0);
         assertEq(votesAgainst, 0);
         assertEq(executed, false);
+        assertEq(archived, false);
     }
 
     // Test voting on a proposal
@@ -47,18 +49,19 @@ contract DisasterReliefFundTest is Test {
             uint256 votesFor,
             uint256 votesAgainst,
             uint256 deadline,
-            bool executed
+            bool executed,
+            bool archived
         ) = fund.proposals(1);
 
         assertEq(votesFor, 1);
         assertEq(votesAgainst, 0);
     }
 
-    // Test proposal execution
-    function testExecuteProposal() public {
+    // Test proposal execution and archiving
+    function testExecuteAndArchiveProposal() public {
         fund.createProposal("Aid for Wildfire Recovery", "Funds for wildfire victims");
         fund.vote(1, true);  // Vote in support
-        vm.warp(block.timestamp + 2 days);  // Move forward in time
+        vm.warp(block.timestamp + 2 days);  // Move forward in time to pass the deadline
         fund.executeProposal(1);
 
         // Access individual fields from the proposal
@@ -69,10 +72,12 @@ contract DisasterReliefFundTest is Test {
             uint256 votesFor,
             uint256 votesAgainst,
             uint256 deadline,
-            bool executed
+            bool executed,
+            bool archived
         ) = fund.proposals(1);
 
         assertEq(executed, true);
+        assertEq(archived, true);
     }
 
     // Test voting against a proposal
@@ -88,10 +93,46 @@ contract DisasterReliefFundTest is Test {
             uint256 votesFor,
             uint256 votesAgainst,
             uint256 deadline,
-            bool executed
+            bool executed,
+            bool archived
         ) = fund.proposals(1);
 
         assertEq(votesAgainst, 1);
         assertEq(votesFor, 0);
+    }
+
+    // Test proposal recreation after archiving
+    function testRecreateArchivedProposal() public {
+        // Create and archive the initial proposal
+        fund.createProposal("Initial Proposal", "An initial proposal to be archived");
+        fund.vote(1, false); // Vote against
+        vm.warp(block.timestamp + 2 days);  // Move forward in time to pass the deadline
+        fund.executeProposal(1);
+
+        // Ensure the proposal is archived
+        (, , , , , , , bool archived) = fund.proposals(1);
+        assertEq(archived, true);
+
+        // Recreate the archived proposal
+        fund.recreateProposal(1);
+
+        // Access individual fields from the newly created proposal
+        (
+            address proposer,
+            string memory title,
+            string memory description,
+            uint256 votesFor,
+            uint256 votesAgainst,
+            uint256 deadline,
+            bool executed,
+            bool archivedNew
+        ) = fund.proposals(2);
+
+        assertEq(title, "Initial Proposal");
+        assertEq(description, "An initial proposal to be archived");
+        assertEq(votesFor, 0);
+        assertEq(votesAgainst, 0);
+        assertEq(executed, false);
+        assertEq(archivedNew, false);
     }
 }

@@ -29,6 +29,36 @@ export const disasterReliefFundAbi = [
   },
   {
     type: 'function',
+    inputs: [{ name: '_proposalId', internalType: 'uint256', type: 'uint256' }],
+    name: 'getProposal',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct DisasterReliefFund.Proposal',
+        type: 'tuple',
+        components: [
+          { name: 'proposer', internalType: 'address', type: 'address' },
+          { name: 'title', internalType: 'string', type: 'string' },
+          { name: 'description', internalType: 'string', type: 'string' },
+          { name: 'votesFor', internalType: 'uint256', type: 'uint256' },
+          { name: 'votesAgainst', internalType: 'uint256', type: 'uint256' },
+          { name: 'deadline', internalType: 'uint256', type: 'uint256' },
+          { name: 'executed', internalType: 'bool', type: 'bool' },
+          { name: 'archived', internalType: 'bool', type: 'bool' },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getProposalCount',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [],
     name: 'proposalCount',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
@@ -46,8 +76,18 @@ export const disasterReliefFundAbi = [
       { name: 'votesAgainst', internalType: 'uint256', type: 'uint256' },
       { name: 'deadline', internalType: 'uint256', type: 'uint256' },
       { name: 'executed', internalType: 'bool', type: 'bool' },
+      { name: 'archived', internalType: 'bool', type: 'bool' },
     ],
     stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_originalProposalId', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'recreateProposal',
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
     type: 'function',
@@ -88,6 +128,39 @@ export const disasterReliefFundAbi = [
       },
     ],
     name: 'ProposalCreated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'proposalId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      { name: 'passed', internalType: 'bool', type: 'bool', indexed: false },
+    ],
+    name: 'ProposalExecuted',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'originalProposalId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'newProposalId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'ProposalRecreated',
   },
   {
     type: 'event',
@@ -365,6 +438,24 @@ export const useReadDisasterReliefFundundefined =
   /*#__PURE__*/ createUseReadContract({ abi: disasterReliefFundAbi })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"getProposal"`
+ */
+export const useReadDisasterReliefFundGetProposal =
+  /*#__PURE__*/ createUseReadContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'getProposal',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"getProposalCount"`
+ */
+export const useReadDisasterReliefFundGetProposalCount =
+  /*#__PURE__*/ createUseReadContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'getProposalCount',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"proposalCount"`
  */
 export const useReadDisasterReliefFundProposalCount =
@@ -416,6 +507,15 @@ export const useWriteDisasterReliefFundExecuteProposal =
   })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"recreateProposal"`
+ */
+export const useWriteDisasterReliefFundRecreateProposal =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'recreateProposal',
+  })
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"vote"`
  */
 export const useWriteDisasterReliefFundVote =
@@ -449,6 +549,15 @@ export const useSimulateDisasterReliefFundExecuteProposal =
   })
 
 /**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"recreateProposal"`
+ */
+export const useSimulateDisasterReliefFundRecreateProposal =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'recreateProposal',
+  })
+
+/**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"vote"`
  */
 export const useSimulateDisasterReliefFundVote =
@@ -470,6 +579,24 @@ export const useWatchDisasterReliefFundProposalCreated =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: disasterReliefFundAbi,
     eventName: 'ProposalCreated',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `eventName` set to `"ProposalExecuted"`
+ */
+export const useWatchDisasterReliefFundProposalExecuted =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: disasterReliefFundAbi,
+    eventName: 'ProposalExecuted',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `eventName` set to `"ProposalRecreated"`
+ */
+export const useWatchDisasterReliefFundProposalRecreated =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: disasterReliefFundAbi,
+    eventName: 'ProposalRecreated',
   })
 
 /**

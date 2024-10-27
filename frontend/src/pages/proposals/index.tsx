@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { readContract } from "@wagmi/core";
-import config from "../../wagmi"; // Adjust the import according to your project structure
-import { ABI, deployedAddress } from "../../contracts/deployed-contract"; // Adjust as needed
-import type { ProposalDetails } from "../../types/proposals/types"; // Adjust according to your type definition
+import config from "../../wagmi"; // Ensure this import is correct
+import { ABI, deployedAddress } from "../../contracts/deployed-contract";
+import type { ProposalDetails } from "../../types/proposals/types";
 
 const ProposalsList: React.FC = () => {
   const [proposals, setProposals] = useState<ProposalDetails[]>([]);
@@ -11,33 +11,37 @@ const ProposalsList: React.FC = () => {
 
   useEffect(() => {
     const fetchProposals = async () => {
-      setLoading(true); // Ensure loading state is set
+      setLoading(true);
       try {
-        const proposalCount: bigint = await readContract(config, {
-          abi: ABI,
+        // Fetch the number of proposals
+        const proposalCount = await readContract(config, {
           address: deployedAddress,
+          abi: ABI,
           functionName: "proposalCount",
-          args: [],
         });
- console.log("proposalCount:",proposalCount)
+
+        console.log("proposalCount:", proposalCount);
         const proposalPromises: Promise<ProposalDetails | undefined>[] = [];
 
-        for (let i = 1; i <= Number(proposalCount); i++) { // Adjust loop to start from 1
-          const proposal: Promise<ProposalDetails | undefined> = readContract(config, {
-            abi: ABI,
+        // Use BigInt consistently
+        const count = proposalCount; // Keep proposalCount as BigInt
+        for (let i = BigInt(1); i <= count; i++) {
+          const proposal = readContract(config, {
             address: deployedAddress,
+            abi: ABI,
             functionName: "getProposal",
-            args: [BigInt(i)], // Assuming your proposals are indexed from 1
-          });
+            args: [i], // Pass i directly as BigInt
+          }) as Promise<ProposalDetails | undefined>;
           proposalPromises.push(proposal);
         }
 
         const proposalResults = await Promise.all(proposalPromises);
-        const validProposals = proposalResults.filter((proposal): proposal is ProposalDetails => !!proposal);
-
+        const validProposals = proposalResults.filter((p): p is ProposalDetails => p !== undefined);
+        console.log("valid proposals:", validProposals)
         setProposals(validProposals);
       } catch (err) {
-        console.error(err); // Log error for debugging
+        console.error("Error fetching proposals:", err);
+        console.error("Error Message:", err.message);
         setError("Error fetching proposals");
       } finally {
         setLoading(false);
@@ -47,13 +51,8 @@ const ProposalsList: React.FC = () => {
     fetchProposals();
   }, []);
 
-  if (loading) {
-    return <p>Loading proposals...</p>;
-  }
-
-  if (error) {
-    return <p>{error}</p>;
-  }
+  if (loading) return <p>Loading proposals...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <div>
@@ -62,9 +61,9 @@ const ProposalsList: React.FC = () => {
         <div key={index}>
           <h3>{proposal.title}</h3>
           <p>{proposal.description}</p>
-          <p>Votes For: {proposal.votesFor}</p>
-          <p>Votes Against: {proposal.votesAgainst}</p>
-          <p>Deadline: {new Date(proposal.deadline * 1000).toLocaleString()}</p> {/* Convert timestamp */}
+          <p>Votes For: {Number(proposal.votesFor)}</p> {/* Convert to number */}
+          <p>Votes Against: {Number(proposal.votesAgainst)}</p> {/* Convert to number */}
+          <p>Deadline: {new Date(Number(proposal.deadline) * 1000).toLocaleString()}</p>
           <p>Status: {proposal.executed ? "Executed" : "Pending"}</p>
         </div>
       ))}
