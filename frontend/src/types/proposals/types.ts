@@ -8,6 +8,7 @@ export interface ProposalDetails {
   votesAgainst: bigint;     // Count of votes against
   deadline: bigint;         // Timestamp for the proposal deadline
   executed: boolean;        // Status of proposal execution
+  passed: boolean;          // Status indicating if the proposal has passed
 }
 
 

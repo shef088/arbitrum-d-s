@@ -1,0 +1,44 @@
+/* Header.css */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #1e3a8a;
+    padding: 1rem 2rem;
+    color: #f1f5f9;
+    font-family: Arial, sans-serif;
+  }
+  
+  .header h1 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+    color: #f1f5f9;
+  }
+  
+  .header nav {
+    display: flex;
+    gap: 1.5rem;
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .header nav a {
+    color: #f1f5f9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+  }
+  
+  .header nav a:hover {
+    color: #a3bffa;
+  }
+  
+  .connect-btn {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+  }
+
+  
+  

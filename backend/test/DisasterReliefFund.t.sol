@@ -25,7 +25,8 @@ contract DisasterReliefFundTest is Test {
             uint256 votesAgainst,
             uint256 deadline,
             bool executed,
-            bool archived
+            bool archived,
+            bool passed // New field
         ) = fund.proposals(1);
 
         assertEq(title, "Aid for Earthquake Victims");
@@ -34,6 +35,7 @@ contract DisasterReliefFundTest is Test {
         assertEq(votesAgainst, 0);
         assertEq(executed, false);
         assertEq(archived, false);
+        assertEq(passed, false); // Check initial passed state
     }
 
     // Test voting on a proposal
@@ -50,11 +52,13 @@ contract DisasterReliefFundTest is Test {
             uint256 votesAgainst,
             uint256 deadline,
             bool executed,
-            bool archived
+            bool archived,
+            bool passed // New field
         ) = fund.proposals(1);
 
         assertEq(votesFor, 1);
         assertEq(votesAgainst, 0);
+        assertEq(passed, false); // Check if passed status is still false
     }
 
     // Test proposal execution and archiving
@@ -73,11 +77,13 @@ contract DisasterReliefFundTest is Test {
             uint256 votesAgainst,
             uint256 deadline,
             bool executed,
-            bool archived
+            bool archived,
+            bool passed // New field
         ) = fund.proposals(1);
 
         assertEq(executed, true);
         assertEq(archived, true);
+        assertEq(passed, true); // Check if passed status is set to true after execution
     }
 
     // Test voting against a proposal
@@ -94,11 +100,13 @@ contract DisasterReliefFundTest is Test {
             uint256 votesAgainst,
             uint256 deadline,
             bool executed,
-            bool archived
+            bool archived,
+            bool passed // New field
         ) = fund.proposals(1);
 
         assertEq(votesAgainst, 1);
         assertEq(votesFor, 0);
+        assertEq(passed, false); // Check if passed status is still false
     }
 
     // Test proposal recreation after archiving
@@ -110,7 +118,7 @@ contract DisasterReliefFundTest is Test {
         fund.executeProposal(1);
 
         // Ensure the proposal is archived
-        (, , , , , , , bool archived) = fund.proposals(1);
+        (, , , , , , , bool archived, ) = fund.proposals(1);
         assertEq(archived, true);
 
         // Recreate the archived proposal
@@ -125,7 +133,8 @@ contract DisasterReliefFundTest is Test {
             uint256 votesAgainst,
             uint256 deadline,
             bool executed,
-            bool archivedNew
+            bool archivedNew,
+            bool passedNew // New field for recreated proposal
         ) = fund.proposals(2);
 
         assertEq(title, "Initial Proposal");
@@ -134,5 +143,6 @@ contract DisasterReliefFundTest is Test {
         assertEq(votesAgainst, 0);
         assertEq(executed, false);
         assertEq(archivedNew, false);
+        assertEq(passedNew, false); // Check passed status for recreated proposal
     }
 }

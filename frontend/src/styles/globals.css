@@ -1,46 +1,45 @@
-@font-face {
-	font-family: 'Gilroy-Bold';
-	src: local('Gilroy-Bold'), url(../fonts/Gilroy-Bold.ttf) format('truetype');
-  }
-  
-  @font-face {
-	font-family: 'Gilroy-Medium';
-	src: local('Gilroy-Medium'), url(../fonts/Gilroy-Medium.ttf) format('truetype');
-  }
-  
-  @font-face {
-	font-family: 'Gilroy-Light';
-	src: local('Gilroy-Light'), url(../fonts/Gilroy-Light.ttf) format('truetype');
-  }
+/* styles/globals.css */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-  @font-face {
-	font-family: 'Gilroy';
-	src: local('Gilroy'), url(../fonts/Gilroy-Regular.ttf) format('truetype');
-  }
-  
-html,
 body {
-  padding: 0;
-  color: #fff;
-  margin: 0;
-  font-family: "Gilroy", BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-	/* background: rgb(10,20,45);
-background: -moz-linear-gradient(90deg, rgba(10,20,45,1) 15%, rgba(39,57,123,1) 38%, rgba(233,116,87,1) 91%);
-background: -webkit-linear-gradient(90deg, rgba(10,20,45,1) 15%, rgba(39,57,123,1) 38%, rgba(233,116,87,1) 91%);
-background: linear-gradient(90deg, rgba(10,20,45,1) 15%, rgba(39,57,123,1) 38%, rgba(233,116,87,1) 91%); */
-background: rgb(0,0,0);
-/* background: -moz-repeating-conic-gradient(293deg, rgba(0,0,0,1) 7%, rgba(101,101,101,1) 42%, rgba(8,9,9,1) 83%);
-background: -webkit-repeating-conic-gradient(293deg, rgba(0,0,0,1) 7%, rgba(101,101,101,1) 42%, rgba(8,9,9,1) 83%);
-background: repeating-conic-gradient(293deg, rgba(0,0,0,1) 7%, rgba(101,101,101,1) 42%, rgba(8,9,9,1) 83%); */
-background: content-box repeating-conic-gradient(#041828ff 0.0002% 0.00195%, #B24A4Aff 0.002% 0.0015%);
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+    color: #333333;
+    line-height: 1.6;
+}
+
+main {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
 }
 
 a {
-  color: inherit;
-  text-decoration: underline;
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
 }
 
-* {
-  box-sizing: border-box;
+a:hover {
+    color: #ffd700;
+}
+
+button {
+    font-family: inherit;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #333333;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+p {
+    margin-bottom: 1em;
 }

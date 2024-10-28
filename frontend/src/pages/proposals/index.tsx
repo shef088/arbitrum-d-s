@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { readContract } from "@wagmi/core";
-import config from "../../wagmi"; // Ensure this import is correct
-import { ABI, deployedAddress } from "../../contracts/deployed-contract";
+ 
+
+import React, { useEffect, useState } from "react";
+ 
 import type { ProposalDetails } from "../../types/proposals/types";
+import fetchProposals from "../../utils/fetchProposals";
 
 const ProposalsList: React.FC = () => {
   const [proposals, setProposals] = useState<ProposalDetails[]>([]);
@@ -10,45 +11,20 @@ const ProposalsList: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchProposals = async () => {
+    const loadProposals = async () => {
       setLoading(true);
       try {
-        // Fetch the number of proposals
-        const proposalCount = await readContract(config, {
-          address: deployedAddress,
-          abi: ABI,
-          functionName: "proposalCount",
-        });
-
-        console.log("proposalCount:", proposalCount);
-        const proposalPromises: Promise<ProposalDetails | undefined>[] = [];
-
-        // Use BigInt consistently
-        const count = proposalCount; // Keep proposalCount as BigInt
-        for (let i = BigInt(1); i <= count; i++) {
-          const proposal = readContract(config, {
-            address: deployedAddress,
-            abi: ABI,
-            functionName: "getProposal",
-            args: [i], // Pass i directly as BigInt
-          }) as Promise<ProposalDetails | undefined>;
-          proposalPromises.push(proposal);
-        }
-
-        const proposalResults = await Promise.all(proposalPromises);
-        const validProposals = proposalResults.filter((p): p is ProposalDetails => p !== undefined);
-        console.log("valid proposals:", validProposals)
-        setProposals(validProposals);
+        const proposalsData = await fetchProposals();
+        setProposals(proposalsData);
       } catch (err) {
         console.error("Error fetching proposals:", err);
-        console.error("Error Message:", err.message);
         setError("Error fetching proposals");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProposals();
+    loadProposals();
   }, []);
 
   if (loading) return <p>Loading proposals...</p>;
