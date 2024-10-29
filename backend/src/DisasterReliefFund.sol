@@ -17,6 +17,7 @@ contract DisasterReliefFund {
     mapping(uint256 => Proposal) public proposals;
     mapping(uint256 => mapping(address => bool)) public hasVoted; // Tracks if a user has voted on a proposal
     mapping(uint256 => mapping(address => bool)) public userVote; // Tracks the user's vote (true for 'for', false for 'against')
+    mapping(address => uint256[]) public userProposals; // Maps user address to an array of proposal IDs
 
     uint256 public proposalCount;
 
@@ -25,7 +26,7 @@ contract DisasterReliefFund {
     event ProposalExecuted(uint256 proposalId, bool passed);
     event ProposalRecreated(uint256 originalProposalId, uint256 newProposalId);
 
-    function createProposal(string memory _title, string memory _description) public {
+    function createProposal(string memory _title, string memory _description) public returns (uint256) {
         proposalCount++;
         proposals[proposalCount] = Proposal({
             proposer: msg.sender,
@@ -38,53 +39,56 @@ contract DisasterReliefFund {
             archived: false,
             passed: false
         });
+        
+        // Add proposal ID to the userProposals mapping for the proposer
+        userProposals[msg.sender].push(proposalCount);
+
         emit ProposalCreated(proposalCount, _title, _description);
+        
+        return proposalCount; // Return the proposal ID
+    }
+
+    function getUserProposals(address _user) public view returns (uint256[] memory) {
+        return userProposals[_user];
     }
 
     function vote(uint256 _proposalId, bool _support) public {
-    require(_proposalId > 0 && _proposalId <= proposalCount, "Proposal does not exist");
-    require(!proposals[_proposalId].archived, "Proposal is archived");
-    require(block.timestamp < proposals[_proposalId].deadline, "Voting period has ended");
+        require(_proposalId > 0 && _proposalId <= proposalCount, "Proposal does not exist");
+        require(!proposals[_proposalId].archived, "Proposal is archived");
+        require(block.timestamp < proposals[_proposalId].deadline, "Voting period has ended");
 
-    // Check if the user has voted before
-    bool previousVote = userVote[_proposalId][msg.sender];
+        bool previousVote = userVote[_proposalId][msg.sender];
 
-    if (hasVoted[_proposalId][msg.sender]) {
-        // User has voted before, check if the vote needs to be updated
-        if (previousVote == _support) {
-            // User is attempting to vote the same way again
-            if (_support) {
-                revert("Already voted for this proposal.");
+        if (hasVoted[_proposalId][msg.sender]) {
+            if (previousVote == _support) {
+                if (_support) {
+                    revert("Already voted for this proposal.");
+                } else {
+                    revert("Already voted against this proposal.");
+                }
             } else {
-                revert("Already voted against this proposal.");
+                if (_support) {
+                    proposals[_proposalId].votesFor++;
+                    proposals[_proposalId].votesAgainst--;
+                } else {
+                    proposals[_proposalId].votesFor--;
+                    proposals[_proposalId].votesAgainst++;
+                }
             }
         } else {
-            // If the vote is being changed, update the vote count
+            hasVoted[_proposalId][msg.sender] = true;
+
             if (_support) {
                 proposals[_proposalId].votesFor++;
-                proposals[_proposalId].votesAgainst--;
             } else {
-                proposals[_proposalId].votesFor--;
                 proposals[_proposalId].votesAgainst++;
             }
         }
-    } else {
-        // User is voting for the first time
-        hasVoted[_proposalId][msg.sender] = true;
 
-        if (_support) {
-            proposals[_proposalId].votesFor++;
-        } else {
-            proposals[_proposalId].votesAgainst++;
-        }
+        userVote[_proposalId][msg.sender] = _support;
+
+        emit Voted(_proposalId, msg.sender, _support);
     }
-
-    // Update the user's vote status
-    userVote[_proposalId][msg.sender] = _support;
-
-    emit Voted(_proposalId, msg.sender, _support);
-}
-
 
     function executeProposal(uint256 _proposalId) public {
         require(_proposalId > 0 && _proposalId <= proposalCount, "Proposal does not exist");
@@ -118,6 +122,8 @@ contract DisasterReliefFund {
             archived: false,
             passed: false
         });
+
+        userProposals[msg.sender].push(proposalCount);
 
         emit ProposalRecreated(_originalProposalId, proposalCount);
         emit ProposalCreated(proposalCount, originalProposal.title, originalProposal.description);

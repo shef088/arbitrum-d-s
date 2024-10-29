@@ -12,12 +12,19 @@ import {
 export const disasterReliefFundAbi = [
   {
     type: 'function',
+    inputs: [],
+    name: 'checkExpiredProposals',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     inputs: [
       { name: '_title', internalType: 'string', type: 'string' },
       { name: '_description', internalType: 'string', type: 'string' },
     ],
     name: 'createProposal',
-    outputs: [],
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'nonpayable',
   },
   {
@@ -45,6 +52,7 @@ export const disasterReliefFundAbi = [
           { name: 'deadline', internalType: 'uint256', type: 'uint256' },
           { name: 'executed', internalType: 'bool', type: 'bool' },
           { name: 'archived', internalType: 'bool', type: 'bool' },
+          { name: 'passed', internalType: 'bool', type: 'bool' },
         ],
       },
     ],
@@ -55,6 +63,23 @@ export const disasterReliefFundAbi = [
     inputs: [],
     name: 'getProposalCount',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_user', internalType: 'address', type: 'address' }],
+    name: 'getUserProposals',
+    outputs: [{ name: '', internalType: 'uint256[]', type: 'uint256[]' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'uint256', type: 'uint256' },
+      { name: '', internalType: 'address', type: 'address' },
+    ],
+    name: 'hasVoted',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view',
   },
   {
@@ -77,6 +102,7 @@ export const disasterReliefFundAbi = [
       { name: 'deadline', internalType: 'uint256', type: 'uint256' },
       { name: 'executed', internalType: 'bool', type: 'bool' },
       { name: 'archived', internalType: 'bool', type: 'bool' },
+      { name: 'passed', internalType: 'bool', type: 'bool' },
     ],
     stateMutability: 'view',
   },
@@ -92,12 +118,12 @@ export const disasterReliefFundAbi = [
   {
     type: 'function',
     inputs: [
-      { name: '_proposalId', internalType: 'uint256', type: 'uint256' },
-      { name: '_support', internalType: 'bool', type: 'bool' },
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'uint256', type: 'uint256' },
     ],
-    name: 'vote',
-    outputs: [],
-    stateMutability: 'nonpayable',
+    name: 'userProposals',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -105,9 +131,19 @@ export const disasterReliefFundAbi = [
       { name: '', internalType: 'uint256', type: 'uint256' },
       { name: '', internalType: 'address', type: 'address' },
     ],
-    name: 'votes',
+    name: 'userVote',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_proposalId', internalType: 'uint256', type: 'uint256' },
+      { name: '_support', internalType: 'bool', type: 'bool' },
+    ],
+    name: 'vote',
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
     type: 'event',
@@ -456,6 +492,24 @@ export const useReadDisasterReliefFundGetProposalCount =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"getUserProposals"`
+ */
+export const useReadDisasterReliefFundGetUserProposals =
+  /*#__PURE__*/ createUseReadContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'getUserProposals',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"hasVoted"`
+ */
+export const useReadDisasterReliefFundHasVoted =
+  /*#__PURE__*/ createUseReadContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'hasVoted',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"proposalCount"`
  */
 export const useReadDisasterReliefFundProposalCount =
@@ -474,12 +528,21 @@ export const useReadDisasterReliefFundProposals =
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"votes"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"userProposals"`
  */
-export const useReadDisasterReliefFundVotes =
+export const useReadDisasterReliefFundUserProposals =
   /*#__PURE__*/ createUseReadContract({
     abi: disasterReliefFundAbi,
-    functionName: 'votes',
+    functionName: 'userProposals',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"userVote"`
+ */
+export const useReadDisasterReliefFundUserVote =
+  /*#__PURE__*/ createUseReadContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'userVote',
   })
 
 /**
@@ -487,6 +550,15 @@ export const useReadDisasterReliefFundVotes =
  */
 export const useWriteDisasterReliefFundundefined =
   /*#__PURE__*/ createUseWriteContract({ abi: disasterReliefFundAbi })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"checkExpiredProposals"`
+ */
+export const useWriteDisasterReliefFundCheckExpiredProposals =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'checkExpiredProposals',
+  })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"createProposal"`
@@ -529,6 +601,15 @@ export const useWriteDisasterReliefFundVote =
  */
 export const useSimulateDisasterReliefFundundefined =
   /*#__PURE__*/ createUseSimulateContract({ abi: disasterReliefFundAbi })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"checkExpiredProposals"`
+ */
+export const useSimulateDisasterReliefFundCheckExpiredProposals =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'checkExpiredProposals',
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"createProposal"`

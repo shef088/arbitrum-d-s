@@ -2,10 +2,13 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import fetchProposalById from '../../utils/fetchProposalById';
-import { readContract, writeContract } from "@wagmi/core"; // Import writeContract
-import config from "../../wagmi"; // Ensure this import is correct
-import { ABI, deployedAddress } from "../../contracts/deployed-contract";
-import type { ProposalResponse } from '../../types/proposals/types';
+import { readContract, writeContract } from "@wagmi/core"; 
+import config from "../../wagmi"; 
+import { ABI, deployedAddress } from "../../contracts/deployed-contract"; 
+import type { ProposalResponse } from '../../types/proposals/types'; 
+import { toast } from 'react-toastify';
+import { useAccount } from 'wagmi';
+
 
 const ProposalDetail: React.FC = () => {
   const router = useRouter();
@@ -13,11 +16,12 @@ const ProposalDetail: React.FC = () => {
   const [proposal, setProposal] = useState<ProposalResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [voteError, setVoteError] = useState<string | null>(null); // State for vote error
-
+  const [voteError, setVoteError] = useState<string | null>(null);
+  const { isConnected, address } = useAccount(); 
+  
   useEffect(() => {
     const getProposalDetails = async () => {
-      if (!id) return; // Guard clause for when id is not available
+      if (!id) return;
       setLoading(true);
       try {
         const proposalId = Number(id);
@@ -28,19 +32,18 @@ const ProposalDetail: React.FC = () => {
           setError('Proposal not found');
         }
       } catch (err) {
-        setError(err.message); // Update error state with the caught error message
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
     getProposalDetails();
-  }, [id]);
+  }, [id, isConnected, address]);
 
   const handleVote = async (voteFor: boolean) => {
     if (!proposal) return;
 
-    // Check if voting period has ended
     if (Date.now() >= Number(proposal.deadline) * 1000) {
       setVoteError('Voting period has ended for this proposal.');
       return;
@@ -55,10 +58,8 @@ const ProposalDetail: React.FC = () => {
         args: [proposalId, voteFor],
       });
 
-      // Alert user on successful voting
-      alert(`Successfully voted ${voteFor ? 'for' : 'against'} proposal ${proposal.title}`);
+      toast.success(`Successfully voted ${voteFor ? 'for' : 'against'} proposal ${proposal.title}`);
 
-      // Refetch proposal details after voting
       const foundProposal = await fetchProposalById(proposalId);
       if (foundProposal) {
         setProposal(foundProposal);
@@ -73,13 +74,15 @@ const ProposalDetail: React.FC = () => {
   };
 
   if (loading) return <p>Loading proposal details...</p>;
-  if (error) return <p>{error}</p>;
+  if (error) return <p className="error">{error}</p>;
   if (!proposal) return <p>No proposal data available.</p>;
 
-  return (
+  return (<div className="proposal-detail-container">
+     <h2>Proposal Details</h2><br/>
     <div className="proposal-detail">
-      <h2>{proposal.title}</h2>
-      <p>{proposal.description}</p>
+
+    <h2>{proposal.title}</h2>
+      <p>Description: {proposal.description}</p>
       <div className="proposal-stats">
         <p>Votes For: {Number(proposal.votesFor)}</p>
         <p>Votes Against: {Number(proposal.votesAgainst)}</p>
@@ -94,9 +97,9 @@ const ProposalDetail: React.FC = () => {
           </>
         )}
       </div>
-      {voteError && <p style={{ color: 'red' }}>{voteError}</p>} {/* Display vote error */}
+      {voteError && <p className="error">{voteError}</p>} {/* Display vote error */}
     </div>
-  );
+    </div>);
 };
 
 export default ProposalDetail;

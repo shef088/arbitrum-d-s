@@ -1,0 +1,54 @@
+/* styles/ApprovedProposals.css */
+
+.approved-proposals-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .approved-proposals-container h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .approved-proposal {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .approved-proposal:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  .approved-proposal h3 {
+    font-size: 1.5rem;
+    color: #007bff; /* Bootstrap Primary Color */
+    margin: 0 0 10px;
+  }
+  
+  .approved-proposal p {
+    margin: 5px 0;
+    color: #555;
+  }
+  
+  .approved-proposals-container .loading-message {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #007bff; /* Bootstrap Primary Color */
+  }
+  
+  .approved-proposals-container .error-message {
+    text-align: center;
+    font-size: 1.2rem;
+    color: red;
+  }
+  

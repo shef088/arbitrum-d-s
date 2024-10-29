@@ -1,44 +1,83 @@
-/* Header.css */
 .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #1e3a8a;
-    padding: 1rem 2rem;
-    color: #f1f5f9;
-    font-family: Arial, sans-serif;
-  }
-  
-  .header h1 {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin: 0;
-    color: #f1f5f9;
-  }
-  
-  .header nav {
-    display: flex;
-    gap: 1.5rem;
-    flex: 1;
-    justify-content: center;
-  }
-  
-  .header nav a {
-    color: #f1f5f9;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.3s ease;
-  }
-  
-  .header nav a:hover {
-    color: #a3bffa;
-  }
-  
-  .connect-btn {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
+  display: flex; /* Flexbox for layout */
+  justify-content: space-between; /* Space between logo and connect button */
+  align-items: center; /* Center items vertically */
+  background-color: #1e3a8a; /* Background color */
+  padding: 1rem 2rem; /* Spacing inside the header */
+  color: #f1f5f9; /* Text color */
+  font-family: Arial, sans-serif; /* Font family */
+  position: relative; /* Position for child elements */
+}
+
+/* Logo Styles */
+.logo {
+  margin: 0; /* Remove default margin */
+}
+
+.header h1 {
+  font-size: 1.5rem; /* Size of the logo text */
+  font-weight: bold; /* Bold font */
+  margin: 0; /* Remove default margin */
+}
+
+/* Connect Button Styles */
+.connect-btn {
+  margin-left: auto; /* Push connect button to the right */
+  display: flex; /* Flexbox for centering */
+  align-items: center; /* Center align */
+}
+
+/* Navigation Styles */
+.navigation {
+  display: flex; /* Flexbox for navigation */
+  gap: 1.5rem; /* Space between nav links */
+  justify-content: center; /* Center navigation items */
+  flex-wrap: wrap; /* Allow links to wrap to the next line */
+  padding: 0.5rem 0; /* Vertical padding for navigation */
+  width: 100%; /* Full width for navigation */
+  position: absolute; /* Position below header items */
+  left: 0; /* Align to the left */
+  right: 0; /* Align to the right */
+  top: 100%; /* Position below the header */
+}
+
+/* Link Styles */
+.navigation a {
+  color: #f1f5f9; /* Link color */
+  text-decoration: none; /* Remove underline from links */
+  font-weight: 500; /* Medium font weight */
+  transition: color 0.3s ease; /* Smooth color transition */
+}
+
+.navigation a:hover {
+  color: #a3bffa; /* Hover color for links */
+  text-shadow: 0 0 5px rgba(163, 191, 250, 0.5); /* Subtle glow effect on hover */
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .header {
+      padding: 1rem; /* Keep padding consistent */
   }
 
-  
-  
+  .navigation {
+      flex-direction: column; /* Stack navigation links vertically */
+      width: 100%; /* Full width for nav */
+      position: static; /* Change position for stacking */
+  }
+
+  .navigation a {
+      width: 100%; /* Full width for links */
+      text-align: center; /* Center text in links */
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+      padding: 0.5rem 1rem; /* Reduce padding on smaller screens */
+  }
+
+  .header h1 {
+      font-size: 1.25rem; /* Smaller font size for logo */
+  }
+}
