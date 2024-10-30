@@ -7,17 +7,20 @@
   color: #f1f5f9; /* Text color */
   font-family: Arial, sans-serif; /* Font family */
   position: relative; /* Position for child elements */
+  margin-bottom: 8rem;
 }
 
 /* Logo Styles */
 .logo {
   margin: 0; /* Remove default margin */
+
 }
 
 .header h1 {
   font-size: 1.5rem; /* Size of the logo text */
   font-weight: bold; /* Bold font */
   margin: 0; /* Remove default margin */
+  color: white;
 }
 
 /* Connect Button Styles */
@@ -39,13 +42,16 @@
   left: 0; /* Align to the left */
   right: 0; /* Align to the right */
   top: 100%; /* Position below the header */
+  background: #1e3a8a;
+  color: black;
+  border: 2px solid white;
 }
 
 /* Link Styles */
 .navigation a {
-  color: #f1f5f9; /* Link color */
+  color: white; /* Link color */
   text-decoration: none; /* Remove underline from links */
-  font-weight: 500; /* Medium font weight */
+  font-weight: 300;  
   transition: color 0.3s ease; /* Smooth color transition */
 }
 

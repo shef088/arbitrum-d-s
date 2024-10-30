@@ -9,6 +9,7 @@ contract DisasterReliefFund {
         uint256 votesFor;
         uint256 votesAgainst;
         uint256 deadline;
+        uint256 fundsReceived; // Track funds received specifically for this proposal
         bool executed;
         bool archived;
         bool passed;
@@ -18,13 +19,17 @@ contract DisasterReliefFund {
     mapping(uint256 => mapping(address => bool)) public hasVoted; // Tracks if a user has voted on a proposal
     mapping(uint256 => mapping(address => bool)) public userVote; // Tracks the user's vote (true for 'for', false for 'against')
     mapping(address => uint256[]) public userProposals; // Maps user address to an array of proposal IDs
+    mapping(uint256 => mapping(address => uint256)) public donations; // Tracks individual donations to each proposal
 
     uint256 public proposalCount;
+    uint256 public totalPot; // Shared pool for all donations
 
     event ProposalCreated(uint256 proposalId, string title, string description);
     event Voted(uint256 proposalId, address voter, bool support);
     event ProposalExecuted(uint256 proposalId, bool passed);
     event ProposalRecreated(uint256 originalProposalId, uint256 newProposalId);
+    event DonationReceived(uint256 proposalId, address donor, uint256 amount);
+    event FundsAllocated(uint256 amount, address recipient);
 
     function createProposal(string memory _title, string memory _description) public returns (uint256) {
         proposalCount++;
@@ -35,21 +40,34 @@ contract DisasterReliefFund {
             votesFor: 0,
             votesAgainst: 0,
             deadline: block.timestamp + 1 days,
+            fundsReceived: 0,
             executed: false,
             archived: false,
             passed: false
         });
-        
+
         // Add proposal ID to the userProposals mapping for the proposer
         userProposals[msg.sender].push(proposalCount);
 
         emit ProposalCreated(proposalCount, _title, _description);
-        
+
         return proposalCount; // Return the proposal ID
     }
 
     function getUserProposals(address _user) public view returns (uint256[] memory) {
         return userProposals[_user];
+    }
+
+    function donateToProposal(uint256 _proposalId) public payable {
+        require(_proposalId > 0 && _proposalId <= proposalCount, "Proposal does not exist");
+        require(!proposals[_proposalId].archived, "Proposal is archived");
+        require(msg.value > 0, "Donation must be greater than 0");
+
+        proposals[_proposalId].fundsReceived += msg.value; // Track funds received for each proposal
+        donations[_proposalId][msg.sender] += msg.value;   // Track individual contributions
+        totalPot += msg.value; // Add to the shared donation pool
+
+        emit DonationReceived(_proposalId, msg.sender, msg.value);
     }
 
     function vote(uint256 _proposalId, bool _support) public {
@@ -61,11 +79,7 @@ contract DisasterReliefFund {
 
         if (hasVoted[_proposalId][msg.sender]) {
             if (previousVote == _support) {
-                if (_support) {
-                    revert("Already voted for this proposal.");
-                } else {
-                    revert("Already voted against this proposal.");
-                }
+                revert("Already voted with this choice for this proposal.");
             } else {
                 if (_support) {
                     proposals[_proposalId].votesFor++;
@@ -101,6 +115,12 @@ contract DisasterReliefFund {
         proposal.archived = true;
         proposal.passed = passed;
 
+        if (passed) {
+            uint256 allocation = proposal.fundsReceived; // Use funds donated specifically to this proposal
+            totalPot -= allocation;
+            payable(proposal.proposer).transfer(allocation); // Transfer to proposer
+        }
+
         emit ProposalExecuted(_proposalId, passed);
     }
 
@@ -118,6 +138,7 @@ contract DisasterReliefFund {
             votesFor: 0,
             votesAgainst: 0,
             deadline: block.timestamp + 1 days,
+            fundsReceived: 0,
             executed: false,
             archived: false,
             passed: false
@@ -145,5 +166,15 @@ contract DisasterReliefFund {
 
     function getProposalCount() public view returns (uint256) {
         return proposalCount;
+    }
+
+    // Function to allocate funds from the total pot based on governance
+    function allocateFromPot(uint256 amount, address recipient) public {
+        // Add governance checks to ensure only approved allocations can be made
+        require(amount <= totalPot, "Insufficient funds in the pot");
+        totalPot -= amount;
+        payable(recipient).transfer(amount);
+
+        emit FundsAllocated(amount, recipient);
     }
 }
