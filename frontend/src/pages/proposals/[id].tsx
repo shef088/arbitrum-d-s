@@ -10,6 +10,8 @@ import { toast } from 'react-toastify';
 import { useAccount } from 'wagmi';
 import { ethers } from 'ethers';
 import { FaArrowUp, FaArrowDown } from 'react-icons/fa';
+import { ContractFunctionExecutionError } from 'viem';
+
 
 const ProposalDetail: React.FC = () => {
   const router = useRouter();
@@ -63,7 +65,7 @@ const ProposalDetail: React.FC = () => {
 
   const handleVote = async (voteFor: boolean) => {
     if (!proposal) return;
-    setError(null);
+    setVoteError(null);
     if (Date.now() >= Number(proposal.deadline) * 1000) {
       setVoteError('Voting period has ended for this proposal.');
       return;
@@ -90,6 +92,13 @@ const ProposalDetail: React.FC = () => {
     } catch (err) {
       console.error("Error voting:", err);
       setVoteError("Error casting your vote");
+      if (err instanceof ContractFunctionExecutionError) {
+        const reason = err.message.includes("Already voted") 
+            ? "You have already voted with this choice for this proposal."
+            : "Error casting your vote.";
+        setVoteError(reason);
+        toast.error(reason)
+      }
     }
   };
  
