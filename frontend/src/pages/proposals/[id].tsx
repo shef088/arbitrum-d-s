@@ -9,6 +9,7 @@ import type { ProposalResponse } from '../../types/proposals/types';
 import { toast } from 'react-toastify';
 import { useAccount } from 'wagmi';
 import { ethers } from 'ethers';
+import { FaArrowUp, FaArrowDown } from 'react-icons/fa';
 
 const ProposalDetail: React.FC = () => {
   const router = useRouter();
@@ -62,7 +63,7 @@ const ProposalDetail: React.FC = () => {
 
   const handleVote = async (voteFor: boolean) => {
     if (!proposal) return;
-
+    setError(null);
     if (Date.now() >= Number(proposal.deadline) * 1000) {
       setVoteError('Voting period has ended for this proposal.');
       return;
@@ -142,14 +143,14 @@ const handleDonate = async () => {
     }
   };
   
-
+  
   const handleUsdChange = (usdAmount: string) => {
     setDonationAmountUSD(usdAmount);
     if (ethToUsdRate) {
       setDonationAmountETH((parseFloat(usdAmount) / ethToUsdRate).toFixed(6));
     }
   };
-
+    
   if (loading) return <p>Loading proposal details...</p>;
   if (error) return <p className="error">{error}</p>;
   if (!proposal) return <p>No proposal data available.</p>;
@@ -165,15 +166,20 @@ const handleDonate = async () => {
           <p>Votes Against: {Number(proposal.votesAgainst)}</p>
           <p>Deadline: {new Date(Number(proposal.deadline) * 1000).toLocaleString()}</p>
           <p>Status: {proposal.executed ? "Executed" : "Pending"}</p>
+          {/* <p>
+            Funds Received: {proposal.fundsReceived ? ethers.formatEther(proposal.fundsReceived) : "0"} ETH {}
+          </p> */}
           <p>
-            Funds Received: {proposal.fundsReceived ? ethers.formatEther(proposal.fundsReceived) : "0"} ETH
-          </p>
+  Funds Received: {proposal.fundsReceived ? ethers.formatEther(proposal.fundsReceived) : "0"} ETH 
+  ({proposal.fundsReceived ? (parseFloat(ethers.formatEther(proposal.fundsReceived)) * (ethToUsdRate || 0)).toFixed(2) : "0"} USD)
+</p>
+
         </div>
         <div className="vote-buttons">
           {!proposal.executed && (
             <>
-              <button onClick={() => handleVote(true)}>Vote For</button>
-              <button onClick={() => handleVote(false)}>Vote Against</button>
+              <button onClick={() => handleVote(true)}> <FaArrowUp className="vote-icon" /> {Number(proposal.votesFor)}</button>
+              <button onClick={() => handleVote(false)} className="down-vote-btn">  <FaArrowDown className="vote-icon" /> {Number(proposal.votesAgainst)}</button>
             </>
           )}
         </div>
@@ -181,18 +187,28 @@ const handleDonate = async () => {
         
         <div className="donate-section">
           <h3>Donate to this Proposal</h3>
+          <div className="">  <label htmlFor="amounteth">ETH </label>
           <input
+          name="amounteth"
             type="number"
+              min="0"
+            step="any"
             value={donationAmountETH}
             onChange={(e) => handleEthChange(e.target.value)}
             placeholder="Amount in ETH"
-          />
+          /></div>
+          <div className="">    <label htmlFor="amountusd">USD </label>
           <input
+          name="amountusd"
             type="number"
+              min="0"
+            step="any"
             value={donationAmountUSD}
             onChange={(e) => handleUsdChange(e.target.value)}
             placeholder="Amount in USD"
-          />
+          /></div>
+        
+      
           <button onClick={handleDonate}>Donate</button>
         </div>
       </div>

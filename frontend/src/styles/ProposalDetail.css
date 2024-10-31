@@ -1,72 +1,114 @@
 /* styles/ProposalDetail.css */
 .proposal-detail-container {
-  max-width: 800px; /* Limit the width of the proposals container */
-  margin: 20px auto; /* Center the container */
-  padding: 20px; /* Add padding around the container */
-  background-color: #f9f9f9; /* Light background for contrast */
-  border-radius: 8px; /* Rounded corners */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f3f3f3; /* Slightly darker background for better contrast */
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* Deeper shadow for emphasis */
 }
+
 .proposal-detail {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .proposal-detail h2 {
-    font-size: 2rem;
-    color: #333;
-    margin-bottom: 10px;
-  }
-  
-  .proposal-detail p {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    color: #555;
-  }
-  
-  .proposal-stats {
-    margin-top: 20px;
-    padding: 10px;
-    border: 1px solid #eee;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-  }
-  
-  .proposal-stats p {
-    margin: 5px 0;
-  }
-  
-  .vote-buttons {
-    margin-top: 20px;
-  }
-  
-  .vote-buttons button {
-    padding: 10px 15px;
-    margin-right: 10px;
-    font-size: 1rem;
-    color: #fff;
-    background-color: #007bff; /* Bootstrap Primary Color */
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .vote-buttons button:hover {
-    background-color: #0056b3; /* Darker shade on hover */
-  }
-  
-  .vote-buttons button:disabled {
-    background-color: #cccccc; /* Disabled state */
-    cursor: not-allowed;
-  }
-  
-  .error {
-    color: red;
-    font-weight: bold;
-  }
-  
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.proposal-detail h2 {
+  font-size: 2.2rem;
+  color: #2d2d2d; /* Darker text for readability */
+  margin-bottom: 15px;
+}
+
+.proposal-detail p {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #4a4a4a;
+}
+
+.proposal-stats {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #f7f7f7;
+}
+
+.proposal-stats p {
+  margin: 6px 0;
+}
+
+.vote-buttons {
+  margin-top: 25px;
+}
+
+.vote-buttons button {
+  padding: 12px 18px;
+  margin-right: 10px;
+  font-size: 1rem;
+  color: #ffffff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.vote-buttons button:hover {
+  background-color: #0056b3;
+}
+
+.vote-buttons button:disabled {
+  background-color: #b0b0b0; /* Soft gray for disabled state */
+  cursor: not-allowed;
+}
+
+.donate-section {
+  margin-top: 30px;
+}
+
+.donate-section h3 {
+  font-size: 1.6rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.donate-section input {
+  padding: 8px;
+  margin: 5px 0;
+  font-size: 1rem;
+  width: calc(50% - 10px); /* For side-by-side input fields */
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.donate-section button {
+  padding: 10px 15px;
+  font-size: 1rem;
+  color: #fff;
+  background-color: #28a745;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.donate-section button:hover {
+  background-color: #218838;
+}
+
+.error {
+  color: #e74c3c; /* Red for error messages */
+  font-weight: bold;
+  margin-top: 10px;
+}
+.down-vote-btn{
+  background-color: #e74c3c !important;
+}
+ 
+.down-vote-btn:hover{
+  background-color: #dd210c !important;
+}
+ 
