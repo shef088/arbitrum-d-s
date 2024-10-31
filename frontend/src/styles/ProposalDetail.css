@@ -3,7 +3,7 @@
   max-width: 800px;
   margin: 20px auto;
   padding: 20px;
-  background-color: #f3f3f3; /* Slightly darker background for better contrast */
+  background-color: white; /* Slightly darker background for better contrast */
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* Deeper shadow for emphasis */
 }
@@ -32,13 +32,19 @@
   padding: 15px;
   border: 1px solid #ddd;
   border-radius: 6px;
-  background-color: #f7f7f7;
+  background-color: #6c85db;
 }
 
 .proposal-stats p {
   margin: 6px 0;
+  color: white;
+ 
 }
 
+.funds-p{
+  color:green !important;
+  background-color: white;
+}
 .vote-buttons {
   margin-top: 25px;
 }

@@ -179,9 +179,9 @@ const handleDonate = async () => {
             Funds Received: {proposal.fundsReceived ? ethers.formatEther(proposal.fundsReceived) : "0"} ETH {}
           </p> */}
           <p>
-  Funds Received: {proposal.fundsReceived ? ethers.formatEther(proposal.fundsReceived) : "0"} ETH 
+  Funds Received:<span className="funds-p"> {proposal.fundsReceived ? ethers.formatEther(proposal.fundsReceived) : "0"} ETH 
   ({proposal.fundsReceived ? (parseFloat(ethers.formatEther(proposal.fundsReceived)) * (ethToUsdRate || 0)).toFixed(2) : "0"} USD)
-</p>
+</span></p>
 
         </div>
         <div className="vote-buttons">
