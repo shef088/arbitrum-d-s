@@ -12,6 +12,16 @@ import {
 export const disasterReliefFundAbi = [
   {
     type: 'function',
+    inputs: [
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: 'recipient', internalType: 'address', type: 'address' },
+    ],
+    name: 'allocateFromPot',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     inputs: [],
     name: 'checkExpiredProposals',
     outputs: [],
@@ -26,6 +36,23 @@ export const disasterReliefFundAbi = [
     name: 'createProposal',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_proposalId', internalType: 'uint256', type: 'uint256' }],
+    name: 'donateToProposal',
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'uint256', type: 'uint256' },
+      { name: '', internalType: 'address', type: 'address' },
+    ],
+    name: 'donations',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -50,6 +77,7 @@ export const disasterReliefFundAbi = [
           { name: 'votesFor', internalType: 'uint256', type: 'uint256' },
           { name: 'votesAgainst', internalType: 'uint256', type: 'uint256' },
           { name: 'deadline', internalType: 'uint256', type: 'uint256' },
+          { name: 'fundsReceived', internalType: 'uint256', type: 'uint256' },
           { name: 'executed', internalType: 'bool', type: 'bool' },
           { name: 'archived', internalType: 'bool', type: 'bool' },
           { name: 'passed', internalType: 'bool', type: 'bool' },
@@ -100,6 +128,7 @@ export const disasterReliefFundAbi = [
       { name: 'votesFor', internalType: 'uint256', type: 'uint256' },
       { name: 'votesAgainst', internalType: 'uint256', type: 'uint256' },
       { name: 'deadline', internalType: 'uint256', type: 'uint256' },
+      { name: 'fundsReceived', internalType: 'uint256', type: 'uint256' },
       { name: 'executed', internalType: 'bool', type: 'bool' },
       { name: 'archived', internalType: 'bool', type: 'bool' },
       { name: 'passed', internalType: 'bool', type: 'bool' },
@@ -114,6 +143,13 @@ export const disasterReliefFundAbi = [
     name: 'recreateProposal',
     outputs: [],
     stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'totalPot',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -144,6 +180,50 @@ export const disasterReliefFundAbi = [
     name: 'vote',
     outputs: [],
     stateMutability: 'nonpayable',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'proposalId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'donor',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'DonationReceived',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'recipient',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'FundsAllocated',
   },
   {
     type: 'event',
@@ -474,6 +554,15 @@ export const useReadDisasterReliefFundundefined =
   /*#__PURE__*/ createUseReadContract({ abi: disasterReliefFundAbi })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"donations"`
+ */
+export const useReadDisasterReliefFundDonations =
+  /*#__PURE__*/ createUseReadContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'donations',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"getProposal"`
  */
 export const useReadDisasterReliefFundGetProposal =
@@ -528,6 +617,15 @@ export const useReadDisasterReliefFundProposals =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"totalPot"`
+ */
+export const useReadDisasterReliefFundTotalPot =
+  /*#__PURE__*/ createUseReadContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'totalPot',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"userProposals"`
  */
 export const useReadDisasterReliefFundUserProposals =
@@ -552,6 +650,15 @@ export const useWriteDisasterReliefFundundefined =
   /*#__PURE__*/ createUseWriteContract({ abi: disasterReliefFundAbi })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"allocateFromPot"`
+ */
+export const useWriteDisasterReliefFundAllocateFromPot =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'allocateFromPot',
+  })
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"checkExpiredProposals"`
  */
 export const useWriteDisasterReliefFundCheckExpiredProposals =
@@ -567,6 +674,15 @@ export const useWriteDisasterReliefFundCreateProposal =
   /*#__PURE__*/ createUseWriteContract({
     abi: disasterReliefFundAbi,
     functionName: 'createProposal',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"donateToProposal"`
+ */
+export const useWriteDisasterReliefFundDonateToProposal =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'donateToProposal',
   })
 
 /**
@@ -603,6 +719,15 @@ export const useSimulateDisasterReliefFundundefined =
   /*#__PURE__*/ createUseSimulateContract({ abi: disasterReliefFundAbi })
 
 /**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"allocateFromPot"`
+ */
+export const useSimulateDisasterReliefFundAllocateFromPot =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'allocateFromPot',
+  })
+
+/**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"checkExpiredProposals"`
  */
 export const useSimulateDisasterReliefFundCheckExpiredProposals =
@@ -618,6 +743,15 @@ export const useSimulateDisasterReliefFundCreateProposal =
   /*#__PURE__*/ createUseSimulateContract({
     abi: disasterReliefFundAbi,
     functionName: 'createProposal',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"donateToProposal"`
+ */
+export const useSimulateDisasterReliefFundDonateToProposal =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'donateToProposal',
   })
 
 /**
@@ -652,6 +786,24 @@ export const useSimulateDisasterReliefFundVote =
  */
 export const useWatchDisasterReliefFundundefined =
   /*#__PURE__*/ createUseWatchContractEvent({ abi: disasterReliefFundAbi })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `eventName` set to `"DonationReceived"`
+ */
+export const useWatchDisasterReliefFundDonationReceived =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: disasterReliefFundAbi,
+    eventName: 'DonationReceived',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `eventName` set to `"FundsAllocated"`
+ */
+export const useWatchDisasterReliefFundFundsAllocated =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: disasterReliefFundAbi,
+    eventName: 'FundsAllocated',
+  })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `eventName` set to `"ProposalCreated"`

@@ -17,9 +17,26 @@ const ProposalDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [voteError, setVoteError] = useState<string | null>(null);
-  const [donationAmount, setDonationAmount] = useState<string>(""); // Donation amount state
+  const [donationAmountETH, setDonationAmountETH] = useState<string>("");
+  const [donationAmountUSD, setDonationAmountUSD] = useState<string>("");
+  const [ethToUsdRate, setEthToUsdRate] = useState<number | null>(null);
   const { isConnected, address } = useAccount(); 
   
+  useEffect(() => {
+    // Fetch ETH to USD exchange rate
+    const fetchEthToUsdRate = async () => {
+      try {
+        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+        const data = await response.json();
+        setEthToUsdRate(data.ethereum.usd);
+      } catch (error) {
+        console.error('Error fetching ETH to USD rate:', error);
+      }
+    };
+
+    fetchEthToUsdRate();
+  }, []);
+
   useEffect(() => {
     const getProposalDetails = async () => {
       if (!id) return;
@@ -73,30 +90,60 @@ const ProposalDetail: React.FC = () => {
       setVoteError("Error casting your vote");
     }
   };
+ 
+const handleDonate = async () => {
+  console.log("Donation Amount Eth:", donationAmountETH)
+  console.log("Converted ETH amount:", ethers.parseEther(donationAmountETH));
 
-  const handleDonate = async () => {
-    if (!proposal || !donationAmount) return;
+  if (!proposal || !donationAmountETH || parseFloat(donationAmountETH) < 0.00001) {
+    toast.error("Donation must be greater than 0.00001 ETH");
+    return;
+  }
 
-    try {
-      const proposalId = Number(id);
-      await writeContract(config, {
-        address: deployedAddress,
-        abi: ABI,
-        functionName: 'donateToProposal',
-        args: [proposalId],
-        overrides: { value: ethers.parseEther(donationAmount) }, // Specify the donation amount in ETH
-      });
+  try {
+    const proposalId = Number(id);
+    const ethAmount = ethers.parseEther(donationAmountETH); // Ensure it's correctly formatted for ETH
 
-      toast.success(`Successfully donated ${donationAmount} ETH to proposal ${proposal.title}`);
-      setDonationAmount(""); // Reset donation amount field
-      
-      // Fetch updated proposal details
-      const updatedProposal = await fetchProposalById(proposalId);
-      setProposal(updatedProposal);
-      
-    } catch (err) {
-      console.error("Error donating:", err);
-      toast.error("Error processing donation");
+    await writeContract(config, {
+      address: deployedAddress,
+      abi: ABI,
+      functionName: 'donateToProposal',
+      args: [proposalId],
+      overrides: { value: ethAmount }
+    });
+
+    toast.success(`Successfully donated ${donationAmountETH} ETH to proposal ${proposal.title}`);
+    setDonationAmountETH("");
+    setDonationAmountUSD("");
+
+    // Refresh proposal data after donation
+    const updatedProposal = await fetchProposalById(proposalId);
+    setProposal(updatedProposal);
+
+  } catch (err) {
+    console.error("Error donating:", err);
+    toast.error("Error processing donation");
+  }
+};
+
+  const handleEthChange = (ethAmount: string) => {
+    const amount = parseFloat(ethAmount);
+    if (isNaN(amount) || amount < 0) {
+      toast.error("Invalid donation amount");
+      return;
+    }
+    setDonationAmountETH(ethAmount);
+  
+    if (ethToUsdRate) {
+      setDonationAmountUSD((amount * ethToUsdRate).toFixed(2));
+    }
+  };
+  
+
+  const handleUsdChange = (usdAmount: string) => {
+    setDonationAmountUSD(usdAmount);
+    if (ethToUsdRate) {
+      setDonationAmountETH((parseFloat(usdAmount) / ethToUsdRate).toFixed(6));
     }
   };
 
@@ -116,9 +163,8 @@ const ProposalDetail: React.FC = () => {
           <p>Deadline: {new Date(Number(proposal.deadline) * 1000).toLocaleString()}</p>
           <p>Status: {proposal.executed ? "Executed" : "Pending"}</p>
           <p>
-  Funds Received: {proposal.fundsReceived ? ethers.formatEther(proposal.fundsReceived) : "0"} ETH
-</p>
-
+            Funds Received: {proposal.fundsReceived ? ethers.formatEther(proposal.fundsReceived) : "0"} ETH
+          </p>
         </div>
         <div className="vote-buttons">
           {!proposal.executed && (
@@ -128,15 +174,21 @@ const ProposalDetail: React.FC = () => {
             </>
           )}
         </div>
-        {voteError && <p className="error">{voteError}</p>} {/* Display vote error */}
+        {voteError && <p className="error">{voteError}</p>}
         
         <div className="donate-section">
           <h3>Donate to this Proposal</h3>
           <input
             type="number"
-            value={donationAmount}
-            onChange={(e) => setDonationAmount(e.target.value)}
+            value={donationAmountETH}
+            onChange={(e) => handleEthChange(e.target.value)}
             placeholder="Amount in ETH"
+          />
+          <input
+            type="number"
+            value={donationAmountUSD}
+            onChange={(e) => handleUsdChange(e.target.value)}
+            placeholder="Amount in USD"
           />
           <button onClick={handleDonate}>Donate</button>
         </div>
