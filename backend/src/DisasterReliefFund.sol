@@ -61,7 +61,7 @@ contract DisasterReliefFund {
     function donateToProposal(uint256 _proposalId) public payable {
         require(_proposalId > 0 && _proposalId <= proposalCount, "Proposal does not exist");
         require(!proposals[_proposalId].archived, "Proposal is archived");
-       // require(msg.value >= 0.00001 ether, "Donation must be greater than 0.00 ETH");
+        require(msg.value >= 0.00001 ether, "Donation must be greater than 0.00 ETH");
 
         proposals[_proposalId].fundsReceived += msg.value; // Track funds received for each proposal
         donations[_proposalId][msg.sender] += msg.value;   // Track individual contributions
