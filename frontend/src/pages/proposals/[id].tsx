@@ -45,6 +45,7 @@ const ProposalDetail: React.FC = () => {
         const proposalId = Number(id);
         const foundProposal = await fetchProposalById(proposalId);
         if (foundProposal) {
+          console.log("foundProposal::", foundProposal)
           setProposal(foundProposal);
         } else {
           setError('Proposal not found');
@@ -92,14 +93,15 @@ const ProposalDetail: React.FC = () => {
   };
  
 const handleDonate = async () => {
-  console.log("Donation Amount Eth:", donationAmountETH)
-  console.log("Converted ETH amount:", ethers.parseEther(donationAmountETH));
+ 
 
   if (!proposal || !donationAmountETH || parseFloat(donationAmountETH) < 0.00001) {
     toast.error("Donation must be greater than 0.00001 ETH");
     return;
   }
-
+  console.log("Donation Amount Eth:", donationAmountETH)
+ 
+  console.log("Converted ETH amount:", ethers.parseEther(donationAmountETH));
   try {
     const proposalId = Number(id);
     const ethAmount = ethers.parseEther(donationAmountETH); // Ensure it's correctly formatted for ETH
@@ -109,7 +111,8 @@ const handleDonate = async () => {
       abi: ABI,
       functionName: 'donateToProposal',
       args: [proposalId],
-      overrides: { value: ethAmount }
+      // overrides: { value: ethAmount }
+      value:ethAmount
     });
 
     toast.success(`Successfully donated ${donationAmountETH} ETH to proposal ${proposal.title}`);
