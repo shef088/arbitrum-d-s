@@ -4,6 +4,8 @@ import { ethers } from 'ethers';
 import { readContract } from '@wagmi/core';
 import config from '../../wagmi';
 import { ABI, deployedAddress } from '../../contracts/deployed-contract';
+import { toast } from 'react-toastify';
+ 
 
 const GovernancePage: React.FC = () => {
   const { isConnected, address } = useAccount();
@@ -25,6 +27,7 @@ const GovernancePage: React.FC = () => {
         setOwnerAddress(result);
       } catch (error) {
         console.error('Failed to fetch owner address:', error);
+        toast.error("Failed to fetch owner address")
       }
     };
 
@@ -49,6 +52,7 @@ const GovernancePage: React.FC = () => {
     } catch (error) {
       console.error('Failed to fetch governance addresses:', error);
       setError('Failed to fetch governance addresses.');
+      toast.error('Failed to fetch governance addresses.');
     } finally {
       setLoading(false);
     }
@@ -58,6 +62,11 @@ const GovernancePage: React.FC = () => {
     fetchGovernanceAddresses();
   }, []);
 
+  // Refetch governance addresses when account changes
+  useEffect(() => {
+    fetchGovernanceAddresses();
+  }, [address]);
+
   const handleAddGovernanceAddress = async () => {
     if (!governanceAddress) return;
 
@@ -66,14 +75,14 @@ const GovernancePage: React.FC = () => {
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(deployedAddress, ABI, signer);
 
-      const tx = await contract.authorizeGovernance(governanceAddress);
+      const tx = await contract.authorizeGovernance(governanceAddress.trim());
       await tx.wait();
-      alert('Governance address added successfully!');
+      toast.success('Governance address added successfully!');
       setGovernanceAddress('');
       await fetchGovernanceAddresses(); // Refresh addresses
     } catch (error) {
       console.error('Failed to add governance address:', error);
-      alert('Failed to add governance address.');
+      toast.error('Failed to add governance address.');
     }
   };
 
@@ -88,11 +97,11 @@ const GovernancePage: React.FC = () => {
 
       const tx = await contract.revokeGovernance(addressToRemove);
       await tx.wait();
-      alert('Governance address removed successfully!');
+      toast.success('Governance address removed successfully!');
       await fetchGovernanceAddresses(); // Refresh addresses
     } catch (error) {
       console.error('Failed to remove governance address:', error);
-      alert('Failed to remove governance address.');
+      toast.error('Failed to remove governance address.');
     }
   };
 
@@ -126,7 +135,7 @@ const GovernancePage: React.FC = () => {
               <li key={index}>
                 {addr}
                 {isOwner && (
-                  <button onClick={() => handleRemoveGovernanceAddress(addr)}>Remove</button>
+                  <button className="remove-button" onClick={() => handleRemoveGovernanceAddress(addr)}>Remove</button>
                 )}
               </li>
             ))}

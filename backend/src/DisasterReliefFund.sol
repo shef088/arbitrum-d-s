@@ -238,10 +238,17 @@ contract DisasterReliefFund {
     }
 
     // Function to revoke governance access
-    function revokeGovernance(address _governanceAddress) public onlyOwner {
-        require(authorizedGovernance[_governanceAddress], "Not an authorized governance address");
-        authorizedGovernance[_governanceAddress] = false;
-        
-        // Remove address from the array (optional; requires additional logic)
+   function revokeGovernance(address _governanceAddress) public onlyOwner {
+    require(authorizedGovernance[_governanceAddress], "Not an authorized governance address");
+    authorizedGovernance[_governanceAddress] = false;
+
+    // Remove address from the array (optional; requires additional logic)
+    for (uint i = 0; i < governanceAddresses.length; i++) {
+        if (governanceAddresses[i] == _governanceAddress) {
+            governanceAddresses[i] = governanceAddresses[governanceAddresses.length - 1]; // Move the last element to the removed spot
+            governanceAddresses.pop(); // Remove the last element
+            break;
+        }
     }
+}
 }
