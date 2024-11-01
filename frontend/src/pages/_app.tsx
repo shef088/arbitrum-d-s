@@ -18,7 +18,7 @@ import '../styles/PendingProposals.css';
 import "../styles/globals.css";
 import "../styles/Footer.css";
 import "../styles/Header.css";
- 
+import '../styles/GovernancePage.css';
 
 import Header from "../components/Header"
 import Footer from "../components/Footer";

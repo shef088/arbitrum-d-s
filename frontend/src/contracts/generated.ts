@@ -10,6 +10,7 @@ import {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const disasterReliefFundAbi = [
+  { type: 'constructor', inputs: [], stateMutability: 'nonpayable' },
   {
     type: 'function',
     inputs: [
@@ -33,6 +34,22 @@ export const disasterReliefFundAbi = [
     name: 'archiveProposal',
     outputs: [],
     stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_governanceAddress', internalType: 'address', type: 'address' },
+    ],
+    name: 'authorizeGovernance',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'authorizedGovernance',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -75,6 +92,13 @@ export const disasterReliefFundAbi = [
     name: 'executeProposal',
     outputs: [],
     stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getGovernanceAddresses',
+    outputs: [{ name: '', internalType: 'address[]', type: 'address[]' }],
+    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -127,12 +151,26 @@ export const disasterReliefFundAbi = [
   },
   {
     type: 'function',
+    inputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    name: 'governanceAddresses',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [
       { name: '', internalType: 'uint256', type: 'uint256' },
       { name: '', internalType: 'address', type: 'address' },
     ],
     name: 'hasVoted',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'owner',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
     stateMutability: 'view',
   },
   {
@@ -166,6 +204,15 @@ export const disasterReliefFundAbi = [
       { name: '_originalProposalId', internalType: 'uint256', type: 'uint256' },
     ],
     name: 'recreateProposal',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_governanceAddress', internalType: 'address', type: 'address' },
+    ],
+    name: 'revokeGovernance',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -597,12 +644,30 @@ export const useReadDisasterReliefFundundefined =
   /*#__PURE__*/ createUseReadContract({ abi: disasterReliefFundAbi })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"authorizedGovernance"`
+ */
+export const useReadDisasterReliefFundAuthorizedGovernance =
+  /*#__PURE__*/ createUseReadContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'authorizedGovernance',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"donations"`
  */
 export const useReadDisasterReliefFundDonations =
   /*#__PURE__*/ createUseReadContract({
     abi: disasterReliefFundAbi,
     functionName: 'donations',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"getGovernanceAddresses"`
+ */
+export const useReadDisasterReliefFundGetGovernanceAddresses =
+  /*#__PURE__*/ createUseReadContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'getGovernanceAddresses',
   })
 
 /**
@@ -633,12 +698,30 @@ export const useReadDisasterReliefFundGetUserProposals =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"governanceAddresses"`
+ */
+export const useReadDisasterReliefFundGovernanceAddresses =
+  /*#__PURE__*/ createUseReadContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'governanceAddresses',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"hasVoted"`
  */
 export const useReadDisasterReliefFundHasVoted =
   /*#__PURE__*/ createUseReadContract({
     abi: disasterReliefFundAbi,
     functionName: 'hasVoted',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"owner"`
+ */
+export const useReadDisasterReliefFundOwner =
+  /*#__PURE__*/ createUseReadContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'owner',
   })
 
 /**
@@ -729,6 +812,15 @@ export const useWriteDisasterReliefFundArchiveProposal =
   })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"authorizeGovernance"`
+ */
+export const useWriteDisasterReliefFundAuthorizeGovernance =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'authorizeGovernance',
+  })
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"checkExpiredProposals"`
  */
 export const useWriteDisasterReliefFundCheckExpiredProposals =
@@ -774,6 +866,15 @@ export const useWriteDisasterReliefFundRecreateProposal =
   })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"revokeGovernance"`
+ */
+export const useWriteDisasterReliefFundRevokeGovernance =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'revokeGovernance',
+  })
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"vote"`
  */
 export const useWriteDisasterReliefFundVote =
@@ -813,6 +914,15 @@ export const useSimulateDisasterReliefFundArchiveProposal =
   /*#__PURE__*/ createUseSimulateContract({
     abi: disasterReliefFundAbi,
     functionName: 'archiveProposal',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"authorizeGovernance"`
+ */
+export const useSimulateDisasterReliefFundAuthorizeGovernance =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'authorizeGovernance',
   })
 
 /**
@@ -858,6 +968,15 @@ export const useSimulateDisasterReliefFundRecreateProposal =
   /*#__PURE__*/ createUseSimulateContract({
     abi: disasterReliefFundAbi,
     functionName: 'recreateProposal',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"revokeGovernance"`
+ */
+export const useSimulateDisasterReliefFundRevokeGovernance =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'revokeGovernance',
   })
 
 /**

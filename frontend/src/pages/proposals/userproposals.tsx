@@ -49,7 +49,15 @@ const UserProposals: React.FC = () => {
                 <span>Votes For: {Number(proposal.votesFor)}</span>
                 <span>Votes Against: {Number(proposal.votesAgainst)}</span>
                 <span>Voting Deadline: {new Date(Number(proposal.votingDeadline) * 1000).toLocaleString()}</span>
-                <span>Status: {proposal.executed ? (proposal.votingPassed? "Approved for Donations" : "Rejected") : "Voting"}</span>
+                <span>
+  Status: {proposal.archived 
+    ? "Archived" 
+    : proposal.executed 
+      ? (proposal.votingPassed ? "Approved for Donations" : "Rejected") 
+      : "Voting"
+  }
+</span>
+
          
               </div> 
             </Link>

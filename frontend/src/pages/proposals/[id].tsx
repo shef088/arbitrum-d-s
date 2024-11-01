@@ -109,7 +109,7 @@ const ProposalDetail: React.FC = () => {
       });
 
       toast.success(`Successfully voted ${voteFor ? 'for' : 'against'} proposal ${proposal.title}`);
- // Refresh proposal data after donation
+ // Refresh proposal data  
       const foundProposal = await getProposalDetails()
      
       
@@ -148,7 +148,7 @@ const ProposalDetail: React.FC = () => {
       setDonationAmountETH("");
       setDonationAmountUSD("");
 
-      // Refresh proposal data after donation
+      // Refresh proposal data 
       const foundProposal = await getProposalDetails()
 
     } catch (err) {
@@ -190,7 +190,7 @@ const ProposalDetail: React.FC = () => {
             });
 
             toast.success(`Executed proposal ${proposal.title} successfully!.`);
-             // Refresh proposal data after donation
+             // Refresh proposal  
             const foundProposal = await getProposalDetails();
         } catch (err) {
             console.error("Error executing proposal:", err);
@@ -208,7 +208,8 @@ const ProposalDetail: React.FC = () => {
 
 const handleArchive = async () => {
   if (!proposal) return;
-
+  const confirmation = window.confirm("Are you sure you want to archive this proposal?");
+   if (!confirmation) return;
   try {
     const proposalId: bigint = BigInt(Number(id));
     
@@ -220,7 +221,8 @@ const handleArchive = async () => {
     });
 
     toast.success(`Successfully archived proposal ${proposal.title}`);
-   
+    // Refresh proposal data 
+    const foundProposal = await getProposalDetails();
   } catch (err) {
     console.error("Error archiving proposal:", err);
     if (err instanceof ContractFunctionExecutionError) {
@@ -232,7 +234,27 @@ const handleArchive = async () => {
   }
 };
 
+const recreateProposal = async( ) => {
+  if (!proposal) return;
 
+  try {
+    const proposalId: bigint = BigInt(Number(id));
+    
+    await writeContract(config, {
+      address: deployedAddress,
+      abi: ABI,
+      functionName: 'recreateProposal',  
+      args: [proposalId],
+    });
+
+    toast.success(`Successfully recreated proposal ${proposal.title}`);
+    // Refresh proposal data 
+    const foundProposal = await getProposalDetails();
+  } catch (err) {
+    console.error("Error recreating proposal:", err);
+     
+  }
+}
   if (loading) return <p>Loading proposal details...</p>;
   if (error) return <p className="error">{error}</p>;
   if (!proposal) return <p>No proposal data available.</p>;
@@ -243,15 +265,10 @@ const handleArchive = async () => {
       <div className="proposal-detail">
         <h2>{proposal.title}</h2>
         <p>Description: {proposal.description}</p>
-         {!proposal.votingPassed && proposal.executed &&(
-        <div className="check-exp">
-
-            <button onClick={()=>{}}>Recreate Proposal</button>
-        </div>
-         )}
+        
         <hr/>
      
-        {!proposal.executed && (
+        {!proposal.archived && !proposal.executed &&  (
     <>
         Voting Deadline: <b>{new Date(Number(proposal.votingDeadline) * 1000).toLocaleString()}</b>
         <br />
@@ -334,17 +351,23 @@ const handleArchive = async () => {
           </div>
         </div>
          )}
-         {!proposal.executed &&  <div className="check-exp">
-         <span>Click if this proposal's voting period has ended but proposal status is still Voting.(triggers execute if expired)</span>
+         {!proposal.executed && !proposal.archived  && <div className="check-exp">
+         <span>Execute if this proposal's voting period has ended but proposal status is still Voting.(triggers execute if expired)</span>
             <button onClick={handleCheckExpiredAndExecute}>Execute Proposal</button>
         </div>}
-        {!proposal.archived && (proposal.executed || !proposal.votingPassed) && (
-          <div className="archive-section">
-            <span>Equivalent to set proposal inactive</span>
-            <button onClick={handleArchive}>Archive Proposal</button>
-          </div>
-        )}
-         {proposal. === proposalOwner && !proposal.archived && (
+        {proposal.proposer === address && !proposal.archived && (
+   <div className="archive-section">
+   <span>Equivalent to set proposal inactive</span>
+   <button onClick={handleArchive}>Archive Proposal</button>
+ </div>
+         )}
+          {proposal.archived &&(
+        <div className="check-exp">
+
+            <button onClick={()=>recreateProposal()}>Recreate Proposal</button>
+        </div>
+         )}
+         
       </div>
     </div>
   );

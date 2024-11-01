@@ -41,6 +41,7 @@ const Header: React.FC = () => {
                         <Link href="/proposals/rejected">Rejected Proposals</Link>
                         <Link href="/proposals/userproposals">Your Proposals</Link>
                         <Link href="/proposals/advanced-ops">Advanced</Link>   
+                        <Link href="/governance">Governance</Link>  
                     </>
                 )}
             </nav>

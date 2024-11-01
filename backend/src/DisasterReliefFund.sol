@@ -27,6 +27,10 @@ contract DisasterReliefFund {
     mapping(uint256 => mapping(address => uint256)) public donations; // Tracks individual donations to each proposal
     mapping(address => Donation[]) public userDonations; // New mapping to track all donations made by each user with proposal ID
 
+    mapping(address => bool) public authorizedGovernance; // Mapping to track authorized governance addresses
+    address public owner; // Owner of the contract
+    address[] public governanceAddresses; // Array to store governance addresses
+
     uint256 public proposalCount;
     uint256 public totalPot; // Shared pool for all donations
 
@@ -36,6 +40,20 @@ contract DisasterReliefFund {
     event ProposalRecreated(uint256 originalProposalId, uint256 newProposalId);
     event DonationReceived(uint256 proposalId, address donor, uint256 amount);
     event FundsAllocated(uint256 amount, address recipient);
+
+    modifier onlyGovernance() {
+        require(authorizedGovernance[msg.sender], "Caller is not authorized governance");
+        _;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Caller is not the owner");
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender; // Set the contract deployer as the owner
+    }
 
     function createProposal(string memory _title, string memory _description, uint256 _votingDeadline) public returns (uint256) {
         require(_votingDeadline > block.timestamp, "Voting deadline must be in the future"); // Ensure the voting deadline is in the future
@@ -177,8 +195,8 @@ contract DisasterReliefFund {
     }
 
     // Function to allocate funds from the total pot based on governance
-    function allocateFromPot(uint256 amount, address recipient) public {
-        // Add governance checks to ensure only approved allocations can be made
+    function allocateFromPot(uint256 amount, address recipient) public onlyGovernance {
+        // Ensure only approved allocations can be made
         require(amount <= totalPot, "Insufficient funds in the pot");
         totalPot -= amount;
         payable(recipient).transfer(amount);
@@ -186,11 +204,11 @@ contract DisasterReliefFund {
         emit FundsAllocated(amount, recipient);
     }
 
-    function allocateFundsToProposer(uint256 _proposalId) public {
+    function allocateFundsToProposer(uint256 _proposalId) public onlyGovernance {
         require(_proposalId > 0 && _proposalId <= proposalCount, "Proposal does not exist");
         Proposal storage proposal = proposals[_proposalId];
         require(proposal.executed, "Proposal must be executed before funds can be allocated");
-        require(proposal.votingPassed, "Proposal must have passed to allocate funds"); // Updated check
+        require(proposal.votingPassed, "Proposal must have passed to allocate funds");
         require(proposal.fundsReceived > 0, "No funds available for allocation");
 
         uint256 allocation = proposal.fundsReceived; // Use funds donated specifically to this proposal
@@ -203,9 +221,27 @@ contract DisasterReliefFund {
 
     function archiveProposal(uint256 _proposalId) public {
         require(_proposalId > 0 && _proposalId <= proposalCount, "Proposal does not exist");
-        require(msg.sender == proposals[_proposalId].proposer, "Only the proposer can archive the proposal");
-        require(!proposals[_proposalId].archived, "Proposal is already archived");
+        require(msg.sender == proposals[_proposalId].proposer, "Only proposer can archive");
+        proposals[_proposalId].archived = true;
+    }
 
-        proposals[_proposalId].archived = true; // Mark proposal as archived
+    // Authorize governance address
+    function authorizeGovernance(address _governanceAddress) public onlyOwner {
+        require(!authorizedGovernance[_governanceAddress], "Already authorized");
+        authorizedGovernance[_governanceAddress] = true;
+        governanceAddresses.push(_governanceAddress); // Add to the array of governance addresses
+    }
+
+    // Function to retrieve all governance addresses
+    function getGovernanceAddresses() public view returns (address[] memory) {
+        return governanceAddresses;
+    }
+
+    // Function to revoke governance access
+    function revokeGovernance(address _governanceAddress) public onlyOwner {
+        require(authorizedGovernance[_governanceAddress], "Not an authorized governance address");
+        authorizedGovernance[_governanceAddress] = false;
+        
+        // Remove address from the array (optional; requires additional logic)
     }
 }

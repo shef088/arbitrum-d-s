@@ -8,13 +8,13 @@ const fetchPendingProposals = async (): Promise<ProposalResponse[]> => {
 
     // Filter out the pending proposals
     const pendingProposals = allProposals.filter(proposal => 
-      !proposal.executed 
+      !proposal.executed && !proposal.archived
       // && Number(proposal.votingDeadline) * 1000 > Date.now() // Convert BigInt to number for comparison
     );
 
     return pendingProposals;
   } catch (error) {
-    throw new Error(`Failed to fetch pending proposals: ${error.message}`);
+    throw new Error(`Failed to fetch pending proposals: ${error}`);
   }
 };
 
