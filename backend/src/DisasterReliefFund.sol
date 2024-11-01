@@ -15,7 +15,8 @@ contract DisasterReliefFund {
         uint256 votesAgainst;
         bool votingPassed;  
         uint256 votingDeadline;  
-        uint256 fundsReceived; // Track funds received specifically for this proposal
+        uint256 fundsReceived;  
+        uint256 overallFundsReceived;
         bool executed;
         bool archived;
     }
@@ -65,8 +66,9 @@ contract DisasterReliefFund {
             description: _description,
             votesFor: 0,
             votesAgainst: 0,
-            votingDeadline: _votingDeadline, // Set the voting deadline
+            votingDeadline: _votingDeadline,  
             fundsReceived: 0,
+            overallFundsReceived: 0,
             executed: false,
             archived: false,
             votingPassed: false  
@@ -90,6 +92,7 @@ contract DisasterReliefFund {
         require(msg.value >= 0.00001 ether, "Donation must be greater than 0.00 ETH");
 
         proposals[_proposalId].fundsReceived += msg.value; // Track funds received for each proposal
+        proposals[_proposalId].overallFundsReceived += msg.value;
         donations[_proposalId][msg.sender] += msg.value;   // Track individual contributions
         totalPot += msg.value; // Add to the shared donation pool
 
@@ -169,6 +172,7 @@ contract DisasterReliefFund {
             votesAgainst: 0,
             votingDeadline: block.timestamp + 1 days, // Default voting deadline for recreated proposals
             fundsReceived: 0,
+            overallFundsReceived: 0,
             executed: false,
             archived: false,
             votingPassed: false  
@@ -204,20 +208,26 @@ contract DisasterReliefFund {
         emit FundsAllocated(amount, recipient);
     }
 
-    function allocateFundsToProposer(uint256 _proposalId) public onlyGovernance {
-        require(_proposalId > 0 && _proposalId <= proposalCount, "Proposal does not exist");
-        Proposal storage proposal = proposals[_proposalId];
-        require(proposal.executed, "Proposal must be executed before funds can be allocated");
-        require(proposal.votingPassed, "Proposal must have passed to allocate funds");
-        require(proposal.fundsReceived > 0, "No funds available for allocation");
+ function allocateFundsToProposer(uint256 _proposalId) public {
+    require(_proposalId > 0 && _proposalId <= proposalCount, "Proposal does not exist");
 
-        uint256 allocation = proposal.fundsReceived; // Use funds donated specifically to this proposal
-        totalPot -= allocation; // Decrease the total pot
-        payable(proposal.proposer).transfer(allocation); // Transfer to proposer
+    Proposal storage proposal = proposals[_proposalId];
+    require(msg.sender == proposal.proposer, "Only the proposer can withdraw allocated funds");
+    require(proposal.executed, "Proposal must be executed before funds can be allocated");
+    require(proposal.votingPassed, "Proposal must have passed to allocate funds");
+    require(proposal.fundsReceived > 0, "No funds available for allocation");
 
-        proposal.fundsReceived = 0; // Reset funds received for the proposal after allocation
-        emit FundsAllocated(allocation, proposal.proposer);
-    }
+    uint256 allocation = proposal.fundsReceived;
+    uint256 platformCut = (allocation * 3) / 100; // 3% cut
+    uint256 finalAmount = allocation - platformCut;
+
+    totalPot -= allocation;
+    payable(proposal.proposer).transfer(finalAmount); // Transfer to proposer after cut
+
+    proposal.fundsReceived = 0; // Reset funds received after allocation
+    emit FundsAllocated(finalAmount, proposal.proposer);
+}
+
 
     function archiveProposal(uint256 _proposalId) public {
         require(_proposalId > 0 && _proposalId <= proposalCount, "Proposal does not exist");

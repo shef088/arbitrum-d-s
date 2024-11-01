@@ -128,4 +128,38 @@ contract DisasterReliefFundTest is Test {
         assertEq(newProposal.archived, false);
         assertEq(newProposal.votingPassed, false); // Check passed status for recreated proposal
     }
+
+    // Test adding governance address
+   // Test authorizing governance address
+    function testAuthorizeGovernance() public {
+        address governanceAddress = address(0x123); // Example governance address
+        fund.authorizeGovernance(governanceAddress); // Call the authorizeGovernance function
+
+        // Verify that the governance address was authorized
+        bool isAuthorized = fund.authorizedGovernance(governanceAddress); // Check mapping
+        assertTrue(isAuthorized, "Governance address should be authorized");
+    }
+
+
+  // Test revoking governance address
+    function testRevokeGovernance() public {
+        address governanceAddress = address(0x123); // Example governance address
+        fund.authorizeGovernance(governanceAddress); // First authorize it
+
+        // Now revoke the governance address
+        fund.revokeGovernance(governanceAddress);
+
+        // Verify that the governance address was revoked
+        bool isAuthorized = fund.authorizedGovernance(governanceAddress); // Check mapping
+        assertFalse(isAuthorized, "Governance address should be revoked");
+    }
+
+    // Test revoking governance that is not authorized
+    function testRevokeNonExistentGovernance() public {
+        address nonExistentAddress = address(0x456); // Address not authorized
+
+        // Attempt to revoke it and expect a revert
+        vm.expectRevert("Not an authorized governance address");
+        fund.revokeGovernance(nonExistentAddress);
+    }
 }

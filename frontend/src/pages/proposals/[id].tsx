@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import fetchProposalById from '../../utils/fetchProposalById';
-import { readContract, writeContract } from "@wagmi/core"; 
-import config from "../../wagmi"; 
-import { ABI, deployedAddress } from "../../contracts/deployed-contract"; 
-import type { ProposalResponse } from '../../types/proposals/types'; 
+import { readContract, writeContract } from "@wagmi/core";
+import config from "../../wagmi";
+import { ABI, deployedAddress } from "../../contracts/deployed-contract";
+import type { ProposalResponse } from '../../types/proposals/types';
 import { toast } from 'react-toastify';
 import { useAccount } from 'wagmi';
 import { ethers } from 'ethers';
@@ -21,7 +21,7 @@ const ProposalDetail: React.FC = () => {
   const [donationAmountETH, setDonationAmountETH] = useState<string>("");
   const [donationAmountUSD, setDonationAmountUSD] = useState<string>("");
   const [ethToUsdRate, setEthToUsdRate] = useState<number | null>(null);
-  const { isConnected, address } = useAccount(); 
+  const { isConnected, address } = useAccount();
   const [countdown, setCountdown] = useState<number>(0); // Countdown state
 
   useEffect(() => {
@@ -40,7 +40,7 @@ const ProposalDetail: React.FC = () => {
   }, []);
 
   useEffect(() => {
-  
+
     getProposalDetails();
   }, [id, isConnected, address]);
 
@@ -60,32 +60,32 @@ const ProposalDetail: React.FC = () => {
       if (foundProposal) {
         console.log("foundProposal::", foundProposal);
         setProposal(foundProposal);
-        
+
         // Convert BigInt to number safely
         const currentTime = Math.floor(Date.now() / 1000);
         const propDeadline = Number(foundProposal.votingDeadline); // Convert to number
-        
+
         // Calculate remaining time
         const remainingTime = propDeadline - currentTime;
         setCountdown(remainingTime > 0 ? remainingTime : 0); // Set countdown in seconds
- 
+
       } else {
         setError('Proposal not found');
-      } 
-    } catch (err ) {
-     
-      if (err  instanceof ContractFunctionExecutionError) {
-       
-        const reason = err.message.includes("Proposal does not exist") 
-            ? `Proposal with id '${Number(id)}' does not exist.`
-            : "Error fetching proposal.";
-         
+      }
+    } catch (err) {
+
+      if (err instanceof ContractFunctionExecutionError) {
+
+        const reason = err.message.includes("Proposal does not exist")
+          ? `Proposal with id '${Number(id)}' does not exist.`
+          : "Error fetching proposal.";
+
         toast.error(reason);
         setError(reason);
-      }else{
+      } else {
         setError((err as Error).message);
       }
-       
+
     } finally {
       setLoading(false);
     }
@@ -109,23 +109,23 @@ const ProposalDetail: React.FC = () => {
       });
 
       toast.success(`Successfully voted ${voteFor ? 'for' : 'against'} proposal ${proposal.title}`);
- // Refresh proposal data  
+      // Refresh proposal data  
       const foundProposal = await getProposalDetails()
-     
-      
+
+
     } catch (err) {
       console.error("Error voting:", err);
       setVoteError("Error casting your vote");
       if (err instanceof ContractFunctionExecutionError) {
-        const reason = err.message.includes("Already voted") 
-            ? "You have already voted with this choice for this proposal."
-            : "Error casting your vote.";
+        const reason = err.message.includes("Already voted")
+          ? "You have already voted with this choice for this proposal."
+          : "Error casting your vote.";
         setVoteError(reason);
         toast.error(reason);
       }
     }
   };
- 
+
   const handleDonate = async () => {
     if (!proposal || !donationAmountETH || parseFloat(donationAmountETH) < 0.00001) {
       toast.error("Donation must be greater than 0.00001 ETH");
@@ -133,7 +133,7 @@ const ProposalDetail: React.FC = () => {
     }
 
     try {
-    
+
       const ethAmount = ethers.parseEther(donationAmountETH); // Ensure it's correctly formatted for ETH
       const proposalId: bigint = BigInt(Number(id));
       await writeContract(config, {
@@ -164,12 +164,12 @@ const ProposalDetail: React.FC = () => {
       return;
     }
     setDonationAmountETH(ethAmount);
-  
+
     if (ethToUsdRate) {
       setDonationAmountUSD((amount * ethToUsdRate).toFixed(2));
     }
   };
-  
+
   const handleUsdChange = (usdAmount: string) => {
     setDonationAmountUSD(usdAmount);
     if (ethToUsdRate) {
@@ -179,82 +179,104 @@ const ProposalDetail: React.FC = () => {
 
   const handleCheckExpiredAndExecute = async () => {
     if (!proposal) return;
-    
-        try {
-          const proposalId: bigint = BigInt(Number(id));
-            await writeContract(config, {
-                address: deployedAddress,
-                abi: ABI,
-                functionName: 'executeProposal',
-                args: [proposalId],
-            });
 
-            toast.success(`Executed proposal ${proposal.title} successfully!.`);
-             // Refresh proposal  
-            const foundProposal = await getProposalDetails();
-        } catch (err) {
-            console.error("Error executing proposal:", err);
-            console.error("Error executing msg:", err);
-            if (err instanceof ContractFunctionExecutionError) {
-              const reason = err.message.includes("Voting period not ended") 
-                  ? "Voting period not ended. Wait till it ends to Execute!."
-                  : "Error Executing";
-               
-              toast.error(reason);
-            }
-        }
-    
-};
+    try {
+      const proposalId: bigint = BigInt(Number(id));
+      await writeContract(config, {
+        address: deployedAddress,
+        abi: ABI,
+        functionName: 'executeProposal',
+        args: [proposalId],
+      });
 
-const handleArchive = async () => {
-  if (!proposal) return;
-  const confirmation = window.confirm("Are you sure you want to archive this proposal?");
-   if (!confirmation) return;
-  try {
-    const proposalId: bigint = BigInt(Number(id));
-    
-    await writeContract(config, {
-      address: deployedAddress,
-      abi: ABI,
-      functionName: 'archiveProposal', // Function to archive the proposal
-      args: [proposalId],
-    });
+      toast.success(`Executed proposal ${proposal.title} successfully!.`);
+      // Refresh proposal  
+      const foundProposal = await getProposalDetails();
+    } catch (err) {
+      console.error("Error executing proposal:", err);
+      console.error("Error executing msg:", err);
+      if (err instanceof ContractFunctionExecutionError) {
+        const reason = err.message.includes("Voting period not ended")
+          ? "Voting period not ended. Wait till it ends to Execute!."
+          : "Error Executing";
 
-    toast.success(`Successfully archived proposal ${proposal.title}`);
-    // Refresh proposal data 
-    const foundProposal = await getProposalDetails();
-  } catch (err) {
-    console.error("Error archiving proposal:", err);
-    if (err instanceof ContractFunctionExecutionError) {
-      const reason = err.message.includes("Cannot archive this proposal") 
+        toast.error(reason);
+      }
+    }
+
+  };
+
+  const handleArchive = async () => {
+    if (!proposal) return;
+    const confirmation = window.confirm("Are you sure you want to archive this proposal?");
+    if (!confirmation) return;
+    try {
+      const proposalId: bigint = BigInt(Number(id));
+
+      await writeContract(config, {
+        address: deployedAddress,
+        abi: ABI,
+        functionName: 'archiveProposal', // Function to archive the proposal
+        args: [proposalId],
+      });
+
+      toast.success(`Successfully archived proposal ${proposal.title}`);
+      // Refresh proposal data 
+      const foundProposal = await getProposalDetails();
+    } catch (err) {
+      console.error("Error archiving proposal:", err);
+      if (err instanceof ContractFunctionExecutionError) {
+        const reason = err.message.includes("Cannot archive this proposal")
           ? "This proposal cannot be archived."
           : "Error archiving proposal.";
-      toast.error(reason);
+        toast.error(reason);
+      }
+    }
+  };
+
+  const recreateProposal = async () => {
+    if (!proposal) return;
+
+    try {
+      const proposalId: bigint = BigInt(Number(id));
+
+      await writeContract(config, {
+        address: deployedAddress,
+        abi: ABI,
+        functionName: 'recreateProposal',
+        args: [proposalId],
+      });
+
+      toast.success(`Successfully recreated proposal ${proposal.title}`);
+      // Refresh proposal data 
+      const foundProposal = await getProposalDetails();
+    } catch (err) {
+      console.error("Error recreating proposal:", err);
+
     }
   }
-};
-
-const recreateProposal = async( ) => {
-  if (!proposal) return;
-
-  try {
-    const proposalId: bigint = BigInt(Number(id));
-    
-    await writeContract(config, {
-      address: deployedAddress,
-      abi: ABI,
-      functionName: 'recreateProposal',  
-      args: [proposalId],
-    });
-
-    toast.success(`Successfully recreated proposal ${proposal.title}`);
-    // Refresh proposal data 
-    const foundProposal = await getProposalDetails();
-  } catch (err) {
-    console.error("Error recreating proposal:", err);
-     
-  }
-}
+  const allocateFundsToProposer = async () => {
+    if (!proposal) return;
+    try {
+      const proposalId: bigint = BigInt(Number(id));
+      await writeContract(config, {
+        address: deployedAddress,
+        abi: ABI,
+        functionName: 'allocateFundsToProposer',
+        args: [proposalId],
+      });
+      toast.success(`Funds allocated to proposer for proposal ${proposal.title}`);
+      await getProposalDetails();
+    } catch (err) {
+      console.error("Error allocating funds to proposer:", err);
+      if (err instanceof ContractFunctionExecutionError) {
+        const reason = err.message.includes("Only executable proposals")
+          ? "Only executable proposals can have funds allocated."
+          : "Error allocating funds.";
+        toast.error(reason);
+      }
+    }
+  };
   if (loading) return <p>Loading proposal details...</p>;
   if (error) return <p className="error">{error}</p>;
   if (!proposal) return <p>No proposal data available.</p>;
@@ -265,109 +287,137 @@ const recreateProposal = async( ) => {
       <div className="proposal-detail">
         <h2>{proposal.title}</h2>
         <p>Description: {proposal.description}</p>
-        
-        <hr/>
-     
-        {!proposal.archived && !proposal.executed &&  (
-    <>
-        Voting Deadline: <b>{new Date(Number(proposal.votingDeadline) * 1000).toLocaleString()}</b>
-        <br />
-        Voting Deadline Countdown: 
-        <span className='countdown'>
-            {countdown > 0 ? `${Math.floor(countdown / 3600)}h ${Math.floor((countdown % 3600) / 60)}m ${countdown % 60}s` : "Expired"}
-        </span> 
+
         <hr />
-        <br />
-     
 
-
-      <ul>
-        <li>Note: This proposal will only be eligible to receive donations or funding if the votesfor is equal to or greater than the votesagainst.</li>
-        </ul>      </>
-)}
+        {!proposal.archived && !proposal.executed && (
+          <>
+            Voting Deadline: <b>{new Date(Number(proposal.votingDeadline) * 1000).toLocaleString()}</b>
+            <br />
+            Voting Deadline Countdown:
+            <span className='countdown'>
+              {countdown > 0 ? `${Math.floor(countdown / 3600)}h ${Math.floor((countdown % 3600) / 60)}m ${countdown % 60}s` : "Expired"}
+            </span>
+            <hr />
+            <br />
+            <ul>
+              <li>Note: This proposal will only be eligible to receive donations or funding if the votesfor is equal to or greater than the votesagainst.</li>
+            </ul>      </>
+        )}
         <div className="proposal-stats">
           {!proposal.executed && <>
-          <p>Votes For: {Number(proposal.votesFor)}</p>
-          <p>Votes Against: {Number(proposal.votesAgainst)}</p>
+            <p>Votes For: {Number(proposal.votesFor)}</p>
+            <p>Votes Against: {Number(proposal.votesAgainst)}</p>
           </>}
-         
-     
-          <p>Status: 
-  {proposal.archived 
-    ? "Archived(Cannot receive votes or donations!)" 
-    : proposal.executed 
-      ? (proposal.votingPassed ? "Approved for Donations/Funding" : "Rejected") 
-      : "Voting"}
-</p>
 
+
+          <p>Status:
+            {proposal.archived
+              ? "Archived(Cannot receive votes or donations!)"
+              : proposal.executed
+                ? (proposal.votingPassed ? "Approved for Donations/Funding" : "Rejected")
+                : "Voting"}
+          </p>
 
           <p>
-            Funds Received: <span className="funds-p"> {proposal.fundsReceived ? ethers.formatEther(proposal.fundsReceived) : "0"} ETH 
-            ({proposal.fundsReceived ? (parseFloat(ethers.formatEther(proposal.fundsReceived)) * (ethToUsdRate || 0)).toFixed(2) : "0"} USD)
+            Overall Funds Received: <span className="funds-p"> {proposal.fundsReceived ? ethers.formatEther(proposal.fundsReceived) : "0"} ETH
+              ({proposal.overallFundsReceived ? (parseFloat(ethers.formatEther(proposal.overallFundsReceived)) * (ethToUsdRate || 0)).toFixed(2) : "0"} USD $)
             </span>
           </p>
-           </div>
-           <div className="vote-buttons">
-  {!proposal.executed && Date.now() < Number(proposal.votingDeadline) * 1000 && (
-    <>
-      <button onClick={() => handleVote(true)} className="up-vote-btn">
-        <FaArrowUp className="vote-icon" /> {Number(proposal.votesFor)}
-      </button>
-      <button onClick={() => handleVote(false)} className="down-vote-btn">
-        <FaArrowDown className="vote-icon" /> {Number(proposal.votesAgainst)}
-      </button>
-    </>
-  )}
-</div>
+          <p>
+            Current Funds: <span className="funds-p"> {proposal.fundsReceived ? ethers.formatEther(proposal.fundsReceived) : "0"} ETH
+              ({proposal.fundsReceived ? (parseFloat(ethers.formatEther(proposal.fundsReceived)) * (ethToUsdRate || 0)).toFixed(2) : "0"} USD $)
+            </span>
+          </p>
+        </div>
+        <div className="vote-buttons">
+          {!proposal.executed && Date.now() < Number(proposal.votingDeadline) * 1000 && (
+            <>
+              <button onClick={() => handleVote(true)} className="up-vote-btn">
+                <FaArrowUp className="vote-icon" /> {Number(proposal.votesFor)}
+              </button>
+              <button onClick={() => handleVote(false)} className="down-vote-btn">
+                <FaArrowDown className="vote-icon" /> {Number(proposal.votesAgainst)}
+              </button>
+            </>
+          )}
+        </div>
 
         {voteError && <p className="error">{voteError}</p>}
-        {proposal.votingPassed &&(
+        {proposal.votingPassed && (
 
-       
-        <div className="donate-section">
-          <h3>Donate to this Proposal</h3>
-          <div>
-          
+
+          <div className="donate-section">
+            <h3>Donate to this Proposal</h3>
+            <div>
+
               <div className=''>  <label htmlFor="amounteth">ETH </label>
-            <input
-              name="amounteth"
-              type="number"
-              min="0"
-              value={donationAmountETH}
-              onChange={(e) => handleEthChange(e.target.value)}
-              placeholder="0.00"
-            /></div>
-            <div className=''>    <label htmlFor="amountusd">USD </label>
-            <input
-              name="amountusd"
-              type="number"
-              min="0"
-              value={donationAmountUSD}
-              onChange={(e) => handleUsdChange(e.target.value)}
-              placeholder="0.00"
-            /></div>
-        
-            <button onClick={handleDonate}>Donate</button>
-          </div>
-        </div>
-         )}
-         {!proposal.executed && !proposal.archived  && <div className="check-exp">
-         <span>Execute if this proposal's voting period has ended but proposal status is still Voting.(triggers execute if expired)</span>
-            <button onClick={handleCheckExpiredAndExecute}>Execute Proposal</button>
-        </div>}
-        {proposal.proposer === address && !proposal.archived && (
-   <div className="archive-section">
-   <span>Equivalent to set proposal inactive</span>
-   <button onClick={handleArchive}>Archive Proposal</button>
- </div>
-         )}
-          {proposal.archived &&(
-        <div className="check-exp">
+                <input
+                  name="amounteth"
+                  type="number"
+                  min="0"
+                  value={donationAmountETH}
+                  onChange={(e) => handleEthChange(e.target.value)}
+                  placeholder="0.00"
+                /></div>
+              <div className=''>    <label htmlFor="amountusd">USD </label>
+                <input
+                  name="amountusd"
+                  type="number"
+                  min="0"
+                  value={donationAmountUSD}
+                  onChange={(e) => handleUsdChange(e.target.value)}
+                  placeholder="0.00"
+                /></div>
 
-            <button onClick={()=>recreateProposal()}>Recreate Proposal</button>
-        </div>
-         )}
-         
+              <button onClick={handleDonate}>Donate</button>
+            </div>
+          </div>
+        )}
+
+
+{proposal.fundsReceived > 0 && (
+    <div className="note-section">
+        <span>Note: Withdrawals have a fee of 3% for the upkeep of the platform</span>
+        <span>
+            <span>
+                {proposal.fundsReceived ? ethers.formatEther(proposal.fundsReceived) : "0"} ETH
+                ({proposal.fundsReceived ? (parseFloat(ethers.formatEther(proposal.fundsReceived)) * (ethToUsdRate || 0)).toFixed(2) : "0"} USD $)
+            </span>
+            <span> <span> - 3% </span>=</span>
+            {proposal.fundsReceived > 0
+                ? ethers.formatEther(BigInt(proposal.fundsReceived) * BigInt(0.97 * 1e18) / BigInt(1e18)) // Subtract 3% from ETH
+                : "0"} ETH
+            (
+            {proposal.fundsReceived > 0
+                ? ((parseFloat(ethers.formatEther(BigInt(proposal.fundsReceived) * BigInt(0.97 * 1e18) / BigInt(1e18))) * (ethToUsdRate || 0)) * 0.97).toFixed(2) // Subtract 3% from USD
+                : "0"} USD $
+            )
+        </span>
+        <button onClick={() => allocateFundsToProposer()}>Withdraw funds</button>
+    </div>
+)}
+
+{!proposal.executed && !proposal.archived && (
+    <div className="check-exp">
+        <span>Execute if this proposal's voting period has ended but proposal status is still Voting. (Triggers execute if expired)</span>
+        <button onClick={handleCheckExpiredAndExecute}>Execute Proposal</button>
+    </div>
+)}
+
+{proposal.proposer === address && !proposal.archived && (
+    <div className="archive-section">
+        <span>Equivalent to set proposal inactive</span>
+        <button onClick={handleArchive}>Archive Proposal</button>
+    </div>
+)}
+
+{proposal.archived && (
+    <div className="recreate-section">
+        <button onClick={() => recreateProposal()}>Recreate Proposal</button>
+    </div>
+)}
+
       </div>
     </div>
   );

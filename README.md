@@ -21,3 +21,26 @@ git commit -m 'add .gitignore files'
 git add -A
 git commit -m 'ready for deployment'
 git push -u origin main
+
+
+Testnet Tokens Faucet
+Fund Your Wallet Using a Faucet
+
+Now, let’s fund your wallet with Sepolia ETH. You can do this by requesting test tokens (a process known as a "drip") from one of the following faucets:
+
+ Sepolia Faucet by Google    - https://cloud.google.com/application/web3/faucet/ethereum/sepolia
+- Sepolia Faucet by Chainlink - https://faucets.chain.link/sepolia
+
+Once your drip request is complete, your MetaMask or prefrred wallet balance should update to reflect the Sepolia ETH you’ve received.
+
+Note: Ensure you have at least 0.01 Sepolia ETH before proceeding to the next step.
+
+Now that your wallet is set up and funded, you’re ready to bridge Sepolia ETH from the Ethereum Sepolia network to Arbitrum Sepolia using the Arbitrum Bridge!
+Arbitrum Bridge  - https://bridge.arbitrum.io/
+
+Once you’re on the Arbitrum Bridge, the first step is to connect your wallet. After successfully connecting your wallet, you should see the following screen:
+
+
+Note: By default, the network is set to mainnet. Since we’re bridging Sepolia ETH from Ethereum Sepolia to Arbitrum Sepolia, we’ll need to switch to testnet mode.
+Proceed to bridge 0.005 Sepolia ETH by clicking on “Move funds to Arbitrum Sepolia”
+Sign the confirmation transaction in your wallet. Done.

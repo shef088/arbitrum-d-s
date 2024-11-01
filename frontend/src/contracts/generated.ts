@@ -118,6 +118,11 @@ export const disasterReliefFundAbi = [
           { name: 'votingPassed', internalType: 'bool', type: 'bool' },
           { name: 'votingDeadline', internalType: 'uint256', type: 'uint256' },
           { name: 'fundsReceived', internalType: 'uint256', type: 'uint256' },
+          {
+            name: 'overallFundsReceived',
+            internalType: 'uint256',
+            type: 'uint256',
+          },
           { name: 'executed', internalType: 'bool', type: 'bool' },
           { name: 'archived', internalType: 'bool', type: 'bool' },
         ],
@@ -193,6 +198,11 @@ export const disasterReliefFundAbi = [
       { name: 'votingPassed', internalType: 'bool', type: 'bool' },
       { name: 'votingDeadline', internalType: 'uint256', type: 'uint256' },
       { name: 'fundsReceived', internalType: 'uint256', type: 'uint256' },
+      {
+        name: 'overallFundsReceived',
+        internalType: 'uint256',
+        type: 'uint256',
+      },
       { name: 'executed', internalType: 'bool', type: 'bool' },
       { name: 'archived', internalType: 'bool', type: 'bool' },
     ],
