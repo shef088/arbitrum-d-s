@@ -19,6 +19,7 @@ contract DisasterReliefFund {
         uint256 overallFundsReceived;
         bool executed;
         bool archived;
+        uint256 dateCreated;
     }
 
     mapping(uint256 => Proposal) public proposals;
@@ -71,7 +72,8 @@ contract DisasterReliefFund {
             overallFundsReceived: 0,
             executed: false,
             archived: false,
-            votingPassed: false  
+            votingPassed: false ,
+            dateCreated: block.timestamp 
         });
 
         // Add proposal ID to the userProposals mapping for the proposer
@@ -175,7 +177,8 @@ contract DisasterReliefFund {
             overallFundsReceived: 0,
             executed: false,
             archived: false,
-            votingPassed: false  
+            votingPassed: false,
+            dateCreated: block.timestamp   
         });
 
         userProposals[msg.sender].push(proposalCount);

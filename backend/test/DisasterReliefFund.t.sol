@@ -29,6 +29,7 @@ contract DisasterReliefFundTest is Test {
         assertEq(proposal.archived, false);
         assertEq(proposal.votingPassed, false);
         assertEq(proposal.votingDeadline, votingDeadline); // Verify the fetched deadline matches
+        assertEq(proposal.dateCreated, block.timestamp); 
     }
 
     // Test donation to a proposal
@@ -127,6 +128,7 @@ contract DisasterReliefFundTest is Test {
         assertEq(newProposal.executed, false);
         assertEq(newProposal.archived, false);
         assertEq(newProposal.votingPassed, false); // Check passed status for recreated proposal
+        assertEq(newProposal.dateCreated, block.timestamp);
     }
 
     // Test adding governance address

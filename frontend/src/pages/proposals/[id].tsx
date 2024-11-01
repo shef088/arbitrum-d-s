@@ -289,7 +289,7 @@ const ProposalDetail: React.FC = () => {
       <div className="proposal-detail">
         <h2>{proposal.title}</h2>
         <p>Description: {proposal.description}</p>
-
+        <p>Date Created: {new Date(Number(proposal.dateCreated) * 1000).toLocaleString()}</p>
         <hr />
 
         {!proposal.archived && !proposal.executed && (

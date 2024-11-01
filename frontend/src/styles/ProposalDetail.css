@@ -199,6 +199,7 @@
   border-radius: 8px; /* Rounded corners */
   padding: 15px; /* Padding for inner spacing */
   margin-bottom: 20px; /* Space below the section */
+  margin-top: 4rem;
 }
 
 .check-exp span {

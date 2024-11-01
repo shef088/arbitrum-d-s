@@ -13,6 +13,7 @@ export interface ProposalDetails {
   fundsReceived: bigint;   //Amount donated to the proposal
   overallFundsReceived: bigint;    //Overall proposal donation amount
   archived: boolean;     //Set proposal inactivve,cannott receive votes or donations if true
+  dateCreated: bigint;    //Creation date of the proposal
 }
 
 

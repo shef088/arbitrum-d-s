@@ -20,7 +20,8 @@ import "../styles/Footer.css";
 import "../styles/Header.css";
 import '../styles/GovernancePage.css';
 import '../styles/UserDonations.css';  
-
+import '../styles/Home.css';
+  
 import Header from "../components/Header"
 import Footer from "../components/Footer";
 

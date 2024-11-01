@@ -4,6 +4,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, useAccountEffect } from "wagmi";
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 
 const Header: React.FC = () => {
     const { isConnected } = useAccount();
@@ -25,6 +26,13 @@ const Header: React.FC = () => {
 
     return (
         <header className="header">
+              <Head>
+                <title>Disaster Relief Fund | Transforming Aid through Decentralized Solutions</title>
+                <meta 
+                    name="description" 
+                    content="Join the Disaster Relief Fund on Arbitrum to empower communities impacted by natural disasters. Propose, vote, and donate transparently." 
+                />
+            </Head>
             <div className="logo">
                 <h1>Disaster Relief Fund</h1>
             </div>
