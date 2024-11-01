@@ -6,6 +6,7 @@
   background-color: white; /* Slightly darker background for better contrast */
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* Deeper shadow for emphasis */
+  margin-top: 7rem;
 }
 
 .proposal-detail {

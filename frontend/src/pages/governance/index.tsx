@@ -5,19 +5,26 @@ import { readContract } from '@wagmi/core';
 import config from '../../wagmi';
 import { ABI, deployedAddress } from '../../contracts/deployed-contract';
 import { toast } from 'react-toastify';
+import Loader from '../../components/Loader';
  
 
 const GovernancePage: React.FC = () => {
-  const { isConnected, address } = useAccount();
+  
   const [isOwner, setIsOwner] = useState(false);
   const [governanceAddress, setGovernanceAddress] = useState('');
   const [ownerAddress, setOwnerAddress] = useState<string | null>(null);
   const [governanceAddresses, setGovernanceAddresses] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const { isConnected, address } = useAccount();
 
   useEffect(() => {
     const fetchOwnerAddress = async () => {
+      if (!isConnected || !address) {
+        toast.error("Connect your wallet to continue");
+        setLoading(false); // Stop loading when the error occurs
+        return; // Return early if not connected
+    }
       try {
         const result = await readContract(config, {
           address: deployedAddress,
@@ -124,7 +131,7 @@ const GovernancePage: React.FC = () => {
       <div className="governance-addresses">
         <h2>Current Governance Addresses</h2>
         {loading ? (
-          <p>Loading governance addresses...</p>
+         <Loader/>
         ) : error ? (
           <p>{error}</p>
         ) : governanceAddresses.length === 0 ? (

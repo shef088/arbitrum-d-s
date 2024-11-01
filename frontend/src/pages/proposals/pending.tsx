@@ -4,6 +4,8 @@ import fetchPendingProposals from '../../utils/fetchPendingProposals';
 import type { ProposalResponse } from '../../types/proposals/types';
 import Link from 'next/link';
 import { useAccount } from "wagmi";
+import Loader from '../../components/Loader';
+import { toast } from 'react-toastify';
  
 
 const PendingProposals: React.FC = () => {
@@ -14,10 +16,13 @@ const PendingProposals: React.FC = () => {
 
   useEffect(() => {
     const getPendingProposals = async () => {
-      setLoading(true);
       if (!isConnected || !address) {
-        return;
-      }
+        toast.error("Connect your wallet to continue");
+        setLoading(false); // Stop loading when the error occurs
+        return; // Return early if not connected
+    }
+      setLoading(true);
+      
       try {
         const fetchedProposals = await fetchPendingProposals();
         setProposals(fetchedProposals);
@@ -31,7 +36,7 @@ const PendingProposals: React.FC = () => {
     getPendingProposals();
   }, [isConnected, address]);
 
-  if (loading) return <div className="loading-message">Loading proposals...</div>;
+  if (loading) return <Loader/>;
   if (error) return <div className="error-message">{error}</div>;
 
   return (

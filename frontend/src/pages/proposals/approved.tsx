@@ -4,6 +4,8 @@ import fetchProposals from "../../utils/fetchProposals";
 import type { ProposalResponse } from "../../types/proposals/types";
 import Link from 'next/link';
 import { useAccount } from "wagmi";
+import Loader from '../../components/Loader';
+import { toast } from 'react-toastify';
  
 
 const ApprovedProposals: React.FC = () => {
@@ -14,9 +16,13 @@ const ApprovedProposals: React.FC = () => {
 
   useEffect(() => {
     const getApprovedProposals = async () => {
+      if (!isConnected || !address) {
+        toast.error("Connect your wallet to continue");
+        setLoading(false); // Stop loading when the error occurs
+        return; // Return early if not connected
+    }
+      
       setLoading(true);
-      if (!isConnected || !address) return;
-
       try {
         const allProposals = await fetchProposals();
         const approvedProposals = allProposals.filter(p => p.executed && p.votesFor >= p.votesAgainst);
@@ -31,7 +37,7 @@ const ApprovedProposals: React.FC = () => {
     getApprovedProposals();
   }, [isConnected, address]);
 
-  if (loading) return <p className="loading-message">Loading approved proposals...</p>;
+  if (loading) return <Loader/>;
   if (error) return <p className="error-message">{error}</p>;
 
   return (

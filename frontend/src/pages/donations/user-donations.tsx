@@ -6,6 +6,7 @@ import { ABI, deployedAddress } from "../../contracts/deployed-contract";
 import { useAccount } from 'wagmi';
 import { ethers } from 'ethers';
 import Link from 'next/link';
+import { toast } from 'react-toastify';
 
 
 interface Donation {
@@ -14,12 +15,18 @@ interface Donation {
 }
 
 const UserDonations = () => {
-    const { address } = useAccount();
+    const {isConnected, address } = useAccount();
     const [donations, setDonations] = useState<Donation[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchUserDonations = async () => {
+            if (!isConnected || !address) {
+                toast.error("Connect your wallet to continue");
+                setLoading(false); // Stop loading when the error occurs
+                return; // Return early if not connected
+            }
+            setLoading(true)
             if (address) {
                 try {
                     const userDonations = await readContract(config, {

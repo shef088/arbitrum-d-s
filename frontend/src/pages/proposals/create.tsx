@@ -4,6 +4,7 @@ import config from "../../wagmi";
 import { ABI, deployedAddress } from "../../contracts/deployed-contract"; 
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router'; 
+import { useAccount } from 'wagmi';
 
 const CreateProposal: React.FC = () => {
   const router = useRouter(); 
@@ -11,7 +12,7 @@ const CreateProposal: React.FC = () => {
   const [description, setDescription] = useState('');
   const [deadline, setDeadline] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
+  const { isConnected, address } = useAccount(); 
   const getCurrentDateTime = () => {
     const now = new Date();
     return now.toISOString().slice(0, 16); // Returns format 'YYYY-MM-DDTHH:MM'
@@ -19,20 +20,32 @@ const CreateProposal: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isConnected || !address) {
+      toast.error("Connect your wallet to continue");
+      setIsLoading(false); // Stop loading when the error occurs
+      return; // Return early if not connected
+    }
     setIsLoading(true);
     try {
+      // const tx = await writeContract(config, {
+      //   address: deployedAddress,
+      //   abi: ABI,
+      //   functionName: 'createProposal',
+      //   args: [title, description, new Date(deadline).getTime() / 1000],
+      // });
       const tx = await writeContract(config, {
         address: deployedAddress,
         abi: ABI,
         functionName: 'createProposal',
-        args: [title, description, new Date(deadline).getTime() / 1000],
-      });
+        args: [title, description, BigInt(new Date(deadline).getTime() / 1000)], // Convert to bigint
+    });
+    
       toast.success('Proposal created successfully!');
       console.log('Transaction sent:', tx);
       router.push('/proposals/userproposals');  
     } catch (error) {
       console.error('Error creating proposal:', error);
-      toast.error('Error creating proposal: ' + error.message);
+      toast.error('Error creating proposal');
     } finally {
       setIsLoading(false); 
     }

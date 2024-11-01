@@ -10,6 +10,8 @@ const Header: React.FC = () => {
     const { isConnected } = useAccount();
     const [account, setAccount] = useState<string | undefined>(undefined);
     const router = useRouter();
+    const [visible, setVisible] = useState(true); // State to control header visibility
+    const [lastScrollY, setLastScrollY] = useState(0); // Track the last scroll position
 
     useAccountEffect({
         onConnect(data) {
@@ -24,9 +26,36 @@ const Header: React.FC = () => {
 
     const isActive = (path: string) => router.pathname === path;
 
+    useEffect(() => {
+        const handleScroll = () => {
+            // Get the current scroll position
+            const currentScrollY = window.scrollY;
+
+            // Check if scrolling down or up
+            if (currentScrollY > lastScrollY) {
+                // Scrolling down
+                setVisible(false); // Hide header
+            } else {
+                // Scrolling up
+                setVisible(true); // Show header
+            }
+
+            // Update last scroll position
+            setLastScrollY(currentScrollY);
+        };
+
+        // Add scroll event listener
+        window.addEventListener('scroll', handleScroll);
+
+        // Clean up the event listener on component unmount
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, [lastScrollY]);
+
     return (
-        <header className="header">
-              <Head>
+        <header className={`header ${visible ? 'visible' : 'hidden'}`}>
+            <Head>
                 <title>Disaster Relief Fund | Transforming Aid through Decentralized Solutions</title>
                 <meta 
                     name="description" 
@@ -41,18 +70,19 @@ const Header: React.FC = () => {
             </div>
             <nav className="navigation">
                 <Link href="/" className={isActive('/') ? 'active' : ''}>Home</Link>
-                {isConnected && (
+                
                     <>
                         <Link href="/proposals/create" className={isActive('/proposals/create') ? 'active' : ''}>Create Proposal</Link>
                         <Link href="/proposals/pending" className={isActive('/proposals/pending') ? 'active' : ''}>Vote on Proposals</Link>
                         <Link href="/proposals/approved" className={isActive('/proposals/approved') ? 'active' : ''}>Approved Proposals</Link>
                         <Link href="/proposals/rejected" className={isActive('/proposals/rejected') ? 'active' : ''}>Rejected Proposals</Link>
-                        <Link href="/proposals/userproposals" className={isActive('/proposals/userproposals') ? 'active' : ''}>My Proposals</Link>
-                        <Link href="/donations/user-donations" className={isActive('/donations/user-donations') ? 'active' : ''}>My Donations</Link>
-                        <Link href="/proposals/advanced-ops" className={isActive('/proposals/advanced-ops') ? 'active' : ''}>Advanced</Link>
-                        <Link href="/governance" className={isActive('/governance') ? 'active' : ''}>Governance</Link>
+                        {isConnected &&  <Link href="/proposals/userproposals" className={isActive('/proposals/userproposals') ? 'active' : ''}>My Proposals</Link>}
+                        {isConnected &&  <Link href="/donations/user-donations" className={isActive('/donations/user-donations') ? 'active' : ''}>My Donations</Link>}
+                        {isConnected && <Link href="/proposals/advanced-ops" className={isActive('/proposals/advanced-ops') ? 'active' : ''}>Advanced</Link>}
+                     
+                        {isConnected &&    <Link href="/governance" className={isActive('/governance') ? 'active' : ''}>Governance</Link>}
                     </>
-                )}
+                 
             </nav>
         </header>
     );

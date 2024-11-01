@@ -1,4 +1,4 @@
-.header {
+header {
   display: flex; /* Flexbox for layout */
   justify-content: space-between; /* Space between logo and connect button */
   align-items: center; /* Center items vertically */
@@ -6,9 +6,22 @@
   padding: 1rem 2rem; /* Spacing inside the header */
   color: #f1f5f9; /* Text color */
   font-family: Arial, sans-serif; /* Font family */
-  position: relative; /* Position for child elements */
-  margin-bottom: 7rem;
+  position: fixed; /* Fixed position */
+  top: 0; /* Stick to the top */
+  left: 0; /* Align to the left */
+  right: 0; /* Align to the right */
+  z-index: 1000; /* Ensure it stays above other content */
+  transition: transform 0.3s ease; /* Smooth transition */
 }
+
+.header.hidden {
+  transform: translateY(-100%); /* Move the header out of view */
+}
+
+.header.visible {
+  transform: translateY(0); /* Move the header back into view */
+}
+
 
 /* Logo Styles */
 .logo {

@@ -7,6 +7,7 @@
     background-color: #f9f9f9; /* Light background for contrast */
     border-radius: 8px; /* Rounded corners */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    margin-top: 7rem;
 }
  
 .user-donations-container  .no-donations {
