@@ -1,7 +1,7 @@
 // pages/proposals/approved.tsx
 import React, { useEffect, useState } from 'react';
 import fetchProposals from "../../utils/fetchProposals";
-import type { ProposalDetails, ProposalResponse } from "../../types/proposals/types";
+import type { ProposalResponse } from "../../types/proposals/types";
 import Link from 'next/link';
 import { useAccount } from "wagmi";
  
@@ -36,7 +36,7 @@ const ApprovedProposals: React.FC = () => {
 
   return (
     <div className="proposals-container">
-      <h2>Approved Proposals for Donation/Funding</h2>
+      <h2>Approved Proposals for Donations/Funding</h2>
       {proposals.length === 0 ? (
         <p>No approved proposals found.</p>
       ) : (

@@ -36,7 +36,7 @@ const AdvancedOps: React.FC = () => {
     <div className="advanced-ops-container">
       <h2>Advanced Operations</h2>
       <span>Review all proposals to check for expired voting deadlines and automatically execute them. This process can be triggered by anyone.</span>
-      <button className='check-exp' onClick={handleCheckExpiredProposals} disabled={loading}>
+     <br/><br/> <button className='adv-button' onClick={handleCheckExpiredProposals} disabled={loading}>
         {loading ? "Checking..." : "Check Expired Proposals"}
       </button>
     </div>

@@ -7,7 +7,7 @@
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     text-align: center;
     width: 100%;
-    margin-top: 2rem;
+    margin-top: 1rem;
     transition: all 0.3s ease;
 }
 
@@ -48,7 +48,7 @@
     font-size: 16px;
     margin: 5px 0;
     transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-    width: 100%;
+    width: 70%;
 }
 
 .governance-container button:hover {
@@ -64,6 +64,7 @@
 .governance-container .remove-button {
     background-color: #e74c3c; /* Red color for remove button */
     margin-left: 10px; /* Space between address and button */
+    width: 20%;
 }
 
 .governance-container .remove-button:hover {
@@ -83,10 +84,13 @@
     font-size: 0.9rem;
     font-style: italic;
 }
-
+.governance-addresses {
+    padding-top: 2rem;
+}
 .governance-addresses ul {
     list-style-type: none; /* Remove default list styles */
-    padding: 0; /* Remove padding from list */
+    padding: 4px; /* Remove padding from list */
+    margin-top:1rem;
 }
 
 .governance-addresses li {
@@ -94,4 +98,5 @@
     align-items: center; /* Center items vertically */
     justify-content: center; /* Center items horizontally */
     margin-bottom: 10px; /* Space between addresses */
+    border: 1px solid black;
 }

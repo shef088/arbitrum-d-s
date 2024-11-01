@@ -10,6 +10,7 @@ import { useAccount } from 'wagmi';
 import { ethers } from 'ethers';
 import { FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import { ContractFunctionExecutionError } from 'viem';
+ 
 
 const ProposalDetail: React.FC = () => {
   const router = useRouter();
@@ -23,7 +24,7 @@ const ProposalDetail: React.FC = () => {
   const [ethToUsdRate, setEthToUsdRate] = useState<number | null>(null);
   const { isConnected, address } = useAccount();
   const [countdown, setCountdown] = useState<number>(0); // Countdown state
-
+   
   useEffect(() => {
     // Fetch ETH to USD exchange rate
     const fetchEthToUsdRate = async () => {
@@ -192,6 +193,7 @@ const ProposalDetail: React.FC = () => {
       toast.success(`Executed proposal ${proposal.title} successfully!.`);
       // Refresh proposal  
       const foundProposal = await getProposalDetails();
+      window.location.reload()
     } catch (err) {
       console.error("Error executing proposal:", err);
       console.error("Error executing msg:", err);
@@ -248,8 +250,8 @@ const ProposalDetail: React.FC = () => {
       });
 
       toast.success(`Successfully recreated proposal ${proposal.title}`);
-      // Refresh proposal data 
-      const foundProposal = await getProposalDetails();
+ 
+      router.push('/proposals/userproposals') 
     } catch (err) {
       console.error("Error recreating proposal:", err);
 
@@ -304,32 +306,27 @@ const ProposalDetail: React.FC = () => {
               <li>Note: This proposal will only be eligible to receive donations or funding if the votesfor is equal to or greater than the votesagainst.</li>
             </ul>      </>
         )}
-        <div className="proposal-stats">
-          {!proposal.executed && <>
-            <p>Votes For: {Number(proposal.votesFor)}</p>
-            <p>Votes Against: {Number(proposal.votesAgainst)}</p>
-          </>}
+       <div className="proposal-stats">
+  <p>Status:
+    {proposal.archived
+      ? "Archived (Cannot receive votes or donations!)"
+      : proposal.executed
+        ? (proposal.votingPassed ? " Approved for Donations/Funding" : " Rejected")
+        : " Voting"}
+  </p>
 
+  <p>
+  Available Funds: <span className="funds-p"> {proposal.fundsReceived ? ethers.formatEther(proposal.fundsReceived) : "0"} ETH
+      ({proposal.overallFundsReceived ? (parseFloat(ethers.formatEther(proposal.overallFundsReceived)) * (ethToUsdRate || 0)).toFixed(2) : "0"} USD $)
+    </span>
+  </p>
+  <p>
+    Current Funds: <span className="funds-p"> {proposal.fundsReceived ? ethers.formatEther(proposal.fundsReceived) : "0"} ETH
+      ({proposal.fundsReceived ? (parseFloat(ethers.formatEther(proposal.fundsReceived)) * (ethToUsdRate || 0)).toFixed(2) : "0"} USD $)
+    </span>
+  </p>
+</div>
 
-          <p>Status:
-            {proposal.archived
-              ? "Archived(Cannot receive votes or donations!)"
-              : proposal.executed
-                ? (proposal.votingPassed ? "Approved for Donations/Funding" : "Rejected")
-                : "Voting"}
-          </p>
-
-          <p>
-            Overall Funds Received: <span className="funds-p"> {proposal.fundsReceived ? ethers.formatEther(proposal.fundsReceived) : "0"} ETH
-              ({proposal.overallFundsReceived ? (parseFloat(ethers.formatEther(proposal.overallFundsReceived)) * (ethToUsdRate || 0)).toFixed(2) : "0"} USD $)
-            </span>
-          </p>
-          <p>
-            Current Funds: <span className="funds-p"> {proposal.fundsReceived ? ethers.formatEther(proposal.fundsReceived) : "0"} ETH
-              ({proposal.fundsReceived ? (parseFloat(ethers.formatEther(proposal.fundsReceived)) * (ethToUsdRate || 0)).toFixed(2) : "0"} USD $)
-            </span>
-          </p>
-        </div>
         <div className="vote-buttons">
           {!proposal.executed && Date.now() < Number(proposal.votingDeadline) * 1000 && (
             <>
@@ -377,25 +374,39 @@ const ProposalDetail: React.FC = () => {
 
 
 {proposal.fundsReceived > 0 && (
-    <div className="note-section">
-        <span>Note: Withdrawals have a fee of 3% for the upkeep of the platform</span>
-        <span>
-            <span>
-                {proposal.fundsReceived ? ethers.formatEther(proposal.fundsReceived) : "0"} ETH
-                ({proposal.fundsReceived ? (parseFloat(ethers.formatEther(proposal.fundsReceived)) * (ethToUsdRate || 0)).toFixed(2) : "0"} USD $)
-            </span>
-            <span> <span> - 3% </span>=</span>
-            {proposal.fundsReceived > 0
-                ? ethers.formatEther(BigInt(proposal.fundsReceived) * BigInt(0.97 * 1e18) / BigInt(1e18)) // Subtract 3% from ETH
-                : "0"} ETH
-            (
-            {proposal.fundsReceived > 0
-                ? ((parseFloat(ethers.formatEther(BigInt(proposal.fundsReceived) * BigInt(0.97 * 1e18) / BigInt(1e18))) * (ethToUsdRate || 0)) * 0.97).toFixed(2) // Subtract 3% from USD
-                : "0"} USD $
-            )
-        </span>
-        <button onClick={() => allocateFundsToProposer()}>Withdraw funds</button>
-    </div>
+ <div className="note-section-container">
+ <span className="">Note: Withdrawals have a fee of 3% for the upkeep of the platform</span>
+ 
+ <div className="funds-info">
+   <div className="available-funds">
+     <span>Available Funds:</span>
+     <span className="received-amount">
+       {proposal.fundsReceived ? ethers.formatEther(proposal.fundsReceived) : "0"} ETH 
+       ({proposal.fundsReceived ? (parseFloat(ethers.formatEther(proposal.fundsReceived)) * (ethToUsdRate || 0)).toFixed(2) : "0"} USD $)
+     </span>
+   </div>
+
+   <div className="available-funds">
+   <span>After 3% cut:</span>
+      
+     <div className="received-amount">
+    
+       <span className="eth-received "> 
+         {proposal.fundsReceived > 0
+           ? ethers.formatEther(BigInt(proposal.fundsReceived) * BigInt(0.97 * 1e18) / BigInt(1e18)) // Subtract 3% from ETH
+           : "0"} ETH   | USD $
+           {proposal.fundsReceived > 0
+             ? ((parseFloat(ethers.formatEther(BigInt(proposal.fundsReceived) * BigInt(0.97 * 1e18) / BigInt(1e18))) * (ethToUsdRate || 0)) * 0.97).toFixed(2) // Subtract 3% from USD
+             : "0"}
+       </span>
+        
+     </div>
+   </div>
+ </div>
+
+ <button className="withdraw-button" onClick={() => allocateFundsToProposer()}>Withdraw funds</button>
+</div>
+
 )}
 
 {!proposal.executed && !proposal.archived && (
@@ -407,7 +418,7 @@ const ProposalDetail: React.FC = () => {
 
 {proposal.proposer === address && !proposal.archived && (
     <div className="archive-section">
-        <span>Equivalent to set proposal inactive</span>
+        <span>Equivalent to set proposal inactive. (Disable voting and donations</span>
         <button onClick={handleArchive}>Archive Proposal</button>
     </div>
 )}

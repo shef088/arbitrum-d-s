@@ -59,7 +59,12 @@
   color: #a3bffa; /* Hover color for links */
   text-shadow: 0 0 5px rgba(163, 191, 250, 0.5); /* Subtle glow effect on hover */
 }
-
+.navigation a.active {
+  color: white; /* Active link color */
+  font-weight: 500; /* Slightly bolder for visibility */
+  border-bottom: 2px solid white; /* Underline active link */
+  text-shadow: 0 0 5px rgba(163, 191, 250, 0.5); /* Subtle glow */
+}
 /* Responsive Styles */
 @media (max-width: 768px) {
   .header {

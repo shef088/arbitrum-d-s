@@ -88,7 +88,7 @@ const GovernancePage: React.FC = () => {
 
   const handleRemoveGovernanceAddress = async (addressToRemove: string) => {
     const confirmation = window.confirm(`Are you sure you want to remove the governance address ${addressToRemove}?`);
-    if (!confirmation) return;
+    if (!confirmation) return; 
 
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
@@ -133,7 +133,7 @@ const GovernancePage: React.FC = () => {
           <ul>
             {governanceAddresses.map((addr, index) => (
               <li key={index}>
-                {addr}
+                <span>{addr}</span>
                 {isOwner && (
                   <button className="remove-button" onClick={() => handleRemoveGovernanceAddress(addr)}>Remove</button>
                 )}
