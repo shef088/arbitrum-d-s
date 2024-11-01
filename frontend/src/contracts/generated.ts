@@ -22,6 +22,20 @@ export const disasterReliefFundAbi = [
   },
   {
     type: 'function',
+    inputs: [{ name: '_proposalId', internalType: 'uint256', type: 'uint256' }],
+    name: 'allocateFundsToProposer',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_proposalId', internalType: 'uint256', type: 'uint256' }],
+    name: 'archiveProposal',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     inputs: [],
     name: 'checkExpiredProposals',
     outputs: [],
@@ -32,6 +46,7 @@ export const disasterReliefFundAbi = [
     inputs: [
       { name: '_title', internalType: 'string', type: 'string' },
       { name: '_description', internalType: 'string', type: 'string' },
+      { name: '_votingDeadline', internalType: 'uint256', type: 'uint256' },
     ],
     name: 'createProposal',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
@@ -76,11 +91,11 @@ export const disasterReliefFundAbi = [
           { name: 'description', internalType: 'string', type: 'string' },
           { name: 'votesFor', internalType: 'uint256', type: 'uint256' },
           { name: 'votesAgainst', internalType: 'uint256', type: 'uint256' },
-          { name: 'deadline', internalType: 'uint256', type: 'uint256' },
+          { name: 'votingPassed', internalType: 'bool', type: 'bool' },
+          { name: 'votingDeadline', internalType: 'uint256', type: 'uint256' },
           { name: 'fundsReceived', internalType: 'uint256', type: 'uint256' },
           { name: 'executed', internalType: 'bool', type: 'bool' },
           { name: 'archived', internalType: 'bool', type: 'bool' },
-          { name: 'passed', internalType: 'bool', type: 'bool' },
         ],
       },
     ],
@@ -88,9 +103,19 @@ export const disasterReliefFundAbi = [
   },
   {
     type: 'function',
-    inputs: [],
-    name: 'getProposalCount',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    inputs: [{ name: '_user', internalType: 'address', type: 'address' }],
+    name: 'getUserDonations',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct DisasterReliefFund.Donation[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'amount', internalType: 'uint256', type: 'uint256' },
+          { name: 'proposalId', internalType: 'uint256', type: 'uint256' },
+        ],
+      },
+    ],
     stateMutability: 'view',
   },
   {
@@ -127,11 +152,11 @@ export const disasterReliefFundAbi = [
       { name: 'description', internalType: 'string', type: 'string' },
       { name: 'votesFor', internalType: 'uint256', type: 'uint256' },
       { name: 'votesAgainst', internalType: 'uint256', type: 'uint256' },
-      { name: 'deadline', internalType: 'uint256', type: 'uint256' },
+      { name: 'votingPassed', internalType: 'bool', type: 'bool' },
+      { name: 'votingDeadline', internalType: 'uint256', type: 'uint256' },
       { name: 'fundsReceived', internalType: 'uint256', type: 'uint256' },
       { name: 'executed', internalType: 'bool', type: 'bool' },
       { name: 'archived', internalType: 'bool', type: 'bool' },
-      { name: 'passed', internalType: 'bool', type: 'bool' },
     ],
     stateMutability: 'view',
   },
@@ -149,6 +174,19 @@ export const disasterReliefFundAbi = [
     inputs: [],
     name: 'totalPot',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'userDonations',
+    outputs: [
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: 'proposalId', internalType: 'uint256', type: 'uint256' },
+    ],
     stateMutability: 'view',
   },
   {
@@ -255,7 +293,12 @@ export const disasterReliefFundAbi = [
         type: 'uint256',
         indexed: false,
       },
-      { name: 'passed', internalType: 'bool', type: 'bool', indexed: false },
+      {
+        name: 'votingPassed',
+        internalType: 'bool',
+        type: 'bool',
+        indexed: false,
+      },
     ],
     name: 'ProposalExecuted',
   },
@@ -572,12 +615,12 @@ export const useReadDisasterReliefFundGetProposal =
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"getProposalCount"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"getUserDonations"`
  */
-export const useReadDisasterReliefFundGetProposalCount =
+export const useReadDisasterReliefFundGetUserDonations =
   /*#__PURE__*/ createUseReadContract({
     abi: disasterReliefFundAbi,
-    functionName: 'getProposalCount',
+    functionName: 'getUserDonations',
   })
 
 /**
@@ -626,6 +669,15 @@ export const useReadDisasterReliefFundTotalPot =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"userDonations"`
+ */
+export const useReadDisasterReliefFundUserDonations =
+  /*#__PURE__*/ createUseReadContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'userDonations',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"userProposals"`
  */
 export const useReadDisasterReliefFundUserProposals =
@@ -656,6 +708,24 @@ export const useWriteDisasterReliefFundAllocateFromPot =
   /*#__PURE__*/ createUseWriteContract({
     abi: disasterReliefFundAbi,
     functionName: 'allocateFromPot',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"allocateFundsToProposer"`
+ */
+export const useWriteDisasterReliefFundAllocateFundsToProposer =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'allocateFundsToProposer',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"archiveProposal"`
+ */
+export const useWriteDisasterReliefFundArchiveProposal =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'archiveProposal',
   })
 
 /**
@@ -725,6 +795,24 @@ export const useSimulateDisasterReliefFundAllocateFromPot =
   /*#__PURE__*/ createUseSimulateContract({
     abi: disasterReliefFundAbi,
     functionName: 'allocateFromPot',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"allocateFundsToProposer"`
+ */
+export const useSimulateDisasterReliefFundAllocateFundsToProposer =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'allocateFundsToProposer',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"archiveProposal"`
+ */
+export const useSimulateDisasterReliefFundArchiveProposal =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'archiveProposal',
   })
 
 /**

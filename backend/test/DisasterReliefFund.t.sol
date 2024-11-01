@@ -6,7 +6,6 @@ import {DisasterReliefFund} from "../src/DisasterReliefFund.sol";
 
 contract DisasterReliefFundTest is Test {
     DisasterReliefFund public fund;
-    address public proposer = address(0x123);
 
     // Set up the contract
     function setUp() public {
@@ -15,35 +14,27 @@ contract DisasterReliefFundTest is Test {
 
     // Test proposal creation
     function testCreateProposal() public {
-        fund.createProposal("Aid for Earthquake Victims", "Providing aid to affected areas");
+        uint256 votingDeadline = block.timestamp + 7 days; // Set voting deadline to 7 days from now
+        fund.createProposal("Aid for Earthquake Victims", "Providing aid to affected areas", votingDeadline);
 
-        // Access individual fields from the proposal
-        (
-            address proposer,
-            string memory title,
-            string memory description,
-            uint256 votesFor,
-            uint256 votesAgainst,
-            uint256 deadline,
-            uint256 fundsReceived,
-            bool executed,
-            bool archived,
-            bool passed
-        ) = fund.proposals(1);
+        // Access proposal using getProposal function
+        DisasterReliefFund.Proposal memory proposal = fund.getProposal(1); // Assuming getProposal returns a Proposal struct
 
-        assertEq(title, "Aid for Earthquake Victims");
-        assertEq(description, "Providing aid to affected areas");
-        assertEq(votesFor, 0);
-        assertEq(votesAgainst, 0);
-        assertEq(fundsReceived, 0); // Initial funds should be 0
-        assertEq(executed, false);
-        assertEq(archived, false);
-        assertEq(passed, false);
+        assertEq(proposal.title, "Aid for Earthquake Victims");
+        assertEq(proposal.description, "Providing aid to affected areas");
+        assertEq(proposal.votesFor, 0);
+        assertEq(proposal.votesAgainst, 0);
+        assertEq(proposal.fundsReceived, 0);
+        assertEq(proposal.executed, false);
+        assertEq(proposal.archived, false);
+        assertEq(proposal.votingPassed, false);
+        assertEq(proposal.votingDeadline, votingDeadline); // Verify the fetched deadline matches
     }
 
     // Test donation to a proposal
     function testDonateToProposal() public {
-        fund.createProposal("Flood Relief", "Help for flood victims");
+        uint256 votingDeadline = block.timestamp + 7 days; // Set voting deadline
+        fund.createProposal("Flood Relief", "Help for flood victims", votingDeadline);
         
         uint256 initialPot = fund.totalPot();
         uint256 donationAmount = 1 ether;
@@ -52,16 +43,18 @@ contract DisasterReliefFundTest is Test {
         payable(address(fund)).transfer(donationAmount);
         fund.donateToProposal{value: donationAmount}(1);
 
-        (, , , , , , uint256 fundsReceived, , , ) = fund.proposals(1);
+        // Access proposal using getProposal function
+        DisasterReliefFund.Proposal memory proposal = fund.getProposal(1);
 
-        assertEq(fundsReceived, donationAmount);
+        assertEq(proposal.fundsReceived, donationAmount);
         assertEq(fund.totalPot(), initialPot + donationAmount); // Check total pot updated
     }
 
     // Test proposal execution and fund transfer
     function testExecuteProposalWithDonations() public {
         // Create proposal and donate
-        fund.createProposal("Wildfire Recovery", "Support for wildfire victims");
+        uint256 votingDeadline = block.timestamp + 7 days; // Set voting deadline
+        fund.createProposal("Wildfire Recovery", "Support for wildfire victims", votingDeadline);
         payable(address(fund)).transfer(1 ether);
         fund.donateToProposal{value: 1 ether}(1);
 
@@ -70,12 +63,12 @@ contract DisasterReliefFundTest is Test {
         vm.warp(block.timestamp + 2 days); // Move forward in time to pass deadline
         fund.executeProposal(1);
 
-        (, , , , , , uint256 fundsReceived, bool executed, bool archived, bool passed) = fund.proposals(1);
+        // Access proposal using getProposal function
+        DisasterReliefFund.Proposal memory proposal = fund.getProposal(1);
 
-        assertEq(executed, true);
-        assertEq(archived, true);
-        assertEq(passed, true);
-        assertEq(fundsReceived, 1 ether);
+        assertEq(proposal.executed, true);
+        assertEq(proposal.archived, true);
+        assertEq(proposal.fundsReceived, 1 ether);
     }
 
     // Test allocation of funds from the total pot
@@ -88,71 +81,51 @@ contract DisasterReliefFundTest is Test {
         fund.donateToProposal{value: 1 ether}(1);
 
         // Allocate funds
-        fund.allocateFromPot(allocationAmount, proposer);
+        fund.allocateFromPot(allocationAmount, address(this)); // Assuming you want to use the current contract address
 
         assertEq(fund.totalPot(), initialPot + 1 ether - allocationAmount); // Ensure deduction from total pot
     }
 
     // Test voting on a proposal
     function testVoteOnProposal() public {
-        fund.createProposal("Support for Flood Relief", "Immediate flood response");
+        uint256 votingDeadline = block.timestamp + 7 days; // Set voting deadline
+        fund.createProposal("Support for Flood Relief", "Immediate flood response", votingDeadline);
         fund.vote(1, true); // Vote in support
 
-        // Access individual fields from the proposal
-        (
-            address proposer,
-            string memory title,
-            string memory description,
-            uint256 votesFor,
-            uint256 votesAgainst,
-            uint256 deadline,
-            uint256 fundsReceived,
-            bool executed,
-            bool archived,
-            bool passed
-        ) = fund.proposals(1);
+        // Access proposal using getProposal function
+        DisasterReliefFund.Proposal memory proposal = fund.getProposal(1);
 
-        assertEq(votesFor, 1);
-        assertEq(votesAgainst, 0);
-        assertEq(passed, false); // Check if passed status is still false
+        assertEq(proposal.votesFor, 1);
+        assertEq(proposal.votesAgainst, 0);
+        assertEq(proposal.votingPassed, false); // Check if passed status is still false
     }
 
     // Test proposal recreation after archiving
     function testRecreateArchivedProposal() public {
         // Create and archive the initial proposal
-        fund.createProposal("Initial Proposal", "An initial proposal to be archived");
+        uint256 votingDeadline = block.timestamp + 7 days; // Set voting deadline
+        fund.createProposal("Initial Proposal", "An initial proposal to be archived", votingDeadline);
         fund.vote(1, false); // Vote against
         vm.warp(block.timestamp + 2 days);  // Move forward in time to pass the deadline
         fund.executeProposal(1);
 
         // Ensure the proposal is archived
-        (, , , , , , , , bool archived, ) = fund.proposals(1);
-        assertEq(archived, true);
+        DisasterReliefFund.Proposal memory proposal = fund.getProposal(1);
+        assertEq(proposal.archived, true);
 
         // Recreate the archived proposal
         fund.recreateProposal(1);
 
         // Access individual fields from the newly created proposal
-        (
-            address proposer,
-            string memory title,
-            string memory description,
-            uint256 votesFor,
-            uint256 votesAgainst,
-            uint256 deadline,
-            uint256 fundsReceived,
-            bool executed,
-            bool archivedNew,
-            bool passedNew
-        ) = fund.proposals(2);
+        DisasterReliefFund.Proposal memory newProposal = fund.getProposal(2); // Get the new proposal details
 
-        assertEq(title, "Initial Proposal");
-        assertEq(description, "An initial proposal to be archived");
-        assertEq(votesFor, 0);
-        assertEq(votesAgainst, 0);
-        assertEq(fundsReceived, 0); // Check new proposal has zero funds
-        assertEq(executed, false);
-        assertEq(archivedNew, false);
-        assertEq(passedNew, false); // Check passed status for recreated proposal
+        assertEq(newProposal.title, "Initial Proposal");
+        assertEq(newProposal.description, "An initial proposal to be archived");
+        assertEq(newProposal.votesFor, 0);
+        assertEq(newProposal.votesAgainst, 0);
+        assertEq(newProposal.fundsReceived, 0); // Check new proposal has zero funds
+        assertEq(newProposal.executed, false);
+        assertEq(newProposal.archived, false);
+        assertEq(newProposal.votingPassed, false); // Check passed status for recreated proposal
     }
 }

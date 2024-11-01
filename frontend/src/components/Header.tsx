@@ -35,11 +35,12 @@ const Header: React.FC = () => {
                 {isConnected && (
                     <>
                         <Link href="/proposals/create">Create Proposal</Link>
-                        <Link href="/proposals">View Proposals</Link>
+                        {/* <Link href="/proposals">View Proposals</Link> */}
                         <Link href="/proposals/pending">Vote on Proposals</Link>
                         <Link href="/proposals/approved">Approved Proposals</Link>
                         <Link href="/proposals/rejected">Rejected Proposals</Link>
-                        <Link href="/proposals/userproposals">Your Proposals</Link> {/* Link to UserProposals page */}
+                        <Link href="/proposals/userproposals">Your Proposals</Link>
+                        <Link href="/proposals/advanced-ops">Advanced</Link>   
                     </>
                 )}
             </nav>

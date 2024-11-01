@@ -20,7 +20,10 @@
   color: #2d2d2d; /* Darker text for readability */
   margin-bottom: 15px;
 }
-
+.countdown{
+  color:red;
+  font-weight: bold;
+}
 .proposal-detail p {
   font-size: 1.1rem;
   line-height: 1.8;
@@ -118,3 +121,34 @@
   background-color: #dd210c !important;
 }
  
+.check-exp {
+  background-color: #f9f9f9; /* Light background for the section */
+  border: 1px solid #ccc; /* Light border for better definition */
+  border-radius: 8px; /* Rounded corners */
+  padding: 15px; /* Padding for spacing */
+  margin-top: 20px; /* Spacing above the section */
+  display: flex; /* Flexbox layout for alignment */
+  justify-content: space-between; /* Space between text and button */
+  align-items: center; /* Center items vertically */
+}
+
+.check-exp span {
+  font-size: 16px; /* Font size for the text */
+  color: #333; /* Dark color for text */
+  flex: 1; /* Allow text to take available space */
+  margin-right: 15px; /* Margin between text and button */
+}
+
+.check-exp button {
+  background-color: #4CAF50; /* Green background for the button */
+  color: white; /* White text */
+  border: none; /* Remove border */
+  border-radius: 5px; /* Rounded corners for button */
+  padding: 10px 15px; /* Padding for button */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s; /* Smooth transition */
+}
+
+.check-exp button:hover {
+  background-color: #45a049; /* Darker green on hover */
+}

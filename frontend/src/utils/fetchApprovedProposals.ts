@@ -7,12 +7,12 @@ const fetchApprovedProposals = async (): Promise<ProposalResponse[]> => {
 
     // Filter out the approved proposals (executed and passed)
     const approvedProposals = allProposals.filter(proposal => 
-      proposal.executed && proposal.passed // Check if executed and passed
+      proposal.executed && proposal.votingPassed // Check if executed and passed
     );
 
     return approvedProposals;
-  } catch (error) {
-    throw new Error(`Failed to fetch approved proposals: ${error.message}`);
+  } catch (error ) {
+    throw new Error(`Failed to fetch approved proposals: ${error}`);
   }
 };
 

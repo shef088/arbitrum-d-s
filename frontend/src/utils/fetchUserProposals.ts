@@ -15,13 +15,14 @@ const fetchUserProposals = async (userAddress: string): Promise<ProposalResponse
 
   try {
     // Fetch the proposal IDs created by the user
-    const proposalIds: BigInt[] = await readContract(config, {
+    const proposalIds = Array.from(await readContract(config, {
       address: deployedAddress,
       abi: ABI,
       functionName: 'getUserProposals',
-      args: [userAddress],
-    }) as BigInt[];
-
+      args: [userAddress as `0x${string}`],
+  }) as readonly bigint[]); // proposalIds is now typed as bigint[]
+  
+  
     // Fetch details for each proposal using the proposal IDs
     for (const id of proposalIds) {
       const proposal: ProposalDetails = await readContract(config, {

@@ -8,7 +8,8 @@ const fetchPendingProposals = async (): Promise<ProposalResponse[]> => {
 
     // Filter out the pending proposals
     const pendingProposals = allProposals.filter(proposal => 
-      !proposal.executed && Number(proposal.deadline) * 1000 > Date.now() // Convert BigInt to number for comparison
+      !proposal.executed 
+      // && Number(proposal.votingDeadline) * 1000 > Date.now() // Convert BigInt to number for comparison
     );
 
     return pendingProposals;

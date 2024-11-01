@@ -1,4 +1,3 @@
-// components/CreateProposal.tsx
 import React, { useState } from 'react';
 import { writeContract } from "@wagmi/core";
 import config from "../../wagmi"; 
@@ -6,12 +5,17 @@ import { ABI, deployedAddress } from "../../contracts/deployed-contract";
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router'; 
 
-
 const CreateProposal: React.FC = () => {
   const router = useRouter(); 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [deadline, setDeadline] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    return now.toISOString().slice(0, 16); // Returns format 'YYYY-MM-DDTHH:MM'
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,14 +25,11 @@ const CreateProposal: React.FC = () => {
         address: deployedAddress,
         abi: ABI,
         functionName: 'createProposal',
-        args: [title, description],
+        args: [title, description, new Date(deadline).getTime() / 1000],
       });
       toast.success('Proposal created successfully!');
       console.log('Transaction sent:', tx);
- 
-      // Navigate to the user proposals page
       router.push('/proposals/userproposals');  
-
     } catch (error) {
       console.error('Error creating proposal:', error);
       toast.error('Error creating proposal: ' + error.message);
@@ -58,6 +59,20 @@ const CreateProposal: React.FC = () => {
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              required
+            />
+          </label>
+        </div>
+        <div><span><span>Set your voting deadline to provide sufficient time for community members to review and vote.<br/>
+        Note: To secure funding or donations, your proposal must receive either an equal or greater number of "For" votes compared to "Against" votes.</span>
+</span><br/><br/>
+          <label>
+            Voting Deadline:
+            <input
+              type="datetime-local"
+              value={deadline}
+              onChange={(e) => setDeadline(e.target.value)}
+              min={getCurrentDateTime()}
               required
             />
           </label>

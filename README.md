@@ -6,6 +6,8 @@ cd backend
 forge build
 forge test
 
+create .env and populate
+
 source .env
 forge create --rpc-url "arbitrumSepolia" --private-key "${PRIVATE_KEY}" --verifier-url "https://api-sepolia.arbiscan.io/api" -e "${API_KEY}" --verify src/DisasterReliefFund.sol:DisasterReliefFund
 

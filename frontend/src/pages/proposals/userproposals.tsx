@@ -4,8 +4,6 @@ import Link from 'next/link';
 import fetchUserProposals from '../../utils/fetchUserProposals';
 import type { ProposalResponse } from '../../types/proposals/types';
 import { useAccount } from "wagmi";
-import { toast } from 'react-toastify';
-
 
 const UserProposals: React.FC = () => {
   const { isConnected, address } = useAccount(); 
@@ -16,10 +14,8 @@ const UserProposals: React.FC = () => {
   useEffect(() => {
     const getUserProposals = async () => {
       if (!isConnected || !address) {
-        // toast.error("Account disconnected!");
         return; 
       }
-
       try {
         const userProposals = await fetchUserProposals(address);
         setProposals(userProposals);
@@ -34,28 +30,31 @@ const UserProposals: React.FC = () => {
     getUserProposals();
   }, [isConnected, address]);
 
-  if (loading) return <div>Loading proposals...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) return <div className="loading-message">Loading proposals...</div>;
+  if (error) return <div className="error-message">{error}</div>;
 
   return (
-    <div className="user-proposals-container">
+    <div className="proposals-container">
       <h1>Your Proposals</h1>
       {proposals.length === 0 ? (
         <p>No proposals found for this user.</p>
       ) : (
         <ul>
-          {proposals.map(proposal => (
-            <li key={proposal.id}>
-              <Link href={`/proposals/${proposal.id}`}>
-                <h2>{proposal.title}</h2>
-                <p>{proposal.description}</p>
-                <p>Votes For: {proposal.votesFor.toString()}</p>
-                <p>Votes Against: {proposal.votesAgainst.toString()}</p>
-                <p>Deadline: {new Date(Number(proposal.deadline)).toLocaleString()}</p>
-                <p>Executed: {proposal.executed ? 'True' : 'False'}</p>
-                <p>Status: {proposal.passed ? 'Passed' : 'Not Passed'}</p>
-              </Link>
-            </li>
+          {proposals.map(proposal => ( 
+            <div className="inner-proposal" key={proposal.id}>
+                 <Link href={`/proposals/${proposal.id}`}>
+              <h3 className="proposal-title">{proposal.title}</h3>
+              <p className="proposal-description">{proposal.description}</p>
+              <div className="proposal-details">
+                <span>Votes For: {Number(proposal.votesFor)}</span>
+                <span>Votes Against: {Number(proposal.votesAgainst)}</span>
+                <span>Voting Deadline: {new Date(Number(proposal.votingDeadline) * 1000).toLocaleString()}</span>
+                <span>Status: {proposal.executed ? (proposal.votingPassed? "Approved for Donations" : "Rejected") : "Voting"}</span>
+         
+              </div> 
+            </Link>
+          
+            </div>
           ))}
         </ul>
       )}
