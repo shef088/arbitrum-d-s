@@ -57,7 +57,7 @@ const Header: React.FC = () => {
                 />
             </Head>
             <div className="logo">
-                <h1>Disaster Relief Fund</h1>
+              <Link href="/" >   <h1>Disaster Relief Fund</h1> </Link>
             </div>
             <div className="connect-btn">
                 <ConnectButton />
