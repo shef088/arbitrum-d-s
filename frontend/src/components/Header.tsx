@@ -5,6 +5,8 @@ import { useAccount, useAccountEffect } from "wagmi";
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome, faPlus, faClipboardList, faHandsHelping, faThumbsDown, faUser, faGem, faUsersCog } from '@fortawesome/free-solid-svg-icons';
 
 const Header: React.FC = () => {
     const { isConnected } = useAccount();
@@ -28,26 +30,18 @@ const Header: React.FC = () => {
 
     useEffect(() => {
         const handleScroll = () => {
-            // Get the current scroll position
             const currentScrollY = window.scrollY;
 
-            // Check if scrolling down or up
             if (currentScrollY > lastScrollY) {
-                // Scrolling down
                 setVisible(false); // Hide header
             } else {
-                // Scrolling up
                 setVisible(true); // Show header
             }
 
-            // Update last scroll position
             setLastScrollY(currentScrollY);
         };
 
-        // Add scroll event listener
         window.addEventListener('scroll', handleScroll);
-
-        // Clean up the event listener on component unmount
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
@@ -69,20 +63,33 @@ const Header: React.FC = () => {
                 <ConnectButton />
             </div>
             <nav className="navigation">
-                <Link href="/" className={isActive('/') ? 'active' : ''}>Home</Link>
-                
-                    <>
-                        <Link href="/proposals/create" className={isActive('/proposals/create') ? 'active' : ''}>Create Proposal</Link>
-                        <Link href="/proposals/pending" className={isActive('/proposals/pending') ? 'active' : ''}>Vote on Proposals</Link>
-                        <Link href="/proposals/approved" className={isActive('/proposals/approved') ? 'active' : ''}>Approved Proposals</Link>
-                        <Link href="/proposals/rejected" className={isActive('/proposals/rejected') ? 'active' : ''}>Rejected Proposals</Link>
-                        {isConnected &&  <Link href="/proposals/userproposals" className={isActive('/proposals/userproposals') ? 'active' : ''}>My Proposals</Link>}
-                        {isConnected &&  <Link href="/donations/user-donations" className={isActive('/donations/user-donations') ? 'active' : ''}>My Donations</Link>}
-                        {isConnected && <Link href="/proposals/advanced-ops" className={isActive('/proposals/advanced-ops') ? 'active' : ''}>Advanced</Link>}
-                     
-                        {isConnected &&    <Link href="/governance" className={isActive('/governance') ? 'active' : ''}>Governance</Link>}
-                    </>
-                 
+                <Link href="/" className={isActive('/') ? 'active' : ''}>
+                    <FontAwesomeIcon icon={faHome} /> Home
+                </Link>
+                <Link href="/proposals/create" className={isActive('/proposals/create') ? 'active' : ''}>
+                    <FontAwesomeIcon icon={faPlus} /> Create Proposal
+                </Link>
+                <Link href="/proposals/pending" className={isActive('/proposals/pending') ? 'active' : ''}>
+                    <FontAwesomeIcon icon={faClipboardList} /> Vote on Proposals
+                </Link>
+                <Link href="/proposals/approved" className={isActive('/proposals/approved') ? 'active' : ''}>
+                    <FontAwesomeIcon icon={faHandsHelping} /> Donate to Proposals
+                </Link>
+                <Link href="/proposals/rejected" className={isActive('/proposals/rejected') ? 'active' : ''}>
+                    <FontAwesomeIcon icon={faThumbsDown} /> Rejected Proposals
+                </Link>
+                {isConnected && <Link href="/proposals/userproposals" className={isActive('/proposals/userproposals') ? 'active' : ''}>
+                    <FontAwesomeIcon icon={faUser} /> My Proposals
+                </Link>}
+                {isConnected && <Link href="/donations/user-donations" className={isActive('/donations/user-donations') ? 'active' : ''}>
+                    <FontAwesomeIcon icon={faGem} /> My Donations
+                </Link>}
+                {isConnected && <Link href="/proposals/advanced-ops" className={isActive('/proposals/advanced-ops') ? 'active' : ''}>
+                    <FontAwesomeIcon icon={faUsersCog} /> Advanced
+                </Link>}
+                {isConnected && <Link href="/governance" className={isActive('/governance') ? 'active' : ''}>
+                    <FontAwesomeIcon icon={faUsersCog} /> Governance
+                </Link>}
             </nav>
         </header>
     );

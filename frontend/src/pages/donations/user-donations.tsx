@@ -7,6 +7,7 @@ import { useAccount } from 'wagmi';
 import { ethers } from 'ethers';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
+import Loader from '../../components/Loader';
 
 
 interface Donation {
@@ -54,7 +55,7 @@ const UserDonations = () => {
     }, [address]);
 
     if (loading) {
-        return <div>Loading your donations...</div>;
+        return <Loader/>
     }
 
     return (

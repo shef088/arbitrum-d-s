@@ -8,7 +8,7 @@
     position: fixed; /* Fixed position */
     top: 0; /* Stick to the top */
     left: 0; /* Align to the left */
-    background: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+    background: rgba(255, 255, 255, 0.3); 
     z-index: 9999; /* Ensure it stays above other content */
 }
 

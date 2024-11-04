@@ -44,3 +44,14 @@ Once you’re on the Arbitrum Bridge, the first step is to connect your wallet. 
 Note: By default, the network is set to mainnet. Since we’re bridging Sepolia ETH from Ethereum Sepolia to Arbitrum Sepolia, we’ll need to switch to testnet mode.
 Proceed to bridge 0.005 Sepolia ETH by clicking on “Move funds to Arbitrum Sepolia”
 Sign the confirmation transaction in your wallet. Done.
+
+Link testnet token for chainlink keepers automation
+Please visit the Chainlink Arbitrum Sepolia Faucet to receive testnet LINK.
+https://faucets.chain.link/arbitrum-sepolia
+
+Then go to https://automation.chain.link/ and setup an automation check.
+Connect your wallet
+Then enter the smart contract address  you want the automation done on.
+Its going to fetch your smart contract functions so you can choose which functiion you want to automate.
+After choosing, you can select the time-based check or any choice and set the frequency.
+A couple of confirmations in your wallet will popup, confirm them all and you are done. 

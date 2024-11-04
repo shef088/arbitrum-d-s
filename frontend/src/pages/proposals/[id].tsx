@@ -10,7 +10,16 @@ import { useAccount } from 'wagmi';
 import { ethers } from 'ethers';
 import { FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import { ContractFunctionExecutionError } from 'viem';
- 
+import WidthdrawProposalFunds from '../../components/proposal/WidthdrawProposalFunds';
+import CheckExecuteProposal from '../../components/proposal/CheckExecuteProposal';
+import ArchiveProposal from '../../components/proposal/ArchiveProposal';
+import RecreateProposal from '../../components/proposal/RecreateProposal';
+import Donate from '../../components/proposal/Donate';
+import VoteButtons from '../../components/proposal/VoteButtons';
+import ProposalStats from '../../components/proposal/ProposalStats';
+import VotingDeadline from '../../components/proposal/VotingDeadline';
+import Loader from '../../components/Loader';
+
 
 const ProposalDetail: React.FC = () => {
   const router = useRouter();
@@ -24,7 +33,7 @@ const ProposalDetail: React.FC = () => {
   const [ethToUsdRate, setEthToUsdRate] = useState<number | null>(null);
   const { isConnected, address } = useAccount();
   const [countdown, setCountdown] = useState<number>(0); // Countdown state
-   
+
   useEffect(() => {
     // Fetch ETH to USD exchange rate
     const fetchEthToUsdRate = async () => {
@@ -250,8 +259,8 @@ const ProposalDetail: React.FC = () => {
       });
 
       toast.success(`Successfully recreated proposal ${proposal.title}`);
- 
-      router.push('/proposals/userproposals') 
+
+      router.push('/proposals/userproposals')
     } catch (err) {
       console.error("Error recreating proposal:", err);
 
@@ -279,7 +288,7 @@ const ProposalDetail: React.FC = () => {
       }
     }
   };
-  if (loading) return <p>Loading proposal details...</p>;
+  if (loading) return <Loader/>;
   if (error) return <p className="error">{error}</p>;
   if (!proposal) return <p>No proposal data available.</p>;
 
@@ -291,143 +300,42 @@ const ProposalDetail: React.FC = () => {
         <p>Description: {proposal.description}</p>
         <p>Date Created: {new Date(Number(proposal.dateCreated) * 1000).toLocaleString()}</p>
         <hr />
+        <VotingDeadline proposal={proposal} countdown={countdown} />
 
-        {!proposal.archived && !proposal.executed && (
-          <>
-            Voting Deadline: <b>{new Date(Number(proposal.votingDeadline) * 1000).toLocaleString()}</b>
-            <br />
-            Voting Deadline Countdown:
-            <span className='countdown'>
-              {countdown > 0 ? `${Math.floor(countdown / 3600)}h ${Math.floor((countdown % 3600) / 60)}m ${countdown % 60}s` : "Expired"}
-            </span>
-            <hr />
-            <br />
-            <ul>
-              <li>Note: This proposal will only be eligible to receive donations or funding if the votesfor is equal to or greater than the votesagainst.</li>
-            </ul>      </>
-        )}
-       <div className="proposal-stats">
-  <p>Status:
-    {proposal.archived
-      ? "Archived (Cannot receive votes or donations!)"
-      : proposal.executed
-        ? (proposal.votingPassed ? " Approved for Donations/Funding" : " Rejected")
-        : " Voting"}
-  </p>
+        <ProposalStats proposal={proposal} ethToUsdRate={ethToUsdRate} />
 
-  <p>
-  Available Funds: <span className="funds-p"> {proposal.fundsReceived ? ethers.formatEther(proposal.fundsReceived) : "0"} ETH
-      ({proposal.overallFundsReceived ? (parseFloat(ethers.formatEther(proposal.overallFundsReceived)) * (ethToUsdRate || 0)).toFixed(2) : "0"} USD $)
-    </span>
-  </p>
-  <p>
-    Current Funds: <span className="funds-p"> {proposal.fundsReceived ? ethers.formatEther(proposal.fundsReceived) : "0"} ETH
-      ({proposal.fundsReceived ? (parseFloat(ethers.formatEther(proposal.fundsReceived)) * (ethToUsdRate || 0)).toFixed(2) : "0"} USD $)
-    </span>
-  </p>
-</div>
 
-        <div className="vote-buttons">
-          {!proposal.executed && Date.now() < Number(proposal.votingDeadline) * 1000 && (
-            <>
-              <button onClick={() => handleVote(true)} className="up-vote-btn">
-                <FaArrowUp className="vote-icon" /> {Number(proposal.votesFor)}
-              </button>
-              <button onClick={() => handleVote(false)} className="down-vote-btn">
-                <FaArrowDown className="vote-icon" /> {Number(proposal.votesAgainst)}
-              </button>
-            </>
-          )}
-        </div>
+        <VoteButtons proposal={proposal} handleVote={handleVote} />  
 
         {voteError && <p className="error">{voteError}</p>}
-        {proposal.votingPassed && (
+     
+        <Donate
+          proposal={proposal}
+          donationAmountETH={donationAmountETH}
+          donationAmountUSD={donationAmountUSD}
+          handleEthChange={handleEthChange}
+          handleUsdChange={handleUsdChange}
+          handleDonate={handleDonate}
+        />
 
 
-          <div className="donate-section">
-            <h3>Donate to this Proposal</h3>
-            <div>
+        <WidthdrawProposalFunds proposal={proposal}
+          ethToUsdRate={ethToUsdRate}
+          allocateFundsToProposer={allocateFundsToProposer} />
 
-              <div className=''>  <label htmlFor="amounteth">ETH </label>
-                <input
-                  name="amounteth"
-                  type="number"
-                  min="0"
-                  value={donationAmountETH}
-                  onChange={(e) => handleEthChange(e.target.value)}
-                  placeholder="0.00"
-                /></div>
-              <div className=''>    <label htmlFor="amountusd">USD </label>
-                <input
-                  name="amountusd"
-                  type="number"
-                  min="0"
-                  value={donationAmountUSD}
-                  onChange={(e) => handleUsdChange(e.target.value)}
-                  placeholder="0.00"
-                /></div>
+        <CheckExecuteProposal
+          proposal={proposal}
+          handleCheckExpiredAndExecute={handleCheckExpiredAndExecute}
+        />
 
-              <button onClick={handleDonate}>Donate</button>
-            </div>
-          </div>
-        )}
+        <ArchiveProposal
+          proposal={proposal}
+          address={address}
+          handleArchive={handleArchive}
+        />
 
+        <RecreateProposal proposal={proposal} recreateProposal={recreateProposal} />
 
-{proposal.fundsReceived > 0 && (
- <div className="note-section-container">
- <span className="">Note: Withdrawals have a fee of 3% for the upkeep of the platform</span>
- 
- <div className="funds-info">
-   <div className="available-funds">
-     <span>Available Funds:</span>
-     <span className="received-amount">
-       {proposal.fundsReceived ? ethers.formatEther(proposal.fundsReceived) : "0"} ETH 
-       ({proposal.fundsReceived ? (parseFloat(ethers.formatEther(proposal.fundsReceived)) * (ethToUsdRate || 0)).toFixed(2) : "0"} USD $)
-     </span>
-   </div>
-
-   <div className="available-funds">
-   <span>After 3% cut:</span>
-      
-     <div className="received-amount">
-    
-       <span className="eth-received "> 
-         {proposal.fundsReceived > 0
-           ? ethers.formatEther(BigInt(proposal.fundsReceived) * BigInt(0.97 * 1e18) / BigInt(1e18)) // Subtract 3% from ETH
-           : "0"} ETH   | USD $
-           {proposal.fundsReceived > 0
-             ? ((parseFloat(ethers.formatEther(BigInt(proposal.fundsReceived) * BigInt(0.97 * 1e18) / BigInt(1e18))) * (ethToUsdRate || 0)) * 0.97).toFixed(2) // Subtract 3% from USD
-             : "0"}
-       </span>
-        
-     </div>
-   </div>
- </div>
-
- <button className="withdraw-button" onClick={() => allocateFundsToProposer()}>Withdraw funds</button>
-</div>
-
-)}
-
-{!proposal.executed && !proposal.archived && (
-    <div className="check-exp">
-        <span>Execute if this proposal's voting period has ended but proposal status is still Voting. (Triggers execute if expired)</span>
-        <button onClick={handleCheckExpiredAndExecute}>Execute Proposal</button>
-    </div>
-)}
-
-{proposal.proposer === address && !proposal.archived && (
-    <div className="archive-section">
-        <span>Equivalent to set proposal inactive. (Disable voting and donations</span>
-        <button onClick={handleArchive}>Archive Proposal</button>
-    </div>
-)}
-
-{proposal.archived && (
-    <div className="recreate-section">
-        <button onClick={() => recreateProposal()}>Recreate Proposal</button>
-    </div>
-)}
 
       </div>
     </div>

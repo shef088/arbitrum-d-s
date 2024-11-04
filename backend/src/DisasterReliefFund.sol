@@ -3,7 +3,12 @@ pragma solidity ^0.8.9;
 
 contract DisasterReliefFund {
     struct Donation {
-        uint256 amount;
+        uint128 amount; // Use uint128 to save space
+        uint256 proposalId;
+    }
+
+    struct Withdrawal {
+        uint128 amount; // Use uint128 to save space
         uint256 proposalId;
     }
 
@@ -11,30 +16,31 @@ contract DisasterReliefFund {
         address proposer;
         string title;
         string description;
-        uint256 votesFor;
-        uint256 votesAgainst;
+        uint128 votesFor; // Use uint128 to save space
+        uint128 votesAgainst; // Use uint128 to save space
         bool votingPassed;  
-        uint256 votingDeadline;  
-        uint256 fundsReceived;  
-        uint256 overallFundsReceived;
+        uint64 votingDeadline; // Use uint64 for deadline timestamp
+        uint128 fundsReceived; // Use uint128 to save space
+        uint128 overallFundsReceived; // Use uint128 to save space
         bool executed;
         bool archived;
-        uint256 dateCreated;
+        uint64 dateCreated; // Use uint64 for date created timestamp
     }
 
     mapping(uint256 => Proposal) public proposals;
-    mapping(uint256 => mapping(address => bool)) public hasVoted; // Tracks if a user has voted on a proposal
-    mapping(uint256 => mapping(address => bool)) public userVote; // Tracks the user's vote (true for 'for', false for 'against')
-    mapping(address => uint256[]) public userProposals; // Maps user address to an array of proposal IDs
-    mapping(uint256 => mapping(address => uint256)) public donations; // Tracks individual donations to each proposal
-    mapping(address => Donation[]) public userDonations; // New mapping to track all donations made by each user with proposal ID
+    mapping(uint256 => mapping(address => bool)) public hasVoted; 
+    mapping(uint256 => mapping(address => bool)) public userVote; 
+    mapping(address => uint256[]) public userProposals; 
+    mapping(uint256 => mapping(address => uint256)) public donations; 
+    mapping(address => Donation[]) public userDonations; 
+    mapping(address => Withdrawal[]) public userWithdrawals; 
 
-    mapping(address => bool) public authorizedGovernance; // Mapping to track authorized governance addresses
-    address public owner; // Owner of the contract
-    address[] public governanceAddresses; // Array to store governance addresses
+    mapping(address => bool) public authorizedGovernance; 
+    address public owner; 
+    address[] public governanceAddresses; 
 
     uint256 public proposalCount;
-    uint256 public totalPot; // Shared pool for all donations
+    uint128 public totalPot; // Change to uint128 to save space
 
     event ProposalCreated(uint256 proposalId, string title, string description);
     event Voted(uint256 proposalId, address voter, bool support);
@@ -42,6 +48,7 @@ contract DisasterReliefFund {
     event ProposalRecreated(uint256 originalProposalId, uint256 newProposalId);
     event DonationReceived(uint256 proposalId, address donor, uint256 amount);
     event FundsAllocated(uint256 amount, address recipient);
+    event WithdrawalMade(address user, uint256 amount, uint256 proposalId); 
 
     modifier onlyGovernance() {
         require(authorizedGovernance[msg.sender], "Caller is not authorized governance");
@@ -54,11 +61,11 @@ contract DisasterReliefFund {
     }
 
     constructor() {
-        owner = msg.sender; // Set the contract deployer as the owner
+        owner = msg.sender; 
     }
 
-    function createProposal(string memory _title, string memory _description, uint256 _votingDeadline) public returns (uint256) {
-        require(_votingDeadline > block.timestamp, "Voting deadline must be in the future"); // Ensure the voting deadline is in the future
+    function createProposal(string memory _title, string memory _description, uint64 _votingDeadline) public returns (uint256) {
+        require(_votingDeadline > block.timestamp, "Voting deadline must be in the future"); 
 
         proposalCount++;
         proposals[proposalCount] = Proposal({
@@ -73,15 +80,13 @@ contract DisasterReliefFund {
             executed: false,
             archived: false,
             votingPassed: false ,
-            dateCreated: block.timestamp 
+            dateCreated: uint64(block.timestamp) 
         });
 
-        // Add proposal ID to the userProposals mapping for the proposer
         userProposals[msg.sender].push(proposalCount);
 
         emit ProposalCreated(proposalCount, _title, _description);
-
-        return proposalCount; // Return the proposal ID
+        return proposalCount; 
     }
 
     function getUserProposals(address _user) public view returns (uint256[] memory) {
@@ -93,14 +98,13 @@ contract DisasterReliefFund {
         require(!proposals[_proposalId].archived, "Proposal is archived");
         require(msg.value >= 0.00001 ether, "Donation must be greater than 0.00 ETH");
 
-        proposals[_proposalId].fundsReceived += msg.value; // Track funds received for each proposal
-        proposals[_proposalId].overallFundsReceived += msg.value;
-        donations[_proposalId][msg.sender] += msg.value;   // Track individual contributions
-        totalPot += msg.value; // Add to the shared donation pool
+        proposals[_proposalId].fundsReceived += uint128(msg.value); 
+        proposals[_proposalId].overallFundsReceived += uint128(msg.value);
+        donations[_proposalId][msg.sender] += msg.value;   
+        totalPot += uint128(msg.value); 
 
-        // Track all donations made by the user with the corresponding proposal ID
         userDonations[msg.sender].push(Donation({
-            amount: msg.value,
+            amount: uint128(msg.value),
             proposalId: _proposalId
         }));
 
@@ -114,7 +118,7 @@ contract DisasterReliefFund {
     function vote(uint256 _proposalId, bool _support) public {
         require(_proposalId > 0 && _proposalId <= proposalCount, "Proposal does not exist");
         require(!proposals[_proposalId].archived, "Proposal is archived");
-        require(block.timestamp < proposals[_proposalId].votingDeadline, "Voting period has ended"); // Updated to use votingDeadline
+        require(block.timestamp < proposals[_proposalId].votingDeadline, "Voting period has ended");
 
         bool previousVote = userVote[_proposalId][msg.sender];
 
@@ -148,7 +152,7 @@ contract DisasterReliefFund {
     function executeProposal(uint256 _proposalId) public {
         require(_proposalId > 0 && _proposalId <= proposalCount, "Proposal does not exist");
         require(!proposals[_proposalId].archived, "Proposal is archived");
-        require(block.timestamp >= proposals[_proposalId].votingDeadline, "Voting period not ended"); // Updated to use votingDeadline
+        require(block.timestamp >= proposals[_proposalId].votingDeadline, "Voting period not ended");
         require(!proposals[_proposalId].executed, "Already executed");
 
         Proposal storage proposal = proposals[_proposalId];
@@ -172,13 +176,13 @@ contract DisasterReliefFund {
             description: originalProposal.description,
             votesFor: 0,
             votesAgainst: 0,
-            votingDeadline: block.timestamp + 1 days, // Default voting deadline for recreated proposals
+            votingDeadline: uint64(block.timestamp) + 1 days, 
             fundsReceived: 0,
             overallFundsReceived: 0,
             executed: false,
             archived: false,
             votingPassed: false,
-            dateCreated: block.timestamp   
+            dateCreated: uint64(block.timestamp)   
         });
 
         userProposals[msg.sender].push(proposalCount);
@@ -201,36 +205,40 @@ contract DisasterReliefFund {
         return proposals[_proposalId];
     }
 
-    // Function to allocate funds from the total pot based on governance
     function allocateFromPot(uint256 amount, address recipient) public onlyGovernance {
-        // Ensure only approved allocations can be made
         require(amount <= totalPot, "Insufficient funds in the pot");
-        totalPot -= amount;
+        totalPot -= uint128(amount);
         payable(recipient).transfer(amount);
 
         emit FundsAllocated(amount, recipient);
     }
 
- function allocateFundsToProposer(uint256 _proposalId) public {
-    require(_proposalId > 0 && _proposalId <= proposalCount, "Proposal does not exist");
+    function allocateFundsToProposer(uint256 _proposalId) public {
+        require(_proposalId > 0 && _proposalId <= proposalCount, "Proposal does not exist");
 
-    Proposal storage proposal = proposals[_proposalId];
-    require(msg.sender == proposal.proposer, "Only the proposer can withdraw allocated funds");
-    require(proposal.executed, "Proposal must be executed before funds can be allocated");
-    require(proposal.votingPassed, "Proposal must have passed to allocate funds");
-    require(proposal.fundsReceived > 0, "No funds available for allocation");
+        Proposal storage proposal = proposals[_proposalId];
+        require(msg.sender == proposal.proposer, "Only the proposer can withdraw allocated funds");
+        require(proposal.executed, "Proposal must be executed before funds can be allocated");
+        require(proposal.votingPassed, "Proposal must have passed to allocate funds");
+        require(proposal.fundsReceived > 0, "No funds available for allocation");
 
-    uint256 allocation = proposal.fundsReceived;
-    uint256 platformCut = (allocation * 3) / 100; // 3% cut
-    uint256 finalAmount = allocation - platformCut;
+        uint128 allocation = proposal.fundsReceived;
+        uint128 platformCut = (allocation * 3) / 100; // 3% cut
+        uint128 finalAmount = allocation - platformCut;
 
-    totalPot -= allocation;
-    payable(proposal.proposer).transfer(finalAmount); // Transfer to proposer after cut
+        totalPot -= allocation;
+        payable(proposal.proposer).transfer(finalAmount); // Transfer to proposer after cut
 
-    proposal.fundsReceived = 0; // Reset funds received after allocation
-    emit FundsAllocated(finalAmount, proposal.proposer);
-}
+        // Track the withdrawal
+        userWithdrawals[proposal.proposer].push(Withdrawal({
+            amount: finalAmount,
+            proposalId: _proposalId
+        }));
 
+        proposal.fundsReceived = 0; // Reset funds received after allocation
+        emit FundsAllocated(finalAmount, proposal.proposer);
+        emit WithdrawalMade(proposal.proposer, finalAmount, _proposalId); // Emit the withdrawal event
+    }
 
     function archiveProposal(uint256 _proposalId) public {
         require(_proposalId > 0 && _proposalId <= proposalCount, "Proposal does not exist");
@@ -251,17 +259,22 @@ contract DisasterReliefFund {
     }
 
     // Function to revoke governance access
-   function revokeGovernance(address _governanceAddress) public onlyOwner {
-    require(authorizedGovernance[_governanceAddress], "Not an authorized governance address");
-    authorizedGovernance[_governanceAddress] = false;
+    function revokeGovernance(address _governanceAddress) public onlyOwner {
+        require(authorizedGovernance[_governanceAddress], "Not an authorized governance address");
+        authorizedGovernance[_governanceAddress] = false;
 
-    // Remove address from the array (optional; requires additional logic)
-    for (uint i = 0; i < governanceAddresses.length; i++) {
-        if (governanceAddresses[i] == _governanceAddress) {
-            governanceAddresses[i] = governanceAddresses[governanceAddresses.length - 1]; // Move the last element to the removed spot
-            governanceAddresses.pop(); // Remove the last element
-            break;
+        // Remove address from the array (optional; requires additional logic)
+        for (uint i = 0; i < governanceAddresses.length; i++) {
+            if (governanceAddresses[i] == _governanceAddress) {
+                governanceAddresses[i] = governanceAddresses[governanceAddresses.length - 1]; // Move the last element to the removed spot
+                governanceAddresses.pop(); // Remove the last element
+                break;
+            }
         }
     }
-}
+
+    // New function to retrieve withdrawals made by a user
+    function getUserWithdrawals(address _user) public view returns (Withdrawal[] memory) {
+        return userWithdrawals[_user];
+    }
 }

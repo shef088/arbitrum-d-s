@@ -63,7 +63,7 @@ export const disasterReliefFundAbi = [
     inputs: [
       { name: '_title', internalType: 'string', type: 'string' },
       { name: '_description', internalType: 'string', type: 'string' },
-      { name: '_votingDeadline', internalType: 'uint256', type: 'uint256' },
+      { name: '_votingDeadline', internalType: 'uint64', type: 'uint64' },
     ],
     name: 'createProposal',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
@@ -113,19 +113,19 @@ export const disasterReliefFundAbi = [
           { name: 'proposer', internalType: 'address', type: 'address' },
           { name: 'title', internalType: 'string', type: 'string' },
           { name: 'description', internalType: 'string', type: 'string' },
-          { name: 'votesFor', internalType: 'uint256', type: 'uint256' },
-          { name: 'votesAgainst', internalType: 'uint256', type: 'uint256' },
+          { name: 'votesFor', internalType: 'uint128', type: 'uint128' },
+          { name: 'votesAgainst', internalType: 'uint128', type: 'uint128' },
           { name: 'votingPassed', internalType: 'bool', type: 'bool' },
-          { name: 'votingDeadline', internalType: 'uint256', type: 'uint256' },
-          { name: 'fundsReceived', internalType: 'uint256', type: 'uint256' },
+          { name: 'votingDeadline', internalType: 'uint64', type: 'uint64' },
+          { name: 'fundsReceived', internalType: 'uint128', type: 'uint128' },
           {
             name: 'overallFundsReceived',
-            internalType: 'uint256',
-            type: 'uint256',
+            internalType: 'uint128',
+            type: 'uint128',
           },
           { name: 'executed', internalType: 'bool', type: 'bool' },
           { name: 'archived', internalType: 'bool', type: 'bool' },
-          { name: 'dateCreated', internalType: 'uint256', type: 'uint256' },
+          { name: 'dateCreated', internalType: 'uint64', type: 'uint64' },
         ],
       },
     ],
@@ -141,7 +141,7 @@ export const disasterReliefFundAbi = [
         internalType: 'struct DisasterReliefFund.Donation[]',
         type: 'tuple[]',
         components: [
-          { name: 'amount', internalType: 'uint256', type: 'uint256' },
+          { name: 'amount', internalType: 'uint128', type: 'uint128' },
           { name: 'proposalId', internalType: 'uint256', type: 'uint256' },
         ],
       },
@@ -153,6 +153,23 @@ export const disasterReliefFundAbi = [
     inputs: [{ name: '_user', internalType: 'address', type: 'address' }],
     name: 'getUserProposals',
     outputs: [{ name: '', internalType: 'uint256[]', type: 'uint256[]' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_user', internalType: 'address', type: 'address' }],
+    name: 'getUserWithdrawals',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct DisasterReliefFund.Withdrawal[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'amount', internalType: 'uint128', type: 'uint128' },
+          { name: 'proposalId', internalType: 'uint256', type: 'uint256' },
+        ],
+      },
+    ],
     stateMutability: 'view',
   },
   {
@@ -194,19 +211,19 @@ export const disasterReliefFundAbi = [
       { name: 'proposer', internalType: 'address', type: 'address' },
       { name: 'title', internalType: 'string', type: 'string' },
       { name: 'description', internalType: 'string', type: 'string' },
-      { name: 'votesFor', internalType: 'uint256', type: 'uint256' },
-      { name: 'votesAgainst', internalType: 'uint256', type: 'uint256' },
+      { name: 'votesFor', internalType: 'uint128', type: 'uint128' },
+      { name: 'votesAgainst', internalType: 'uint128', type: 'uint128' },
       { name: 'votingPassed', internalType: 'bool', type: 'bool' },
-      { name: 'votingDeadline', internalType: 'uint256', type: 'uint256' },
-      { name: 'fundsReceived', internalType: 'uint256', type: 'uint256' },
+      { name: 'votingDeadline', internalType: 'uint64', type: 'uint64' },
+      { name: 'fundsReceived', internalType: 'uint128', type: 'uint128' },
       {
         name: 'overallFundsReceived',
-        internalType: 'uint256',
-        type: 'uint256',
+        internalType: 'uint128',
+        type: 'uint128',
       },
       { name: 'executed', internalType: 'bool', type: 'bool' },
       { name: 'archived', internalType: 'bool', type: 'bool' },
-      { name: 'dateCreated', internalType: 'uint256', type: 'uint256' },
+      { name: 'dateCreated', internalType: 'uint64', type: 'uint64' },
     ],
     stateMutability: 'view',
   },
@@ -232,7 +249,7 @@ export const disasterReliefFundAbi = [
     type: 'function',
     inputs: [],
     name: 'totalPot',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    outputs: [{ name: '', internalType: 'uint128', type: 'uint128' }],
     stateMutability: 'view',
   },
   {
@@ -243,7 +260,7 @@ export const disasterReliefFundAbi = [
     ],
     name: 'userDonations',
     outputs: [
-      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: 'amount', internalType: 'uint128', type: 'uint128' },
       { name: 'proposalId', internalType: 'uint256', type: 'uint256' },
     ],
     stateMutability: 'view',
@@ -266,6 +283,19 @@ export const disasterReliefFundAbi = [
     ],
     name: 'userVote',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'userWithdrawals',
+    outputs: [
+      { name: 'amount', internalType: 'uint128', type: 'uint128' },
+      { name: 'proposalId', internalType: 'uint256', type: 'uint256' },
+    ],
     stateMutability: 'view',
   },
   {
@@ -399,6 +429,31 @@ export const disasterReliefFundAbi = [
       { name: 'support', internalType: 'bool', type: 'bool', indexed: false },
     ],
     name: 'Voted',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'user',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'proposalId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'WithdrawalMade',
   },
 ] as const
 
@@ -710,6 +765,15 @@ export const useReadDisasterReliefFundGetUserProposals =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"getUserWithdrawals"`
+ */
+export const useReadDisasterReliefFundGetUserWithdrawals =
+  /*#__PURE__*/ createUseReadContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'getUserWithdrawals',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"governanceAddresses"`
  */
 export const useReadDisasterReliefFundGovernanceAddresses =
@@ -788,6 +852,15 @@ export const useReadDisasterReliefFundUserVote =
   /*#__PURE__*/ createUseReadContract({
     abi: disasterReliefFundAbi,
     functionName: 'userVote',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"userWithdrawals"`
+ */
+export const useReadDisasterReliefFundUserWithdrawals =
+  /*#__PURE__*/ createUseReadContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'userWithdrawals',
   })
 
 /**
@@ -1058,6 +1131,15 @@ export const useWatchDisasterReliefFundVoted =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: disasterReliefFundAbi,
     eventName: 'Voted',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `eventName` set to `"WithdrawalMade"`
+ */
+export const useWatchDisasterReliefFundWithdrawalMade =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: disasterReliefFundAbi,
+    eventName: 'WithdrawalMade',
   })
 
 /**

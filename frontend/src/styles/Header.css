@@ -62,12 +62,17 @@ header {
 
 /* Link Styles */
 .navigation a {
+  display: flex; /* Flexbox to align icon and text */
+  align-items: center; /* Center align items */
   color: white; /* Link color */
   text-decoration: none; /* Remove underline from links */
   font-weight: 300;  
   transition: color 0.3s ease; /* Smooth color transition */
 }
 
+.navigation a svg {
+  margin-right: 0.2rem;  
+}
 .navigation a:hover {
   color: #a3bffa; /* Hover color for links */
   text-shadow: 0 0 5px rgba(163, 191, 250, 0.5); /* Subtle glow effect on hover */
