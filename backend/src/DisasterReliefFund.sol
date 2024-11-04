@@ -5,11 +5,13 @@ contract DisasterReliefFund {
     struct Donation {
         uint128 amount; // Use uint128 to save space
         uint256 proposalId;
+        uint64 timestamp;
     }
 
     struct Withdrawal {
         uint128 amount; // Use uint128 to save space
         uint256 proposalId;
+        uint64 timestamp;
     }
 
     struct Proposal {
@@ -105,7 +107,8 @@ contract DisasterReliefFund {
 
         userDonations[msg.sender].push(Donation({
             amount: uint128(msg.value),
-            proposalId: _proposalId
+            proposalId: _proposalId,
+             timestamp: uint64(block.timestamp)
         }));
 
         emit DonationReceived(_proposalId, msg.sender, msg.value);
@@ -149,19 +152,24 @@ contract DisasterReliefFund {
         emit Voted(_proposalId, msg.sender, _support);
     }
 
-    function executeProposal(uint256 _proposalId) public {
-        require(_proposalId > 0 && _proposalId <= proposalCount, "Proposal does not exist");
-        require(!proposals[_proposalId].archived, "Proposal is archived");
-        require(block.timestamp >= proposals[_proposalId].votingDeadline, "Voting period not ended");
-        require(!proposals[_proposalId].executed, "Already executed");
+   function executeProposal(uint256 _proposalId) public {
+    require(_proposalId > 0 && _proposalId <= proposalCount, "Proposal does not exist");
+    require(!proposals[_proposalId].archived, "Proposal is archived");
+    require(block.timestamp >= proposals[_proposalId].votingDeadline, "Voting period not ended");
+    require(!proposals[_proposalId].executed, "Already executed");
 
-        Proposal storage proposal = proposals[_proposalId];
-        bool votingPassed = proposal.votesFor >= proposal.votesAgainst;  
-        proposal.executed = true;
-        proposal.votingPassed = votingPassed;
-
-        emit ProposalExecuted(_proposalId, votingPassed);
+    Proposal storage proposal = proposals[_proposalId];
+    bool votingPassed = proposal.votesFor >= proposal.votesAgainst;  
+    proposal.votingPassed = votingPassed;
+    proposal.executed = true;
+    if (!votingPassed) {
+        // Archive the proposal if it does not pass
+        proposal.archived = true;
     }
+    
+    emit ProposalExecuted(_proposalId, votingPassed);
+}
+
 
     function recreateProposal(uint256 _originalProposalId) public {
         require(_originalProposalId > 0 && _originalProposalId <= proposalCount, "Proposal does not exist");
@@ -232,7 +240,8 @@ contract DisasterReliefFund {
         // Track the withdrawal
         userWithdrawals[proposal.proposer].push(Withdrawal({
             amount: finalAmount,
-            proposalId: _proposalId
+            proposalId: _proposalId,
+            timestamp: uint64(block.timestamp)
         }));
 
         proposal.fundsReceived = 0; // Reset funds received after allocation

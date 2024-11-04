@@ -178,4 +178,33 @@ contract DisasterReliefFundTest is Test {
         vm.expectRevert("Insufficient funds in the pot");
         fund.allocateFromPot(allocationAmount, address(this));
     }
+
+    // Test withdrawal of funds
+    function testWithdrawFunds() public {
+        uint256 votingDeadline = block.timestamp + 7 days; // Set voting deadline
+        fund.createProposal("Community Center", "Build a community center", uint64(votingDeadline));
+        
+        // Donate to the proposal
+        (bool success, ) = address(fund).call{value: 1 ether}("");
+        require(success, "Transfer failed");
+        fund.donateToProposal{value: 1 ether}(1);
+
+        // Vote for the proposal and execute it
+        fund.vote(1, true);
+        vm.warp(block.timestamp + 8 days); // Move time forward to pass voting deadline
+        fund.executeProposal(1);
+
+        // Allocate funds to the proposer
+        fund.allocateFundsToProposer(1);
+
+        // Check that the proposer has a withdrawal record
+        DisasterReliefFund.Withdrawal[] memory withdrawals = fund.getUserWithdrawals(address(this));
+        assertEq(withdrawals.length, 1, "Should have one withdrawal record");
+        
+        // Check the withdrawal details
+        DisasterReliefFund.Withdrawal memory withdrawal = withdrawals[0];
+        assertEq(withdrawal.amount, 0.97 ether, "Should withdraw the correct amount after fees");
+        assertEq(withdrawal.proposalId, 1, "Proposal ID should match");
+        assertEq(withdrawal.timestamp, uint64(block.timestamp), "Timestamp should match the current block timestamp");
+    }
 }

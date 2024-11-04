@@ -50,7 +50,9 @@ Please visit the Chainlink Arbitrum Sepolia Faucet to receive testnet LINK.
 https://faucets.chain.link/arbitrum-sepolia
 
 Then go to https://automation.chain.link/ and setup an automation check.
-Connect your wallet
+Connect your wallet.
+Select the testnet.
+Create an automatio upkeep
 Then enter the smart contract address  you want the automation done on.
 Its going to fetch your smart contract functions so you can choose which functiion you want to automate.
 After choosing, you can select the time-based check or any choice and set the frequency.

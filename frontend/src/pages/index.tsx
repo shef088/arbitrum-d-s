@@ -1,10 +1,13 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
+import ApprovedProposals from "./proposals/approved";
 
 const Home = () => {
     const { isConnected } = useAccount();
 
     return (
+        <>
+        {isConnected ? <ApprovedProposals/> :
         <div className="home-container">
             <div className="home-hero">
                 <h1 className="home-hero-title">Disaster Relief Fund</h1>
@@ -43,6 +46,8 @@ const Home = () => {
                 </div>
             )}
         </div>
+        }
+        </>
     );
 };
 

@@ -8,7 +8,12 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* Deeper shadow for emphasis */
   margin-top: 7rem;
 }
-
+.proposal-detail-container h2{
+  color: #333333;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 15px;
+}
 .proposal-detail {
   padding: 20px;
   background-color: #ffffff;
@@ -56,7 +61,8 @@
 .funds-p {
   color: green !important;
   background-color: white;
-  padding: 0 5px; /* Padding around the funds text */
+  padding: 0 5px; 
+  font-weight: bold;
 }
 
 .vote-buttons {

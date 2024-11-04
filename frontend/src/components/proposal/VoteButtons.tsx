@@ -4,7 +4,7 @@ import { FaArrowUp, FaArrowDown } from 'react-icons/fa';
 const VoteButtons = ({ proposal, handleVote }) => {
     return (
         <div className="vote-buttons">
-            {!proposal.executed && Date.now() < Number(proposal.votingDeadline) * 1000 && (
+            {!proposal.executed && (
                 <>
                     <button onClick={() => handleVote(true)} className="up-vote-btn">
                         <FaArrowUp className="vote-icon" /> {Number(proposal.votesFor)}

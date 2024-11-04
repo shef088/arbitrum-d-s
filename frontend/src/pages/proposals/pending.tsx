@@ -16,11 +16,7 @@ const PendingProposals: React.FC = () => {
 
   useEffect(() => {
     const getPendingProposals = async () => {
-      if (!isConnected || !address) {
-        toast.error("Connect your wallet to continue");
-        setLoading(false); // Stop loading when the error occurs
-        return; // Return early if not connected
-    }
+    
       setLoading(true);
       
       try {

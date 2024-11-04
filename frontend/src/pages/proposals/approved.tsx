@@ -16,12 +16,6 @@ const ApprovedProposals: React.FC = () => {
 
   useEffect(() => {
     const getApprovedProposals = async () => {
-      if (!isConnected || !address) {
-        toast.error("Connect your wallet to continue");
-        setLoading(false); // Stop loading when the error occurs
-        return; // Return early if not connected
-    }
-      
       setLoading(true);
       try {
         const allProposals = await fetchProposals();

@@ -143,6 +143,7 @@ export const disasterReliefFundAbi = [
         components: [
           { name: 'amount', internalType: 'uint128', type: 'uint128' },
           { name: 'proposalId', internalType: 'uint256', type: 'uint256' },
+          { name: 'timestamp', internalType: 'uint64', type: 'uint64' },
         ],
       },
     ],
@@ -167,6 +168,7 @@ export const disasterReliefFundAbi = [
         components: [
           { name: 'amount', internalType: 'uint128', type: 'uint128' },
           { name: 'proposalId', internalType: 'uint256', type: 'uint256' },
+          { name: 'timestamp', internalType: 'uint64', type: 'uint64' },
         ],
       },
     ],
@@ -262,6 +264,7 @@ export const disasterReliefFundAbi = [
     outputs: [
       { name: 'amount', internalType: 'uint128', type: 'uint128' },
       { name: 'proposalId', internalType: 'uint256', type: 'uint256' },
+      { name: 'timestamp', internalType: 'uint64', type: 'uint64' },
     ],
     stateMutability: 'view',
   },
@@ -295,6 +298,7 @@ export const disasterReliefFundAbi = [
     outputs: [
       { name: 'amount', internalType: 'uint128', type: 'uint128' },
       { name: 'proposalId', internalType: 'uint256', type: 'uint256' },
+      { name: 'timestamp', internalType: 'uint64', type: 'uint64' },
     ],
     stateMutability: 'view',
   },

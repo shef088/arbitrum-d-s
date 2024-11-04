@@ -9,8 +9,15 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   margin-top: 7rem;
 }
-.proposals-container h2 {
+.proposals-container h1 {
   font-size: 2rem;
+  color: #333;
+  margin-bottom: 25px;
+  text-align: center;
+  font-weight: bold;
+}
+.proposals-container h2 {
+  font-size: 1.8rem;
   color: #333;
   margin-bottom: 25px;
   text-align: center;

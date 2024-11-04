@@ -14,16 +14,12 @@ const RejectedProposals: React.FC = () => {
   const { isConnected, address } = useAccount(); 
   useEffect(() => {
     const getRejectedProposals = async () => {
-      if (!isConnected || !address) {
-        toast.error("Connect your wallet to continue");
-        setLoading(false); // Stop loading when the error occurs
-        return; // Return early if not connected
-    }
+    
       setLoading(true);
      
       try {
         const allProposals = await fetchProposals();
-        const rejectedProposals = allProposals.filter(p => p.votingPassed!==true);
+        const rejectedProposals = allProposals.filter(p => p.votingPassed!==true && p.executed);
         setProposals(rejectedProposals);
       } catch (err) {
         setError("Error fetching rejected proposals");
@@ -40,7 +36,7 @@ const RejectedProposals: React.FC = () => {
     <div className="proposals-container">
       <h2>Rejected Proposals</h2>
       {proposals.length === 0 ? (
-        <p>No approved proposals found.</p>
+        <p>No rejected proposals found.</p>
       ) : (proposals.map((proposal, index) => (
           <div className="inner-proposal" key={proposal.id}>
           <Link href={`/proposals/${proposal.id}`}>

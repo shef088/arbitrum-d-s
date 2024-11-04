@@ -102,6 +102,11 @@ const ProposalDetail: React.FC = () => {
   };
 
   const handleVote = async (voteFor: boolean) => {
+    if (!isConnected || !address) {
+      toast.error("Connect your wallet to continue");
+      setLoading(false);   
+      return; 
+  }
     if (!proposal) return;
     setVoteError(null);
     if (Date.now() >= Number(proposal.votingDeadline) * 1000) {
@@ -121,8 +126,6 @@ const ProposalDetail: React.FC = () => {
       toast.success(`Successfully voted ${voteFor ? 'for' : 'against'} proposal ${proposal.title}`);
       // Refresh proposal data  
       const foundProposal = await getProposalDetails()
-
-
     } catch (err) {
       console.error("Error voting:", err);
       setVoteError("Error casting your vote");
@@ -137,13 +140,17 @@ const ProposalDetail: React.FC = () => {
   };
 
   const handleDonate = async () => {
+    if (!isConnected || !address) {
+      toast.error("Connect your wallet to continue");
+      setLoading(false);   
+      return; 
+  }
     if (!proposal || !donationAmountETH || parseFloat(donationAmountETH) < 0.00001) {
       toast.error("Donation must be greater than 0.00001 ETH");
       return;
     }
 
     try {
-
       const ethAmount = ethers.parseEther(donationAmountETH); // Ensure it's correctly formatted for ETH
       const proposalId: bigint = BigInt(Number(id));
       await writeContract(config, {
@@ -188,6 +195,11 @@ const ProposalDetail: React.FC = () => {
   };
 
   const handleCheckExpiredAndExecute = async () => {
+    if (!isConnected || !address) {
+      toast.error("Connect your wallet to continue");
+      setLoading(false);   
+      return; 
+  }
     if (!proposal) return;
 
     try {
@@ -200,8 +212,7 @@ const ProposalDetail: React.FC = () => {
       });
 
       toast.success(`Executed proposal ${proposal.title} successfully!.`);
-      // Refresh proposal  
-      const foundProposal = await getProposalDetails();
+     
       window.location.reload()
     } catch (err) {
       console.error("Error executing proposal:", err);
@@ -218,6 +229,11 @@ const ProposalDetail: React.FC = () => {
   };
 
   const handleArchive = async () => {
+    if (!isConnected || !address) {
+      toast.error("Connect your wallet to continue");
+      setLoading(false);   
+      return; 
+  }
     if (!proposal) return;
     const confirmation = window.confirm("Are you sure you want to archive this proposal?");
     if (!confirmation) return;
@@ -232,8 +248,7 @@ const ProposalDetail: React.FC = () => {
       });
 
       toast.success(`Successfully archived proposal ${proposal.title}`);
-      // Refresh proposal data 
-      const foundProposal = await getProposalDetails();
+      window.location.reload()
     } catch (err) {
       console.error("Error archiving proposal:", err);
       if (err instanceof ContractFunctionExecutionError) {
@@ -246,6 +261,11 @@ const ProposalDetail: React.FC = () => {
   };
 
   const recreateProposal = async () => {
+    if (!isConnected || !address) {
+      toast.error("Connect your wallet to continue");
+      setLoading(false);   
+      return; 
+  }
     if (!proposal) return;
 
     try {
@@ -267,6 +287,11 @@ const ProposalDetail: React.FC = () => {
     }
   }
   const allocateFundsToProposer = async () => {
+    if (!isConnected || !address) {
+      toast.error("Connect your wallet to continue");
+      setLoading(false);   
+      return; 
+  }
     if (!proposal) return;
     try {
       const proposalId: bigint = BigInt(Number(id));
@@ -289,7 +314,7 @@ const ProposalDetail: React.FC = () => {
     }
   };
   if (loading) return <Loader/>;
-  if (error) return <p className="error">{error}</p>;
+  if (error) return <div className="proposal-detail-container"><p className="error">{error}</p></div> ;
   if (!proposal) return <p>No proposal data available.</p>;
 
   return (
@@ -326,6 +351,7 @@ const ProposalDetail: React.FC = () => {
         <CheckExecuteProposal
           proposal={proposal}
           handleCheckExpiredAndExecute={handleCheckExpiredAndExecute}
+          countdown={countdown} 
         />
 
         <ArchiveProposal

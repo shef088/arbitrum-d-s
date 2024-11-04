@@ -63,9 +63,9 @@ const Header: React.FC = () => {
                 <ConnectButton />
             </div>
             <nav className="navigation">
-                <Link href="/" className={isActive('/') ? 'active' : ''}>
+                {/* <Link href="/" className={isActive('/') ? 'active' : ''}>
                     <FontAwesomeIcon icon={faHome} /> Home
-                </Link>
+                </Link> */}
                 <Link href="/proposals/create" className={isActive('/proposals/create') ? 'active' : ''}>
                     <FontAwesomeIcon icon={faPlus} /> Create Proposal
                 </Link>
