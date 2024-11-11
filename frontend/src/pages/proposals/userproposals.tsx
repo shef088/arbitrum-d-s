@@ -1,42 +1,56 @@
-// components/UserProposals.tsx
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link'; 
 import fetchUserProposals from '../../utils/fetchUserProposals';
-import type { ProposalResponse } from '../../types/proposals/types';
-import { useAccount } from "wagmi";
+import Pagination from '../../components/Pagination';
 import Loader from '../../components/Loader';
+import { ProposalResponse } from '../../types/proposals/types';
+import { useAccount } from 'wagmi';
 import { toast } from 'react-toastify';
+import Link from 'next/link';
 
 const UserProposals: React.FC = () => {
-  const { isConnected, address } = useAccount(); 
+  const { isConnected, address } = useAccount();
   const [proposals, setProposals] = useState<ProposalResponse[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const getUserProposals = async () => {
-      
-      if (!isConnected || !address) {
-        toast.error("Connect your wallet to continue");
-        setLoading(false); // Stop loading when the error occurs
-        return; // Return early if not connected
+  const [start, setStart] = useState(0); // Start index for pagination
+  const count = 2; // Number of items per page
+  const [totalItems, setTotalItems] = useState(0); // Total items for pagination
+  const [currentPage, setCurrentPage] = useState(0); // Track current page
+
+  // Fetch proposals based on `start` and `count`
+  const fetchProposals = async () => {
+    if (!isConnected || !address) {
+      toast.error("Connect your wallet to continue");
+      setLoading(false);
+      return;
     }
-    setLoading(true)
-      try {
-        const userProposals = await fetchUserProposals(address);
-        setProposals(userProposals);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to fetch user proposals.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    setLoading(true);
+    try {
+      const { proposals: fetchedProposals, totalProposalCount } = await fetchUserProposals(address, start, count);
+      setProposals(fetchedProposals);
+      setTotalItems(totalProposalCount);
+      setError(null);
+    } catch (err) {
+      console.error("Failed to fetch proposals:", err);
+      setError("Failed to fetch user proposals.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    getUserProposals();
-  }, [isConnected, address]);
+  // Trigger fetchProposals on initial load and whenever `start` changes
+  useEffect(() => {
+    fetchProposals();
+  }, [start, isConnected, address]);
 
-  if (loading) return <Loader/>;
+  // Handle page change
+  const handlePageChange = (selectedPage: number) => {
+    setStart(selectedPage * count);
+    setCurrentPage(selectedPage); // Update the current page
+  };
+
+  if (loading) return <Loader />;
   if (error) return <div className="error-message">{error}</div>;
 
   return (
@@ -46,32 +60,36 @@ const UserProposals: React.FC = () => {
         <p>No proposals found for this user.</p>
       ) : (
         <ul>
-          {proposals.map(proposal => ( 
+          {proposals.map((proposal) => (
             <div className="inner-proposal" key={proposal.id}>
-                 <Link href={`/proposals/${proposal.id}`}>
-              <h3 className="proposal-title">{proposal.title}</h3>
-              <p className="proposal-description">{proposal.description}</p>
-              <div className="proposal-details">
-                <span>Votes For: {Number(proposal.votesFor)}</span>
-                <span>Votes Against: {Number(proposal.votesAgainst)}</span>
-                <span>Voting Deadline: {new Date(Number(proposal.votingDeadline) * 1000).toLocaleString()}</span>
-                <span>
-  Status: {proposal.archived 
-    ? "Archived" 
-    : proposal.executed 
-      ? (proposal.votingPassed ? "Approved for Donations" : "Rejected") 
-      : "Voting"
-  }
-</span>
-
-         
-              </div> 
-            </Link>
-          
+              <Link href={`/proposals/${proposal.id}`}>
+                <h3 className="proposal-title">{proposal.title}</h3>
+                <p className="proposal-description">{proposal.description}</p>
+                <div className="proposal-details">
+                  <span>Votes For: {Number(proposal.votesFor)}</span>
+                  <span>Votes Against: {Number(proposal.votesAgainst)}</span>
+                  <span>Voting Deadline: {new Date(Number(proposal.votingDeadline) * 1000).toLocaleString()}</span>
+                  <span>
+                    Status: {proposal.archived
+                      ? "Archived"
+                      : proposal.executed
+                      ? proposal.votingPassed
+                        ? "Approved for Donations"
+                        : "Rejected"
+                      : "Voting"}
+                  </span>
+                </div>
+              </Link>
             </div>
           ))}
         </ul>
       )}
+      <Pagination 
+        count={count} 
+        totalItems={totalItems} 
+        onPageChange={handlePageChange} 
+        currentPage={currentPage}  // Pass currentPage to Pagination
+      />
     </div>
   );
 };

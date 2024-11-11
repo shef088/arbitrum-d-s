@@ -13,18 +13,21 @@
   font-weight: 600;
   line-height: 1.2;
   margin-bottom: 15px;
+  text-decoration: underline;
 }
 .proposal-detail {
   padding: 20px;
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-top: 1px solid grey;
 }
 
 .proposal-detail h2 {
   font-size: 2.2rem;
-  color: #2d2d2d; /* Darker text for readability */
+  color: #2d2d2d; 
   margin-bottom: 15px;
+  text-decoration: none;
 }
 .countdown{
   color:red;

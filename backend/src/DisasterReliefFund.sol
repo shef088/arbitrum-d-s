@@ -15,6 +15,7 @@ contract DisasterReliefFund {
     }
 
     struct Proposal {
+        uint256 id;
         address proposer;
         string title;
         string description;
@@ -71,6 +72,7 @@ contract DisasterReliefFund {
 
         proposalCount++;
         proposals[proposalCount] = Proposal({
+            id: proposalCount, // Automatically set id to proposalCount
             proposer: msg.sender,
             title: _title,
             description: _description,
@@ -91,10 +93,102 @@ contract DisasterReliefFund {
         return proposalCount; 
     }
 
-    function getUserProposals(address _user) public view returns (uint256[] memory) {
-        return userProposals[_user];
+  function getExecutedProposals(uint256 start, uint256 count) public view returns (Proposal[] memory, uint256) {
+    uint256 executedCount = 0;
+    uint256 totalExecuted = 0;
+
+    // First pass to determine total executed proposals
+    for (uint256 k = 1; k <= proposalCount; k++) {
+        if (proposals[k].executed) {
+            totalExecuted++;
+        }
     }
-    
+
+    // Adjust start if out of bounds
+    if (start >= totalExecuted) {
+        return (new Proposal[](0), totalExecuted);
+    }
+
+    // Allocate memory for the paginated result
+    Proposal[] memory paginatedProposals = new Proposal[](count);
+
+    // Second pass to collect proposals starting from `start` up to `count`
+    uint256 j = 0;
+    for (uint256 i = 1; i <= proposalCount && j < count; i++) {
+        if (proposals[i].executed) {
+            if (executedCount >= start) {
+                paginatedProposals[j] = proposals[i];
+                j++;
+            }
+            executedCount++;
+        }
+    }
+
+    return (paginatedProposals, totalExecuted);
+}
+
+function getNonExecutedProposals(uint256 start, uint256 count) public view returns (Proposal[] memory, uint256) {
+    uint256 nonExecutedCount = 0;
+    uint256 totalNonExecuted = 0;
+
+    // First pass to determine total non-executed proposals
+    for (uint256 k = 1; k <= proposalCount; k++) {
+        if (!proposals[k].executed) {
+            totalNonExecuted++;
+        }
+    }
+
+    // Adjust start if out of bounds
+    if (start >= totalNonExecuted) {
+        return (new Proposal[](0) , totalNonExecuted);
+    }
+
+    // Allocate memory for the paginated result
+    Proposal[] memory paginatedProposals = new Proposal[](count);
+
+    // Second pass to collect proposals starting from `start` up to `count`
+    uint256 j = 0;
+    for (uint256 i = 1; i <= proposalCount && j < count; i++) {
+        if (!proposals[i].executed) {
+            if (nonExecutedCount >= start) {
+                paginatedProposals[j] = proposals[i];
+                j++;
+            }
+            nonExecutedCount++;
+        }
+    }
+
+    return (paginatedProposals, totalNonExecuted);
+}
+
+ function getUserProposals(address _user, uint256 start, uint256 count) public view returns (uint256[] memory, uint256) {
+    uint256[] storage userProposalsArray = userProposals[_user];
+    uint256 length = userProposalsArray.length;
+
+    // Check if the start index is out of bounds
+    if (start >= length) {
+        return (new uint256[](0), length); // Return an empty array
+    }
+
+    // Calculate the end index, ensuring it doesn't exceed the array length
+    uint256 end = start + count;
+    if (end > length) {
+        end = length;
+    }
+
+    // Create a new array to store the paginated results
+    uint256[] memory paginatedProposals = new uint256[](end - start);
+
+    // Iterate through the array segment and copy the elements
+    for (uint256 i = 0; i < end - start; i++) {
+        uint256 currentIndex = start + i;
+        paginatedProposals[i] = userProposalsArray[currentIndex];
+    }
+
+    return  (paginatedProposals, length);
+}
+
+
     function donateToProposal(uint256 _proposalId) public payable {
         require(_proposalId > 0 && _proposalId <= proposalCount, "Proposal does not exist");
         require(!proposals[_proposalId].archived, "Proposal is archived");
@@ -114,9 +208,35 @@ contract DisasterReliefFund {
         emit DonationReceived(_proposalId, msg.sender, msg.value);
     }
 
-    function getUserDonations(address _user) public view returns (Donation[] memory) {
-        return userDonations[_user];
+  
+   function getUserWithdrawals(address _user, uint256 start, uint256 count) public view returns (Withdrawal[] memory) {
+    Withdrawal[] storage withdrawalsList = userWithdrawals[_user];
+    uint256 length = withdrawalsList.length;
+
+    // Check if the start index is out of bounds
+    if (start >= length) {
+        return new Withdrawal[](0); // Return an empty array
     }
+
+    // Calculate the end index, ensuring it doesn't exceed the array length
+    uint256 end = start + count;
+    if (end > length) {
+        end = length;
+    }
+
+    // Create a new array to store the paginated results
+    Withdrawal[] memory paginatedWithdrawals = new Withdrawal[](end - start);
+
+    // Iterate through the array segment and copy the elements
+    for (uint256 i = 0; i < end - start; i++) {
+        // Calculate the index of the element to copy, starting from the end
+        uint256 currentIndex = length - start - i - 1;
+        paginatedWithdrawals[i] = withdrawalsList[currentIndex];
+    }
+
+    return paginatedWithdrawals;
+}
+
 
     function vote(uint256 _proposalId, bool _support) public {
         require(_proposalId > 0 && _proposalId <= proposalCount, "Proposal does not exist");
@@ -179,6 +299,7 @@ contract DisasterReliefFund {
 
         proposalCount++;
         proposals[proposalCount] = Proposal({
+            id: proposalCount,  
             proposer: msg.sender,
             title: originalProposal.title,
             description: originalProposal.description,
@@ -282,8 +403,6 @@ contract DisasterReliefFund {
         }
     }
 
-    // New function to retrieve withdrawals made by a user
-    function getUserWithdrawals(address _user) public view returns (Withdrawal[] memory) {
-        return userWithdrawals[_user];
-    }
+
+
 }

@@ -1,7 +1,7 @@
 // types/proposal/types.ts
 
 export interface ProposalDetails {
-  
+  id: bigint; 
   proposer: string;         // Address of the proposer
   title: string;            // Title of the proposal
   description: string;      // Description of the proposal
@@ -18,5 +18,5 @@ export interface ProposalDetails {
 
 
 // Type for the response from the contract
-// export type ProposalResponse = ProposalDetails ;  
-export type ProposalResponse = ProposalDetails & { id: number };  
+export type ProposalResponse = ProposalDetails ;  
+// export type ProposalResponse = ProposalDetails & { id: number };  

@@ -7,9 +7,9 @@ const ProposalStats = ({ proposal, ethToUsdRate }) => {
         <div className="proposal-stats">
             <p>Status:
                 {proposal.archived
-                    ? "Archived (Cannot receive votes or donations!)"
+                    ? <span className='error'>Archived (Cannot receive votes or donations!)</span>
                     : proposal.executed
-                        ? (proposal.votingPassed ? " Approved for Donations/Funding" : " Rejected")
+                        ? (proposal.votingPassed ? <span> Approved for Donations/Funding</span> :<span> Rejected</span>)
                         : " Voting"}
             </p>
 

@@ -95,9 +95,81 @@ export const disasterReliefFundAbi = [
   },
   {
     type: 'function',
+    inputs: [
+      { name: 'start', internalType: 'uint256', type: 'uint256' },
+      { name: 'count', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'getExecutedProposals',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct DisasterReliefFund.Proposal[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'id', internalType: 'uint256', type: 'uint256' },
+          { name: 'proposer', internalType: 'address', type: 'address' },
+          { name: 'title', internalType: 'string', type: 'string' },
+          { name: 'description', internalType: 'string', type: 'string' },
+          { name: 'votesFor', internalType: 'uint128', type: 'uint128' },
+          { name: 'votesAgainst', internalType: 'uint128', type: 'uint128' },
+          { name: 'votingPassed', internalType: 'bool', type: 'bool' },
+          { name: 'votingDeadline', internalType: 'uint64', type: 'uint64' },
+          { name: 'fundsReceived', internalType: 'uint128', type: 'uint128' },
+          {
+            name: 'overallFundsReceived',
+            internalType: 'uint128',
+            type: 'uint128',
+          },
+          { name: 'executed', internalType: 'bool', type: 'bool' },
+          { name: 'archived', internalType: 'bool', type: 'bool' },
+          { name: 'dateCreated', internalType: 'uint64', type: 'uint64' },
+        ],
+      },
+      { name: '', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [],
     name: 'getGovernanceAddresses',
     outputs: [{ name: '', internalType: 'address[]', type: 'address[]' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'start', internalType: 'uint256', type: 'uint256' },
+      { name: 'count', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'getNonExecutedProposals',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct DisasterReliefFund.Proposal[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'id', internalType: 'uint256', type: 'uint256' },
+          { name: 'proposer', internalType: 'address', type: 'address' },
+          { name: 'title', internalType: 'string', type: 'string' },
+          { name: 'description', internalType: 'string', type: 'string' },
+          { name: 'votesFor', internalType: 'uint128', type: 'uint128' },
+          { name: 'votesAgainst', internalType: 'uint128', type: 'uint128' },
+          { name: 'votingPassed', internalType: 'bool', type: 'bool' },
+          { name: 'votingDeadline', internalType: 'uint64', type: 'uint64' },
+          { name: 'fundsReceived', internalType: 'uint128', type: 'uint128' },
+          {
+            name: 'overallFundsReceived',
+            internalType: 'uint128',
+            type: 'uint128',
+          },
+          { name: 'executed', internalType: 'bool', type: 'bool' },
+          { name: 'archived', internalType: 'bool', type: 'bool' },
+          { name: 'dateCreated', internalType: 'uint64', type: 'uint64' },
+        ],
+      },
+      { name: '', internalType: 'uint256', type: 'uint256' },
+    ],
     stateMutability: 'view',
   },
   {
@@ -110,6 +182,7 @@ export const disasterReliefFundAbi = [
         internalType: 'struct DisasterReliefFund.Proposal',
         type: 'tuple',
         components: [
+          { name: 'id', internalType: 'uint256', type: 'uint256' },
           { name: 'proposer', internalType: 'address', type: 'address' },
           { name: 'title', internalType: 'string', type: 'string' },
           { name: 'description', internalType: 'string', type: 'string' },
@@ -133,32 +206,25 @@ export const disasterReliefFundAbi = [
   },
   {
     type: 'function',
-    inputs: [{ name: '_user', internalType: 'address', type: 'address' }],
-    name: 'getUserDonations',
+    inputs: [
+      { name: '_user', internalType: 'address', type: 'address' },
+      { name: 'start', internalType: 'uint256', type: 'uint256' },
+      { name: 'count', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'getUserProposals',
     outputs: [
-      {
-        name: '',
-        internalType: 'struct DisasterReliefFund.Donation[]',
-        type: 'tuple[]',
-        components: [
-          { name: 'amount', internalType: 'uint128', type: 'uint128' },
-          { name: 'proposalId', internalType: 'uint256', type: 'uint256' },
-          { name: 'timestamp', internalType: 'uint64', type: 'uint64' },
-        ],
-      },
+      { name: '', internalType: 'uint256[]', type: 'uint256[]' },
+      { name: '', internalType: 'uint256', type: 'uint256' },
     ],
     stateMutability: 'view',
   },
   {
     type: 'function',
-    inputs: [{ name: '_user', internalType: 'address', type: 'address' }],
-    name: 'getUserProposals',
-    outputs: [{ name: '', internalType: 'uint256[]', type: 'uint256[]' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '_user', internalType: 'address', type: 'address' }],
+    inputs: [
+      { name: '_user', internalType: 'address', type: 'address' },
+      { name: 'start', internalType: 'uint256', type: 'uint256' },
+      { name: 'count', internalType: 'uint256', type: 'uint256' },
+    ],
     name: 'getUserWithdrawals',
     outputs: [
       {
@@ -210,6 +276,7 @@ export const disasterReliefFundAbi = [
     inputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     name: 'proposals',
     outputs: [
+      { name: 'id', internalType: 'uint256', type: 'uint256' },
       { name: 'proposer', internalType: 'address', type: 'address' },
       { name: 'title', internalType: 'string', type: 'string' },
       { name: 'description', internalType: 'string', type: 'string' },
@@ -733,6 +800,15 @@ export const useReadDisasterReliefFundDonations =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"getExecutedProposals"`
+ */
+export const useReadDisasterReliefFundGetExecutedProposals =
+  /*#__PURE__*/ createUseReadContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'getExecutedProposals',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"getGovernanceAddresses"`
  */
 export const useReadDisasterReliefFundGetGovernanceAddresses =
@@ -742,21 +818,21 @@ export const useReadDisasterReliefFundGetGovernanceAddresses =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"getNonExecutedProposals"`
+ */
+export const useReadDisasterReliefFundGetNonExecutedProposals =
+  /*#__PURE__*/ createUseReadContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'getNonExecutedProposals',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"getProposal"`
  */
 export const useReadDisasterReliefFundGetProposal =
   /*#__PURE__*/ createUseReadContract({
     abi: disasterReliefFundAbi,
     functionName: 'getProposal',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"getUserDonations"`
- */
-export const useReadDisasterReliefFundGetUserDonations =
-  /*#__PURE__*/ createUseReadContract({
-    abi: disasterReliefFundAbi,
-    functionName: 'getUserDonations',
   })
 
 /**

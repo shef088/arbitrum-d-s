@@ -1,39 +1,59 @@
 // pages/pendingProposals.tsx
 import React, { useEffect, useState } from 'react';
-import fetchPendingProposals from '../../utils/fetchPendingProposals';
+import {fetchNonExecutedProposals} from '../../utils/fetchProposalsPaginated';
+import Pagination from '../../components/Pagination';
 import type { ProposalResponse } from '../../types/proposals/types';
 import Link from 'next/link';
-import { useAccount } from "wagmi";
 import Loader from '../../components/Loader';
+import { useAccount } from "wagmi";
 import { toast } from 'react-toastify';
- 
 
 const PendingProposals: React.FC = () => {
   const [proposals, setProposals] = useState<ProposalResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { isConnected, address } = useAccount();
+  
+  const { isConnected } = useAccount();
 
+  const [start, setStart] = useState(0); // Start index for pagination
+  const count = 2; // Number of items per page
+  const [totalItems, setTotalItems] = useState(0); // Total items for pagination
+  const [currentPage, setCurrentPage] = useState(0); // Track current page
+
+  // Fetch proposals based on `start` and `count`
+  const fetchProposals = async () => {
+    if (!isConnected) {
+      toast.error("Connect your wallet to continue");
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    try {
+      const { proposals: fetchedProposals, totalProposals } = await fetchNonExecutedProposals(start, count);
+      setProposals(fetchedProposals);
+      setTotalItems(totalProposals);
+      setError(null);
+    } catch (err) {
+      console.error("Failed to fetch pending proposals:", err);
+      setError("Failed to fetch pending proposals.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Trigger fetchProposals on initial load and whenever `start` changes
   useEffect(() => {
-    const getPendingProposals = async () => {
-    
-      setLoading(true);
-      
-      try {
-        const fetchedProposals = await fetchPendingProposals();
-        setProposals(fetchedProposals);
-      } catch (err) {
-        setError((err as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    };
+    fetchProposals();
+  }, [start, isConnected]);
 
-    getPendingProposals();
-  }, [isConnected, address]);
+  // Handle page change
+  const handlePageChange = (selectedPage: number) => {
+    setStart(selectedPage * count);
+    setCurrentPage(selectedPage); // Update the current page
+  };
 
-  if (loading) return <Loader/>;
-  if (error) return <div className="error-message">{error}</div>;
+  if (loading) return <Loader />;
+  if (error) return <div className="proposals-container"><div className="error-message">{error}</div></div>;
 
   return (
     <div className="proposals-container">
@@ -56,6 +76,12 @@ const PendingProposals: React.FC = () => {
           </div>
         ))
       )}
+      <Pagination 
+        count={count} 
+        totalItems={totalItems} 
+        onPageChange={handlePageChange} 
+        currentPage={currentPage}  // Pass currentPage to Pagination
+      />
     </div>
   );
 };
