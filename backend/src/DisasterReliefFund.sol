@@ -37,7 +37,7 @@ contract DisasterReliefFund {
     mapping(uint256 => mapping(address => uint256)) public donations; 
     mapping(address => Donation[]) public userDonations; 
     mapping(address => Withdrawal[]) public userWithdrawals; 
-
+    
     mapping(address => bool) public authorizedGovernance; 
     address public owner; 
     address[] public governanceAddresses; 
@@ -88,7 +88,8 @@ contract DisasterReliefFund {
         });
 
         userProposals[msg.sender].push(proposalCount);
-
+       
+       
         emit ProposalCreated(proposalCount, _title, _description);
         return proposalCount; 
     }
@@ -188,6 +189,67 @@ function getNonExecutedProposals(uint256 start, uint256 count) public view retur
     return  (paginatedProposals, length);
 }
 
+ // Helper function to check if a substring exists in a string
+    function isSubstring(string memory _searchTerm, string memory _text) internal pure returns (bool) {
+        bytes memory searchBytes = bytes(_searchTerm);
+        bytes memory textBytes = bytes(_text);
+
+        // Make sure search term isn't longer than the text
+        if (searchBytes.length > textBytes.length) {
+            return false;
+        }
+
+        // Iterate over the text and check for substring
+        for (uint i = 0; i <= textBytes.length - searchBytes.length; i++) {
+            bool matchFound = true;
+            for (uint j = 0; j < searchBytes.length; j++) {
+                if (textBytes[i + j] != searchBytes[j]) {
+                    matchFound = false;
+                    break;
+                }
+            }
+            if (matchFound) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Search proposals with pagination
+    function searchProposals(string memory _title, uint256 start, uint256 count) public view returns (Proposal[] memory, uint256) {
+        uint256 totalProposals = proposalCount;
+        uint256 matchedTotalCount = 0;
+
+        // First, count how many proposals match the search term
+        for (uint256 i = 0; i < totalProposals; i++) {
+            if (isSubstring(_title, proposals[i].title)) {
+                matchedTotalCount++;
+            }
+        }
+
+        // Pagination: Only collect proposals from `start` index to `start + count`
+        Proposal[] memory paginatedProposals = new Proposal[](count);
+        uint256 matchedCount = 0;
+        uint256 proposalIndex = 0;
+
+        for (uint256 i = 0; i < totalProposals && matchedCount < count; i++) {
+            if (isSubstring(_title, proposals[i].title)) {
+                if (proposalIndex >= start) {  // Skip the first `start` proposals
+                    paginatedProposals[matchedCount] = proposals[i];
+                    matchedCount++;
+                }
+                proposalIndex++;
+            }
+        }
+
+        // Resize array to the actual matched proposals
+        Proposal[] memory result = new Proposal[](matchedCount);
+        for (uint256 j = 0; j < matchedCount; j++) {
+            result[j] = paginatedProposals[j];
+        }
+
+        return (result, matchedTotalCount);
+    }
 
     function donateToProposal(uint256 _proposalId) public payable {
         require(_proposalId > 0 && _proposalId <= proposalCount, "Proposal does not exist");
@@ -209,13 +271,39 @@ function getNonExecutedProposals(uint256 start, uint256 count) public view retur
     }
 
   
-   function getUserWithdrawals(address _user, uint256 start, uint256 count) public view returns (Withdrawal[] memory) {
+
+function getUserDonations(address _user, uint256 _start, uint256 _count) public view returns (Donation[] memory donationList, uint256 totalDonations) {
+    totalDonations = userDonations[_user].length;
+
+    // Ensure the start index is within bounds
+    if (_start >= totalDonations) {
+        return (new Donation[](0), totalDonations); 
+    }
+
+    // Calculate the end index, ensuring it doesn't exceed the total length
+    uint256 end = _start + _count;
+    if (end > totalDonations) {
+        end = totalDonations;
+    }
+
+    uint256 donationCount = end - _start;
+    Donation[] memory result = new Donation[](donationCount);
+
+    for (uint256 i = 0; i < donationCount; i++) {
+        result[i] = userDonations[_user][_start + i];
+    }
+
+    return (result, totalDonations);
+}
+
+
+function getUserWithdrawals(address _user, uint256 start, uint256 count) public view returns (Withdrawal[] memory, uint256) {
     Withdrawal[] storage withdrawalsList = userWithdrawals[_user];
     uint256 length = withdrawalsList.length;
 
     // Check if the start index is out of bounds
     if (start >= length) {
-        return new Withdrawal[](0); // Return an empty array
+        return (new Withdrawal[](0), length); // Return an empty array and the total length
     }
 
     // Calculate the end index, ensuring it doesn't exceed the array length
@@ -229,12 +317,10 @@ function getNonExecutedProposals(uint256 start, uint256 count) public view retur
 
     // Iterate through the array segment and copy the elements
     for (uint256 i = 0; i < end - start; i++) {
-        // Calculate the index of the element to copy, starting from the end
-        uint256 currentIndex = length - start - i - 1;
-        paginatedWithdrawals[i] = withdrawalsList[currentIndex];
+        paginatedWithdrawals[i] = withdrawalsList[start + i];
     }
 
-    return paginatedWithdrawals;
+    return (paginatedWithdrawals, length);
 }
 
 

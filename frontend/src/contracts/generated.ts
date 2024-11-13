@@ -208,6 +208,29 @@ export const disasterReliefFundAbi = [
     type: 'function',
     inputs: [
       { name: '_user', internalType: 'address', type: 'address' },
+      { name: '_start', internalType: 'uint256', type: 'uint256' },
+      { name: '_count', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'getUserDonations',
+    outputs: [
+      {
+        name: 'donationList',
+        internalType: 'struct DisasterReliefFund.Donation[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'amount', internalType: 'uint128', type: 'uint128' },
+          { name: 'proposalId', internalType: 'uint256', type: 'uint256' },
+          { name: 'timestamp', internalType: 'uint64', type: 'uint64' },
+        ],
+      },
+      { name: 'totalDonations', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_user', internalType: 'address', type: 'address' },
       { name: 'start', internalType: 'uint256', type: 'uint256' },
       { name: 'count', internalType: 'uint256', type: 'uint256' },
     ],
@@ -237,6 +260,7 @@ export const disasterReliefFundAbi = [
           { name: 'timestamp', internalType: 'uint64', type: 'uint64' },
         ],
       },
+      { name: '', internalType: 'uint256', type: 'uint256' },
     ],
     stateMutability: 'view',
   },
@@ -313,6 +337,53 @@ export const disasterReliefFundAbi = [
     name: 'revokeGovernance',
     outputs: [],
     stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_title', internalType: 'string', type: 'string' },
+      { name: 'start', internalType: 'uint256', type: 'uint256' },
+      { name: 'count', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'searchProposals',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct DisasterReliefFund.Proposal[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'id', internalType: 'uint256', type: 'uint256' },
+          { name: 'proposer', internalType: 'address', type: 'address' },
+          { name: 'title', internalType: 'string', type: 'string' },
+          { name: 'description', internalType: 'string', type: 'string' },
+          { name: 'votesFor', internalType: 'uint128', type: 'uint128' },
+          { name: 'votesAgainst', internalType: 'uint128', type: 'uint128' },
+          { name: 'votingPassed', internalType: 'bool', type: 'bool' },
+          { name: 'votingDeadline', internalType: 'uint64', type: 'uint64' },
+          { name: 'fundsReceived', internalType: 'uint128', type: 'uint128' },
+          {
+            name: 'overallFundsReceived',
+            internalType: 'uint128',
+            type: 'uint128',
+          },
+          { name: 'executed', internalType: 'bool', type: 'bool' },
+          { name: 'archived', internalType: 'bool', type: 'bool' },
+          { name: 'dateCreated', internalType: 'uint64', type: 'uint64' },
+        ],
+      },
+      { name: '', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'bytes32', type: 'bytes32' },
+      { name: '', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'titleToProposalIds',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -836,6 +907,15 @@ export const useReadDisasterReliefFundGetProposal =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"getUserDonations"`
+ */
+export const useReadDisasterReliefFundGetUserDonations =
+  /*#__PURE__*/ createUseReadContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'getUserDonations',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"getUserProposals"`
  */
 export const useReadDisasterReliefFundGetUserProposals =
@@ -896,6 +976,24 @@ export const useReadDisasterReliefFundProposals =
   /*#__PURE__*/ createUseReadContract({
     abi: disasterReliefFundAbi,
     functionName: 'proposals',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"searchProposals"`
+ */
+export const useReadDisasterReliefFundSearchProposals =
+  /*#__PURE__*/ createUseReadContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'searchProposals',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"titleToProposalIds"`
+ */
+export const useReadDisasterReliefFundTitleToProposalIds =
+  /*#__PURE__*/ createUseReadContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'titleToProposalIds',
   })
 
 /**

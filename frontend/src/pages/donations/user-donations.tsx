@@ -1,4 +1,3 @@
-// pages/user-donations.tsx
 import { useEffect, useState } from 'react';
 import { readContract } from "@wagmi/core";
 import config from "../../wagmi";
@@ -8,7 +7,7 @@ import { ethers } from 'ethers';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
 import Loader from '../../components/Loader';
-
+import Pagination from '../../components/Pagination'; // Import the Pagination component
 
 interface Donation {
     amount: string;
@@ -16,47 +15,66 @@ interface Donation {
 }
 
 const UserDonations = () => {
-    const {isConnected, address } = useAccount();
+    const { isConnected, address } = useAccount();
     const [donations, setDonations] = useState<Donation[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    
+    const [start, setStart] = useState(0); // Start index for pagination
+    const count = 5; // Number of items per page
+    const [totalItems, setTotalItems] = useState(0); // Total items for pagination
+    const [currentPage, setCurrentPage] = useState(0); // Track current page
 
     useEffect(() => {
-        const fetchUserDonations = async () => {
-            if (!isConnected || !address) {
-                toast.error("Connect your wallet to continue");
-                setLoading(false); // Stop loading when the error occurs
-                return; // Return early if not connected
-            }
-            setLoading(true)
-            if (address) {
-                try {
-                    const userDonations = await readContract(config, {
-                        address: deployedAddress,
-                        abi: ABI,
-                        functionName: 'getUserDonations',
-                        args: [address as `0x${string}`],
-                    }) as readonly { amount: bigint; proposalId: bigint; }[];
-
-                    const formattedDonations = userDonations.map(donation => ({
-                        amount: donation.amount.toString(),
-                        proposalId: Number(donation.proposalId),
-                    }));
-
-                    setDonations(formattedDonations);
-                } catch (error) {
-                    console.error("Error fetching donations:", error);
-                } finally {
-                    setLoading(false);
-                }
-            }
-        };
-
         fetchUserDonations();
-    }, [address]);
+    }, [address, start]); // Refetch whenever address or start changes
 
-    if (loading) {
-        return <Loader/>
-    }
+    const fetchUserDonations = async () => {
+        if (!isConnected || !address) {
+            toast.error("Connect your wallet to continue");
+            setLoading(false); // Stop loading when the error occurs
+            return; // Return early if not connected
+        }
+        setLoading(true);
+      
+        try {
+            // Fetch paginated donations from the contract
+            const [userDonations, totalDonations] = await readContract(config, {
+                address: deployedAddress,
+                abi: ABI,
+                functionName: 'getUserDonations',
+                args: [address as `0x${string}`, BigInt(start), BigInt(count)], // Pass start and count for pagination
+            });
+
+            // Type assertion to specify that userDonations is an array of objects with amount, proposalId, and timestamp
+            const donationsArray = userDonations as { amount: bigint; proposalId: bigint; timestamp: bigint }[];
+
+            // Format donations data
+            const formattedDonations = donationsArray.map((donation) => ({
+                amount: ethers.formatEther(donation.amount.toString()),
+                proposalId: Number(donation.proposalId),
+            }));
+
+            // Set the donations and total items for pagination
+            setDonations(formattedDonations);
+            setTotalItems(Number(totalDonations)); // Ensure totalItems is correctly set from the contract
+            setError(null);
+        } catch (error) {
+            console.error("Error fetching donations:", error);
+            setError("Failed to fetch donations.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Handle page change
+    const handlePageChange = (selectedPage: number) => {
+        setStart(selectedPage * count);
+        setCurrentPage(selectedPage); // Update the current page
+    };
+
+    if (loading) return <Loader />;
+    if (error) return <div className="error-message">{error}</div>;
 
     return (
         <div className="user-donations-container">
@@ -65,15 +83,22 @@ const UserDonations = () => {
                 <p className="no-donations">You have not made any donations yet.</p>
             ) : (
                 <div className="donation-list">
-                    {donations.map((donation, index) => (
-
+                    {donations.map((donation) => (
                         <Link href={`/proposals/${donation.proposalId}`} key={donation.proposalId} className="donation-item">
                             <p>Proposal ID: {donation.proposalId}</p>
-                            <p>Donation Amount: {ethers.formatEther(donation.amount)} ETH</p>
+                            <p>Donation Amount: {donation.amount} ETH</p>
                         </Link>
                     ))}
                 </div>
             )}
+
+            {/* Pagination controls */}
+            <Pagination 
+                count={count} 
+                totalItems={totalItems} 
+                onPageChange={handlePageChange} 
+                currentPage={currentPage} // Pass currentPage to Pagination
+            />
         </div>
     );
 };

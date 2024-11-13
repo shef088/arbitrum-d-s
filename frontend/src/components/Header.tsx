@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faPlus, faClipboardList, faHandsHelping, faThumbsDown, faUser, faGem, faUsersCog } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faPlus, faClipboardList, faHandsHelping, faThumbsDown, faUser, faGem, faUsersCog, faSearch, faCoins } from '@fortawesome/free-solid-svg-icons';
 
 const Header: React.FC = () => {
     const { isConnected } = useAccount();
@@ -78,11 +78,17 @@ const Header: React.FC = () => {
                 <Link href="/proposals/rejected" className={isActive('/proposals/rejected') ? 'active' : ''}>
                     <FontAwesomeIcon icon={faThumbsDown} /> Rejected Proposals
                 </Link>
+                <Link href="/proposals/search" className={isActive('/proposals/search') ? 'active' : ''}>
+                    <FontAwesomeIcon icon={faSearch} /> Search
+                </Link>
                 {isConnected && <Link href="/proposals/userproposals" className={isActive('/proposals/userproposals') ? 'active' : ''}>
                     <FontAwesomeIcon icon={faUser} /> My Proposals
                 </Link>}
                 {isConnected && <Link href="/donations/user-donations" className={isActive('/donations/user-donations') ? 'active' : ''}>
-                    <FontAwesomeIcon icon={faGem} /> My Donations
+                    <FontAwesomeIcon icon={faGem} />Donations
+                </Link>}
+                {isConnected && <Link href="/donations/withdrawal-history" className={isActive('/donations/withdrawal-history') ? 'active' : ''}>
+                    <FontAwesomeIcon icon={faCoins} /> Withdrawals
                 </Link>}
                 {isConnected && <Link href="/proposals/advanced-ops" className={isActive('/proposals/advanced-ops') ? 'active' : ''}>
                     <FontAwesomeIcon icon={faUsersCog} /> Advanced

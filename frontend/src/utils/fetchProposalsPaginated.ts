@@ -63,3 +63,38 @@ export const fetchNonExecutedProposals = async (start: number, count: number): P
     throw new Error('Failed to fetch non-executed proposals');
   }
 };
+
+
+/**
+ * Fetch paginated proposals by title
+ * @param title - Title of the proposal to search
+ * @param start - Starting index for pagination
+ * @param count - Number of proposals to fetch
+ * @returns Array of proposals and the total number of proposals
+ */
+export const fetchProposalsByTitle = async (
+    title: string, 
+    start: number, 
+    count: number
+  ): Promise<PaginatedProposalResponse> => {
+    try {
+      // Destructure the result directly from the smart contract call
+      const [proposals, totalProposals] = await readContract(config, {
+        address: deployedAddress,
+        abi: ABI,
+        functionName: 'searchProposals',
+        args: [title, BigInt(start), BigInt(count)],
+      }) as [ProposalResponse[], bigint];
+  
+      console.log("proposals by title:", proposals, Number(totalProposals) );
+      // Filter out proposals with id <= 0
+      const filteredProposals = proposals.filter(proposal => proposal.id > 0);
+  
+      console.log("Filtered proposals by title:", filteredProposals, Number(totalProposals) );
+  
+      return { proposals: filteredProposals, totalProposals: Number(totalProposals) };
+    } catch (error) {
+      console.error('Error fetching proposals by title:', error);
+      throw new Error('Failed to fetch proposals by title');
+    }
+  };
