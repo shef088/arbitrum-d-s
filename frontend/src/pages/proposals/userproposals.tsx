@@ -6,7 +6,6 @@ import { ProposalResponse } from '../../types/proposals/types';
 import { useAccount } from 'wagmi';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
-import { useRouter } from 'next/router'; // Import useRouter from Next.js
 
 const UserProposals: React.FC = () => {
   const { isConnected, address } = useAccount();
@@ -19,20 +18,40 @@ const UserProposals: React.FC = () => {
   const [totalItems, setTotalItems] = useState(0); // Total items for pagination
   const [currentPage, setCurrentPage] = useState(0); // Track current page
 
-  const router = useRouter(); // Access Next.js router
+  // Fetch the total number of proposals on initial load
+  const fetchTotalProposalCount = async () => {
+    if (!isConnected || !address) {
+      toast.error("Connect your wallet to continue");
+      setLoading(false);
+      return;
+    }
 
-  // Fetch proposals based on `start` and `count`
+    setLoading(true);
+    try {
+      // Fetch the total proposal count (this won't return any proposals, just the total count)
+      const totalProposalCount = await fetchUserProposals(address, 0, 0); // Pass (0, 0) to only get the count
+      setTotalItems(totalProposalCount.totalProposalCount);
+    } catch (err) {
+      console.error("Failed to fetch total proposal count:", err);
+      setError("Failed to fetch total proposal count.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch proposals based on start and count
   const fetchProposals = async () => {
     if (!isConnected || !address) {
       toast.error("Connect your wallet to continue");
       setLoading(false);
       return;
     }
+
     setLoading(true);
     try {
-      const { proposals: fetchedProposals, totalProposalCount } = await fetchUserProposals(address, start, count);
-      setProposals(fetchedProposals);
-      setTotalItems(totalProposalCount);
+      // Now, fetch the proposals based on calculated start and count
+      const { proposals: fetchedProposals } = await fetchUserProposals(address, start, count);
+      setProposals(fetchedProposals.reverse());
       setError(null);
     } catch (err) {
       console.error("Failed to fetch proposals:", err);
@@ -42,22 +61,41 @@ const UserProposals: React.FC = () => {
     }
   };
 
-  // Trigger fetchProposals when component mounts or when `start`, `isConnected`, or `address` changes
+  // Fetch total count when the component mounts
   useEffect(() => {
-    fetchProposals();
-  }, [start, isConnected, address]);
+    fetchTotalProposalCount();
+  }, [isConnected, address]);
 
-  // Reload proposals when navigating to this page
+  // Fetch proposals based on start and count whenever start changes
   useEffect(() => {
-    // Trigger reload when navigating to the current route
-    if (router.asPath.includes('/userproposals')) {
-      fetchProposals(); // Reload the proposals
+    if (totalItems > 0) {
+      // Calculate the start index for the first page
+      let calculatedStart = totalItems - count;
+      if (calculatedStart < 0) {
+        calculatedStart = 0;
+      }
+      setStart(calculatedStart);
     }
-  }, [router.asPath]); // Trigger effect whenever the route changes
+  }, [totalItems]);
+
+  // Fetch proposals after calculating start
+  useEffect(() => {
+    if (totalItems > 0 && start !== null) {
+      fetchProposals();
+    }
+  }, [start, totalItems]);
 
   // Handle page change
   const handlePageChange = (selectedPage: number) => {
-    setStart(selectedPage * count);
+    // Calculate new start based on the selected page
+    let newStart = totalItems - (selectedPage + 1) * count;
+
+    // Ensure newStart is not negative
+    if (newStart < 0) {
+      newStart = 0;
+    }
+
+    setStart(newStart);
     setCurrentPage(selectedPage); // Update the current page
   };
 
@@ -66,7 +104,7 @@ const UserProposals: React.FC = () => {
       <h1>Your Proposals</h1>
       {loading && <Loader />}
       {error && <div className="error-message">{error}</div>}
-      {proposals.length === 0 && !loading ? (
+      {proposals.length === 0 && !loading && !error? (
         <p>No proposals found for this user.</p>
       ) : (
         <ul>
