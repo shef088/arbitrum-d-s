@@ -17,7 +17,7 @@ interface Donation {
 const UserDonations = () => {
     const { isConnected, address } = useAccount();
     const [donations, setDonations] = useState<Donation[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     
     const [start, setStart] = useState(0); // Start index for pagination

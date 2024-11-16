@@ -8,7 +8,6 @@ import type { ProposalResponse } from '../../types/proposals/types';
 import { toast } from 'react-toastify';
 import { useAccount } from 'wagmi';
 import { ethers } from 'ethers';
-import { FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import { ContractFunctionExecutionError } from 'viem';
 import WidthdrawProposalFunds from '../../components/proposal/WidthdrawProposalFunds';
 import CheckExecuteProposal from '../../components/proposal/CheckExecuteProposal';
