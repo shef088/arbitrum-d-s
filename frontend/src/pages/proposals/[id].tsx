@@ -18,6 +18,7 @@ import VoteButtons from '../../components/proposal/VoteButtons';
 import ProposalStats from '../../components/proposal/ProposalStats';
 import VotingDeadline from '../../components/proposal/VotingDeadline';
 import Loader from '../../components/Loader';
+import ShareProposal from './ShareProposal';
 
 
 const ProposalDetail: React.FC = () => {
@@ -332,10 +333,10 @@ const ProposalDetail: React.FC = () => {
 
         <ProposalStats proposal={proposal} ethToUsdRate={ethToUsdRate} />
 
-
         <VoteButtons proposal={proposal} handleVote={handleVote}  />  
 
         {voteError && <p className="error">{voteError}</p>}
+        <ShareProposal proposalId={id as string} />
         <WidthdrawProposalFunds proposal={proposal}
           ethToUsdRate={ethToUsdRate}
           allocateFundsToProposer={allocateFundsToProposer} />
