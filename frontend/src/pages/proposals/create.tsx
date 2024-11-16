@@ -42,8 +42,8 @@ const CreateProposal: React.FC = () => {
     
       toast.success('Proposal created successfully!');
       console.log('Transaction sent:', tx);
-      window.location.href = '/proposals/userproposals';
-
+      router.push('/proposals/userproposals'); 
+       
     } catch (error) {
       console.error('Error creating proposal:', error);
       toast.error('Error creating proposal');

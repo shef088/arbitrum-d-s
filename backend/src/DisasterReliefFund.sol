@@ -37,7 +37,9 @@ contract DisasterReliefFund {
     mapping(uint256 => mapping(address => uint256)) public donations;
     mapping(address => Donation[]) public userDonations;
     mapping(address => Withdrawal[]) public userWithdrawals;
-
+ 
+    
+    mapping(bytes32 => uint256[]) public titleToProposalIds;
     mapping(address => bool) public authorizedGovernance;
     address public owner;
     address[] public governanceAddresses;
@@ -98,6 +100,9 @@ contract DisasterReliefFund {
         });
 
         userProposals[msg.sender].push(proposalCount);
+  // Hash the title to store it in the titleToProposalIds mapping
+    bytes32 titleHash = keccak256(abi.encodePacked(_title));
+    titleToProposalIds[titleHash].push(proposalCount);  // Store the proposal ID under the title hash
 
         emit ProposalCreated(proposalCount, _title, _description);
         return proposalCount;
@@ -208,89 +213,41 @@ contract DisasterReliefFund {
         return (paginatedProposals, length);
     }
 
-    function isSubstring(
-        string memory _searchTerm,
-        string memory _text
-    ) internal pure returns (bool) {
-        bytes memory searchBytes = bytes(_searchTerm);
-        bytes memory textBytes = bytes(_text);
+    function searchProposals(string memory _title, uint256 start, uint256 count) public view returns (Proposal[] memory, uint256) {
+    require(start >= 0, "Start index must be non-negative");
+    require(count >= 0, "Count must be non-negative");
 
-        // Make sure search term isn't longer than the text
-        if (searchBytes.length > textBytes.length) {
-            return false;
-        }
+    bytes32 titleHash = keccak256(abi.encodePacked(_title));
+    uint256[] storage proposalIds = titleToProposalIds[titleHash];
+    uint256 totalProposals = proposalIds.length;
 
-        // Preprocess the search term to create the lps (longest proper prefix which is also suffix) array
-        uint256[] memory lps = new uint256[](searchBytes.length);
-        uint256 j = 0;
-        for (uint256 i = 1; i < searchBytes.length; i++) {
-            while (j > 0 && searchBytes[i] != searchBytes[j]) {
-                j = lps[j - 1];
-            }
-            if (searchBytes[i] == searchBytes[j]) {
-                j++;
-            }
-            lps[i] = j;
-        }
-
-        // Search for the search term in the text
-        j = 0;
-        for (uint256 i = 0; i < textBytes.length; i++) {
-            while (j > 0 && textBytes[i] != searchBytes[j]) {
-                j = lps[j - 1];
-            }
-            if (textBytes[i] == searchBytes[j]) {
-                j++;
-            }
-            if (j == searchBytes.length) {
-                return true;
-            }
-        }
-
-        return false;
+    // Early exit if there are no proposals with this title
+    if (totalProposals == 0) {
+        return (new Proposal[](0), 0);  // Return an empty array and 0 count
     }
 
-    // Search proposals with pagination
-    function searchProposals(
-        string memory _title,
-        uint256 start,
-        uint256 count
-    ) public view returns (Proposal[] memory, uint256) {
-        uint256 totalProposals = proposalCount;
-        uint256 matchedTotalCount = 0;
-
-        // First, count how many proposals match the search term
-        for (uint256 i = 0; i < totalProposals; i++) {
-            if (isSubstring(_title, proposals[i].title)) {
-                matchedTotalCount++;
-            }
-        }
-
-        // Pagination: Only collect proposals from `start` index to `start + count`
-        Proposal[] memory paginatedProposals = new Proposal[](count);
-        uint256 matchedCount = 0;
-        uint256 proposalIndex = 0;
-
-        for (uint256 i = 0; i < totalProposals && matchedCount < count; i++) {
-            if (isSubstring(_title, proposals[i].title)) {
-                if (proposalIndex >= start) {
-                    // Skip the first `start` proposals
-                    paginatedProposals[matchedCount] = proposals[i];
-                    matchedCount++;
-                }
-                proposalIndex++;
-            }
-        }
-
-        // Resize array to the actual matched proposals
-        Proposal[] memory result = new Proposal[](matchedCount);
-        for (uint256 j = 0; j < matchedCount; j++) {
-            result[j] = paginatedProposals[j];
-        }
-
-        return (result, matchedTotalCount);
+    // Check if the start index is out of bounds
+    if (start >= totalProposals) {
+        return (new Proposal[](0), totalProposals);  // Return an empty array and the total count
     }
 
+    // Calculate the end index, ensuring it doesn't exceed the array length
+    uint256 end = start + count;
+    if (end > totalProposals) {
+        end = totalProposals;
+    }
+
+    // Create a new array to store the paginated results
+    Proposal[] memory paginatedProposals = new Proposal[](end - start);
+
+    // Iterate through the proposal IDs and fetch the corresponding proposals
+    for (uint256 index = start; index < end; index++) {
+        uint256 proposalId = proposalIds[index];
+        paginatedProposals[index - start] = proposals[proposalId];
+    }
+
+    return (paginatedProposals, totalProposals);
+}
     function getUserFundsSummary(
         address _user
     )

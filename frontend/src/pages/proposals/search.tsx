@@ -63,7 +63,7 @@ const SearchProposals: React.FC = () => {
   return (
     <div className="proposals-container">
       <h2>Search Proposals</h2>
-      {loading &&  <Loader />}
+      {/* {loading &&  <Loader />} */}
       {error && <div className="error-message">{error}</div>}
       {/* Title input for searching proposals */}
       <div className="search-bar">

@@ -6,6 +6,7 @@ import { ProposalResponse } from '../../types/proposals/types';
 import { useAccount } from 'wagmi';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
+import { useRouter } from 'next/router'; // Import useRouter from Next.js
 
 const UserProposals: React.FC = () => {
   const { isConnected, address } = useAccount();
@@ -17,6 +18,8 @@ const UserProposals: React.FC = () => {
   const count = 2; // Number of items per page
   const [totalItems, setTotalItems] = useState(0); // Total items for pagination
   const [currentPage, setCurrentPage] = useState(0); // Track current page
+
+  const router = useRouter(); // Access Next.js router
 
   // Fetch proposals based on `start` and `count`
   const fetchProposals = async () => {
@@ -39,10 +42,18 @@ const UserProposals: React.FC = () => {
     }
   };
 
-  // Trigger fetchProposals on initial load and whenever `start` changes
+  // Trigger fetchProposals when component mounts or when `start`, `isConnected`, or `address` changes
   useEffect(() => {
     fetchProposals();
   }, [start, isConnected, address]);
+
+  // Reload proposals when navigating to this page
+  useEffect(() => {
+    // Trigger reload when navigating to the current route
+    if (router.asPath.includes('/userproposals')) {
+      fetchProposals(); // Reload the proposals
+    }
+  }, [router.asPath]); // Trigger effect whenever the route changes
 
   // Handle page change
   const handlePageChange = (selectedPage: number) => {
@@ -50,13 +61,12 @@ const UserProposals: React.FC = () => {
     setCurrentPage(selectedPage); // Update the current page
   };
 
-  
   return (
     <div className="proposals-container">
       <h1>Your Proposals</h1>
-        {loading &&  <Loader />}
-        {error && <div className="error-message">{error}</div>}
-      {proposals.length === 0  && !loading ? (
+      {loading && <Loader />}
+      {error && <div className="error-message">{error}</div>}
+      {proposals.length === 0 && !loading ? (
         <p>No proposals found for this user.</p>
       ) : (
         <ul>

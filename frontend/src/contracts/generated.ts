@@ -387,6 +387,16 @@ export const disasterReliefFundAbi = [
   },
   {
     type: 'function',
+    inputs: [
+      { name: '', internalType: 'bytes32', type: 'bytes32' },
+      { name: '', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'titleToProposalIds',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [],
     name: 'totalPot',
     outputs: [{ name: '', internalType: 'uint128', type: 'uint128' }],
@@ -994,6 +1004,15 @@ export const useReadDisasterReliefFundSearchProposals =
   /*#__PURE__*/ createUseReadContract({
     abi: disasterReliefFundAbi,
     functionName: 'searchProposals',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"titleToProposalIds"`
+ */
+export const useReadDisasterReliefFundTitleToProposalIds =
+  /*#__PURE__*/ createUseReadContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'titleToProposalIds',
   })
 
 /**
