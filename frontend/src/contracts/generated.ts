@@ -229,6 +229,16 @@ export const disasterReliefFundAbi = [
   },
   {
     type: 'function',
+    inputs: [{ name: '_user', internalType: 'address', type: 'address' }],
+    name: 'getUserFundsSummary',
+    outputs: [
+      { name: 'totalFundsReceived', internalType: 'uint128', type: 'uint128' },
+      { name: 'totalFundsWithdrawn', internalType: 'uint128', type: 'uint128' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [
       { name: '_user', internalType: 'address', type: 'address' },
       { name: 'start', internalType: 'uint256', type: 'uint256' },
@@ -373,16 +383,6 @@ export const disasterReliefFundAbi = [
       },
       { name: '', internalType: 'uint256', type: 'uint256' },
     ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '', internalType: 'bytes32', type: 'bytes32' },
-      { name: '', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'titleToProposalIds',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
   },
   {
@@ -916,6 +916,15 @@ export const useReadDisasterReliefFundGetUserDonations =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"getUserFundsSummary"`
+ */
+export const useReadDisasterReliefFundGetUserFundsSummary =
+  /*#__PURE__*/ createUseReadContract({
+    abi: disasterReliefFundAbi,
+    functionName: 'getUserFundsSummary',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"getUserProposals"`
  */
 export const useReadDisasterReliefFundGetUserProposals =
@@ -985,15 +994,6 @@ export const useReadDisasterReliefFundSearchProposals =
   /*#__PURE__*/ createUseReadContract({
     abi: disasterReliefFundAbi,
     functionName: 'searchProposals',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link disasterReliefFundAbi}__ and `functionName` set to `"titleToProposalIds"`
- */
-export const useReadDisasterReliefFundTitleToProposalIds =
-  /*#__PURE__*/ createUseReadContract({
-    abi: disasterReliefFundAbi,
-    functionName: 'titleToProposalIds',
   })
 
 /**

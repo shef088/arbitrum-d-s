@@ -50,21 +50,21 @@ const UserProposals: React.FC = () => {
     setCurrentPage(selectedPage); // Update the current page
   };
 
-  if (loading) return <Loader />;
-  if (error) return <div className="error-message">{error}</div>;
-
+  
   return (
     <div className="proposals-container">
       <h1>Your Proposals</h1>
-      {proposals.length === 0 ? (
+        {loading &&  <Loader />}
+        {error && <div className="error-message">{error}</div>}
+      {proposals.length === 0  && !loading ? (
         <p>No proposals found for this user.</p>
       ) : (
         <ul>
           {proposals.map((proposal) => (
             <div className="inner-proposal" key={proposal.id}>
               <Link href={`/proposals/${proposal.id}`}>
-                <h3 className="proposal-title">{proposal.title}</h3>
-                <p className="proposal-description">{proposal.description}</p>
+                <h3 className="proposal-title">{proposal.title.substring(0, 100)}</h3>
+                <p className="proposal-description">{proposal.description.substring(0, 100)}...</p>
                 <div className="proposal-details">
                   <span>Votes For: {Number(proposal.votesFor)}</span>
                   <span>Votes Against: {Number(proposal.votesAgainst)}</span>

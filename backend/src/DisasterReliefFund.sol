@@ -189,31 +189,44 @@ function getNonExecutedProposals(uint256 start, uint256 count) public view retur
     return  (paginatedProposals, length);
 }
 
- // Helper function to check if a substring exists in a string
-    function isSubstring(string memory _searchTerm, string memory _text) internal pure returns (bool) {
-        bytes memory searchBytes = bytes(_searchTerm);
-        bytes memory textBytes = bytes(_text);
+ function isSubstring(string memory _searchTerm, string memory _text) internal pure returns (bool) {
+    bytes memory searchBytes = bytes(_searchTerm);
+    bytes memory textBytes = bytes(_text);
 
-        // Make sure search term isn't longer than the text
-        if (searchBytes.length > textBytes.length) {
-            return false;
-        }
-
-        // Iterate over the text and check for substring
-        for (uint i = 0; i <= textBytes.length - searchBytes.length; i++) {
-            bool matchFound = true;
-            for (uint j = 0; j < searchBytes.length; j++) {
-                if (textBytes[i + j] != searchBytes[j]) {
-                    matchFound = false;
-                    break;
-                }
-            }
-            if (matchFound) {
-                return true;
-            }
-        }
+    // Make sure search term isn't longer than the text
+    if (searchBytes.length > textBytes.length) {
         return false;
     }
+
+    // Preprocess the search term to create the lps (longest proper prefix which is also suffix) array
+    uint256[] memory lps = new uint256[](searchBytes.length);
+    uint256 j = 0;
+    for (uint256 i = 1; i < searchBytes.length; i++) {
+        while (j > 0 && searchBytes[i]!= searchBytes[j]) {
+            j = lps[j - 1];
+        }
+        if (searchBytes[i] == searchBytes[j]) {
+            j++;
+        }
+        lps[i] = j;
+    }
+
+    // Search for the search term in the text
+    j = 0;
+    for (uint256 i = 0; i < textBytes.length; i++) {
+        while (j > 0 && textBytes[i]!= searchBytes[j]) {
+            j = lps[j - 1];
+        }
+        if (textBytes[i] == searchBytes[j]) {
+            j++;
+        }
+        if (j == searchBytes.length) {
+            return true;
+        }
+    }
+
+    return false;
+}
 
     // Search proposals with pagination
     function searchProposals(string memory _title, uint256 start, uint256 count) public view returns (Proposal[] memory, uint256) {
@@ -250,6 +263,27 @@ function getNonExecutedProposals(uint256 start, uint256 count) public view retur
 
         return (result, matchedTotalCount);
     }
+
+
+function getUserFundsSummary(address _user) public view returns (uint128 totalFundsReceived, uint128 totalFundsWithdrawn) {
+    // Calculate total funds received
+    uint256[] storage proposalsByUser = userProposals[_user];
+    totalFundsReceived = 0;
+    for (uint256 i = 0; i < proposalsByUser.length; i++) {
+        uint256 proposalId = proposalsByUser[i];
+        totalFundsReceived += proposals[proposalId].overallFundsReceived;
+    }
+
+    // Calculate total funds withdrawn
+    Withdrawal[] storage userWithdrawalsArray = userWithdrawals[_user];
+    totalFundsWithdrawn = 0;
+    for (uint256 i = 0; i < userWithdrawalsArray.length; i++) {
+        totalFundsWithdrawn += userWithdrawalsArray[i].amount;
+    }
+
+    return (totalFundsReceived, totalFundsWithdrawn);
+}
+
 
     function donateToProposal(uint256 _proposalId) public payable {
         require(_proposalId > 0 && _proposalId <= proposalCount, "Proposal does not exist");

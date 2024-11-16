@@ -59,16 +59,12 @@ const SearchProposals: React.FC = () => {
     setCurrentPage(selectedPage); // Update the current page
   };
 
-  // Show loader while fetching proposals
-  if (loading) return <Loader />;
-
-  // Handle error display
-  if (error) return <div className="proposals-container"><div className="error-message">{error}</div></div>;
-
+ 
   return (
     <div className="proposals-container">
       <h2>Search Proposals</h2>
-      
+      {loading &&  <Loader />}
+      {error && <div className="error-message">{error}</div>}
       {/* Title input for searching proposals */}
       <div className="search-bar">
         <input 
@@ -80,14 +76,14 @@ const SearchProposals: React.FC = () => {
         <button onClick={fetchProposals}>Search</button>
       </div>
 
-      {proposals.length === 0 ? (
+      {proposals.length === 0  && !loading ? (
         <p>No proposals found for the title "{title}".</p>
       ) : (
         proposals.map((proposal) => (
           <div className="inner-proposal" key={proposal.id}>
             <Link href={`/proposals/${proposal.id}`}>
-              <h3 className="proposal-title">{proposal.title}</h3>
-              <p className="proposal-description">{proposal.description}</p>
+              <h3 className="proposal-title">{proposal.title.substring(0, 100)}</h3>
+              <p className="proposal-description">{proposal.description.substring(0, 100)}...</p>
               <div className="proposal-details">
                 <span>Votes For: {Number(proposal.votesFor)}</span>
                 <span>Votes Against: {Number(proposal.votesAgainst)}</span>

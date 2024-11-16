@@ -73,18 +73,18 @@ const UserDonations = () => {
         setCurrentPage(selectedPage); // Update the current page
     };
 
-    if (loading) return <Loader />;
-    if (error) return <div className="error-message">{error}</div>;
-
+   
     return (
         <div className="user-donations-container">
-            <h1>Your Donations</h1>
-            {donations.length === 0 ? (
+            <h1>Donations You Have Made</h1>
+            {loading &&  <Loader />}
+            {error && <div className="error-message">{error}</div>}
+            {donations.length === 0   && !loading ? (
                 <p className="no-donations">You have not made any donations yet.</p>
             ) : (
                 <div className="donation-list">
-                    {donations.map((donation) => (
-                        <Link href={`/proposals/${donation.proposalId}`} key={donation.proposalId} className="donation-item">
+                    {donations.map((donation, index) => (
+                        <Link href={`/proposals/${donation.proposalId}`} key={index} className="donation-item">
                             <p>Proposal ID: {donation.proposalId}</p>
                             <p>Donation Amount: {donation.amount} ETH</p>
                         </Link>

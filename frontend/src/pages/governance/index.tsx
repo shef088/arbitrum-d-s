@@ -65,14 +65,11 @@ const GovernancePage: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    fetchGovernanceAddresses();
-  }, []);
-
+  
   // Refetch governance addresses when account changes
   useEffect(() => {
     fetchGovernanceAddresses();
-  }, [address]);
+  }, [address, isConnected]);
 
   const handleAddGovernanceAddress = async () => {
     if (!governanceAddress) return;

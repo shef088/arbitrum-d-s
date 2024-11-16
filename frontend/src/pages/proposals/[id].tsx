@@ -28,6 +28,7 @@ const ProposalDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [voteError, setVoteError] = useState<string | null>(null);
+
   const [donationAmountETH, setDonationAmountETH] = useState<string>("");
   const [donationAmountUSD, setDonationAmountUSD] = useState<string>("");
   const [ethToUsdRate, setEthToUsdRate] = useState<number | null>(null);
@@ -64,13 +65,14 @@ const ProposalDetail: React.FC = () => {
   const getProposalDetails = async () => {
     if (!id) return;
     setLoading(true);
+  
     try {
       const proposalId = Number(id);
       const foundProposal = await fetchProposalById(proposalId);
       if (foundProposal) {
         console.log("foundProposal::", foundProposal);
         setProposal(foundProposal);
-
+        
         // Convert BigInt to number safely
         const currentTime = Math.floor(Date.now() / 1000);
         const propDeadline = Number(foundProposal.votingDeadline); // Convert to number
@@ -78,9 +80,10 @@ const ProposalDetail: React.FC = () => {
         // Calculate remaining time
         const remainingTime = propDeadline - currentTime;
         setCountdown(remainingTime > 0 ? remainingTime : 0); // Set countdown in seconds
-
+         
       } else {
         setError('Proposal not found');
+       
       }
     } catch (err) {
 
@@ -98,6 +101,7 @@ const ProposalDetail: React.FC = () => {
 
     } finally {
       setLoading(false);
+ 
     }
   };
 
@@ -126,6 +130,7 @@ const ProposalDetail: React.FC = () => {
       toast.success(`Successfully voted ${voteFor ? 'for' : 'against'} proposal ${proposal.title}`);
       // Refresh proposal data  
       const foundProposal = await getProposalDetails()
+       
     } catch (err) {
       console.error("Error voting:", err);
       setVoteError("Error casting your vote");
@@ -164,9 +169,8 @@ const ProposalDetail: React.FC = () => {
       toast.success(`Successfully donated ${donationAmountETH} ETH to proposal ${proposal.title}`);
       setDonationAmountETH("");
       setDonationAmountUSD("");
-
-      // Refresh proposal data 
-      const foundProposal = await getProposalDetails()
+      window.location.reload()
+      
 
     } catch (err) {
       console.error("Error donating:", err);
@@ -302,7 +306,7 @@ const ProposalDetail: React.FC = () => {
         args: [proposalId],
       });
       toast.success(`Funds allocated to proposer for proposal ${proposal.title}`);
-      await getProposalDetails();
+      window.location.reload()
     } catch (err) {
       console.error("Error allocating funds to proposer:", err);
       if (err instanceof ContractFunctionExecutionError) {
@@ -330,10 +334,13 @@ const ProposalDetail: React.FC = () => {
         <ProposalStats proposal={proposal} ethToUsdRate={ethToUsdRate} />
 
 
-        <VoteButtons proposal={proposal} handleVote={handleVote} />  
+        <VoteButtons proposal={proposal} handleVote={handleVote}  />  
 
         {voteError && <p className="error">{voteError}</p>}
-     
+        <WidthdrawProposalFunds proposal={proposal}
+          ethToUsdRate={ethToUsdRate}
+          allocateFundsToProposer={allocateFundsToProposer} />
+
         <Donate
           proposal={proposal}
           donationAmountETH={donationAmountETH}
@@ -344,10 +351,7 @@ const ProposalDetail: React.FC = () => {
         />
 
 
-        <WidthdrawProposalFunds proposal={proposal}
-          ethToUsdRate={ethToUsdRate}
-          allocateFundsToProposer={allocateFundsToProposer} />
-
+       
         <CheckExecuteProposal
           proposal={proposal}
           handleCheckExpiredAndExecute={handleCheckExpiredAndExecute}
