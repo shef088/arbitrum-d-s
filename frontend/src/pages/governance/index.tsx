@@ -6,10 +6,10 @@ import config from '../../wagmi';
 import { ABI, deployedAddress } from '../../contracts/deployed-contract';
 import { toast } from 'react-toastify';
 import Loader from '../../components/Loader';
- 
+
 
 const GovernancePage: React.FC = () => {
-  
+
   const [isOwner, setIsOwner] = useState(false);
   const [governanceAddress, setGovernanceAddress] = useState('');
   const [ownerAddress, setOwnerAddress] = useState<string | null>(null);
@@ -24,7 +24,7 @@ const GovernancePage: React.FC = () => {
         toast.error("Connect your wallet to continue");
         setLoading(false); // Stop loading when the error occurs
         return; // Return early if not connected
-    }
+      }
       try {
         const result = await readContract(config, {
           address: deployedAddress,
@@ -65,7 +65,7 @@ const GovernancePage: React.FC = () => {
     }
   };
 
-  
+
   // Refetch governance addresses when account changes
   useEffect(() => {
     fetchGovernanceAddresses();
@@ -92,7 +92,7 @@ const GovernancePage: React.FC = () => {
 
   const handleRemoveGovernanceAddress = async (addressToRemove: string) => {
     const confirmation = window.confirm(`Are you sure you want to remove the governance address ${addressToRemove}?`);
-    if (!confirmation) return; 
+    if (!confirmation) return;
 
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
@@ -108,6 +108,7 @@ const GovernancePage: React.FC = () => {
       toast.error('Failed to remove governance address.');
     }
   };
+  if (!isConnected && !loading) return <div className="governance-container"><div className="error-message">Connect wallet to continue!</div></div>
 
   return (
     <div className="governance-container">
@@ -128,7 +129,7 @@ const GovernancePage: React.FC = () => {
       <div className="governance-addresses">
         <h2>Current Governance Addresses</h2>
         {loading ? (
-         <Loader/>
+          <Loader />
         ) : error ? (
           <p>{error}</p>
         ) : governanceAddresses.length === 0 ? (

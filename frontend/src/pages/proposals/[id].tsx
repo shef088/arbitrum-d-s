@@ -18,7 +18,7 @@ import VoteButtons from '../../components/proposal/VoteButtons';
 import ProposalStats from '../../components/proposal/ProposalStats';
 import VotingDeadline from '../../components/proposal/VotingDeadline';
 import Loader from '../../components/Loader';
-import ShareProposal from './ShareProposal';
+import ShareProposal from '../../components/proposal/ShareProposal';
 import parse from 'react-html-parser';
 
 const ProposalDetail: React.FC = () => {

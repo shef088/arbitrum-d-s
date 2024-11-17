@@ -16,18 +16,17 @@ const ShareProposal: React.FC<ShareProposalProps> = ({ proposalId }) => {
     });
   };
 
- 
-
   const shareOnX = () => {
     const xShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-      `Check out this proposal and consider supporting it: ${shareLink}`
+      `This disaster relief proposal is more than just an idea—it’s a lifeline for those in need. Your generous donation can make a world of difference. Join us in making this vision a reality. Every contribution counts, no matter how big or small: ${shareLink}`
     )}`;
     window.open(xShareUrl, "_blank");
   };
 
-  const shareOnTikTok = () => {
-    const tiktokShareUrl = `https://www.tiktok.com/share?url=${encodeURIComponent(shareLink)}`;
-    window.open(tiktokShareUrl, "_blank");
+  
+  const shareOnFacebook = () => {
+    const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareLink)}`;
+    window.open(facebookShareUrl, "_blank");
   };
 
   return (
@@ -37,7 +36,7 @@ const ShareProposal: React.FC<ShareProposalProps> = ({ proposalId }) => {
       <div className="share-buttons">
         <button onClick={copyToClipboard}>Copy Link</button>
         <button onClick={shareOnX}>Share on X</button>
-        <button onClick={shareOnTikTok}>Share on TikTok</button>
+        <button onClick={shareOnFacebook}>Share on Facebook</button>
       </div>
       <style jsx>{`
         .share-proposal-container {
