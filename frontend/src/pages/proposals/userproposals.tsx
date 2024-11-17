@@ -7,6 +7,7 @@ import { ProposalResponse } from '../../types/proposals/types';
 import { useAccount } from 'wagmi';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
+import sanitizeHtml from 'sanitize-html';
 
 const UserProposals: React.FC = () => {
   const { isConnected, address } = useAccount();
@@ -89,7 +90,7 @@ const UserProposals: React.FC = () => {
     setCurrentPage(selectedPage); // Update current page
     
   };
-
+  if(!isConnected && !loading) return <div className="proposals-container"><div className="error-message">Connect wallet to continue!</div></div>
   return (
     <div className="proposals-container">
       <h1>Your Proposals</h1>
@@ -103,8 +104,9 @@ const UserProposals: React.FC = () => {
             <div className="inner-proposal" key={proposal.id}>
               <Link href={`/proposals/${proposal.id}`}>
                 <h3 className="proposal-title">{proposal.title.substring(0, 100)}</h3>
-                <p className="proposal-description">{proposal.description.substring(0, 100)}...</p>
-                <div className="proposal-details">
+                <p className="proposal-description"> {
+               sanitizeHtml(proposal.description.substring(0, 100), { allowedTags: [] })
+                }...</p>                <div className="proposal-details">
                   <span>Votes For: {Number(proposal.votesFor)}</span>
                   <span>Votes Against: {Number(proposal.votesAgainst)}</span>
                   <span>Voting Deadline: {new Date(Number(proposal.votingDeadline) * 1000).toLocaleString()}</span>

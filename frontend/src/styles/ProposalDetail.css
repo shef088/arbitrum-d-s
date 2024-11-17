@@ -38,7 +38,13 @@
   line-height: 1.8;
   color: #4a4a4a;
 }
+.proposal-detail .descr{
+  padding: 1.5rem;
+  border-radius: 5px;
+  border: 1px solid grey;
 
+
+}
 .proposal-stats {
   margin-top: 20px;
   padding: 15px;

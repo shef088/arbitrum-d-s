@@ -72,7 +72,7 @@ const UserDonations = () => {
         setStart(selectedPage * count);
         setCurrentPage(selectedPage); // Update the current page
     };
-
+    if(!isConnected && !loading) return <div className="user-donations-container"><div className="error-message">Connect wallet to continue!</div></div>
    
     return (
         <div className="user-donations-container">

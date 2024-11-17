@@ -166,7 +166,7 @@ const WithdrawalHistory: React.FC = () => {
   };
 
   
-
+  if(!isConnected && !loading) return <div className="user-donations-container"><div className="error-message">Connect wallet to continue!</div></div>
   return (
     <div className="user-donations-container">
          {loading &&  <Loader />}
@@ -184,12 +184,12 @@ const WithdrawalHistory: React.FC = () => {
       </thead>
       <tbody>
         <tr>
-          <td>Total Received:</td>
+          <td>Total Raised:</td>
           <td>{summary.totalReceived} ETH</td>
           <td>${summary.totalReceivedUsd} USD</td>
         </tr>
         <tr>
-          <td>Total Withdrawn(After 3%):</td>
+          <td>Total Withdrawn(After 3% fees):</td>
           <td>{summary.totalWithdrawn} ETH</td>
           <td>${summary.totalWithdrawnUsd} USD</td>
         </tr>
@@ -200,9 +200,13 @@ const WithdrawalHistory: React.FC = () => {
         </tr>
       </tbody>
     </table>
+    <br></br>
+    <ul>
+      <li>NB: To withdraw funds raised go to the proposal page</li>
+    </ul>
   </div>
 )}
-
+<br></br>
       <h2>Your Withdrawal History</h2>
       {withdrawals.length === 0  && !loading? (
         <p>No withdrawals found.</p>

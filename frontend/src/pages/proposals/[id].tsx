@@ -19,7 +19,7 @@ import ProposalStats from '../../components/proposal/ProposalStats';
 import VotingDeadline from '../../components/proposal/VotingDeadline';
 import Loader from '../../components/Loader';
 import ShareProposal from './ShareProposal';
-
+import parse from 'react-html-parser';
 
 const ProposalDetail: React.FC = () => {
   const router = useRouter();
@@ -317,16 +317,19 @@ const ProposalDetail: React.FC = () => {
       }
     }
   };
-  if (loading) return <Loader/>;
-  if (error) return <div className="proposal-detail-container"><p className="error">{error}</p></div> ;
-  if (!proposal) return <p>No proposal data available.</p>;
-
+  
+  if(!isConnected && !loading) return <div className="proposals-container"><div className="error-message">Connect wallet to continue!</div></div>
+  if (!proposal) return  <div className="proposal-detail-container"><p>No proposal data available.</p></div>;
   return (
     <div className="proposal-detail-container">
+      {loading &&  <Loader />}
+      {error && <div className="error-message">{error}</div>}
+
       <h2>Proposal Details</h2>
       <div className="proposal-detail">
         <h2>{proposal.title}</h2>
-        <p>Description: {proposal.description}</p>
+        <p>Description: </p>
+        <p className='descr'>{parse(proposal.description)}</p>
         <p>Date Created: {new Date(Number(proposal.dateCreated) * 1000).toLocaleString()}</p>
         <hr />
         <VotingDeadline proposal={proposal} countdown={countdown} />

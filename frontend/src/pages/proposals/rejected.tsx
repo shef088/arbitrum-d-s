@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useAccount } from "wagmi";
 import Loader from '../../components/Loader';
 import { toast } from 'react-toastify';
+import sanitizeHtml from 'sanitize-html';
 
 const RejectedProposals: React.FC = () => {
   const [proposals, setProposals] = useState<ProposalResponse[]>([]);
@@ -49,7 +50,7 @@ const RejectedProposals: React.FC = () => {
     setCurrentPage(selectedPage);
   };
 
- 
+  if(!isConnected && !loading) return <div className="proposals-container"><div className="error-message">Connect wallet to continue!</div></div>
   return (
     <div className="proposals-container">
       <h2>Rejected Proposals</h2>
@@ -62,8 +63,9 @@ const RejectedProposals: React.FC = () => {
           <div className="inner-proposal" key={proposal.id}>
             <Link href={`/proposals/${proposal.id}`}>
               <h3 className="proposal-title">{proposal.title.substring(0, 100)}</h3>
-              <p className="proposal-description">{proposal.description.substring(0, 100)}...</p>
-              <div className="proposal-details">
+              <p className="proposal-description"> {
+               sanitizeHtml(proposal.description.substring(0, 100), { allowedTags: [] })
+                }...</p>              <div className="proposal-details">
                 <span>Votes For: {Number(proposal.votesFor)}</span>
                 <span>Votes Against: {Number(proposal.votesAgainst)}</span>
                 <span>Deadline: {new Date(Number(proposal.votingDeadline) * 1000).toLocaleString()}</span>

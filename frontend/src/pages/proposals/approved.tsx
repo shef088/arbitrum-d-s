@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useAccount } from "wagmi";
 import Loader from '../../components/Loader';
 import { toast } from 'react-toastify';
+import sanitizeHtml from 'sanitize-html';
 
 const ApprovedProposals: React.FC = () => {
   const [proposals, setProposals] = useState<ProposalResponse[]>([]);
@@ -48,7 +49,7 @@ const ApprovedProposals: React.FC = () => {
     setStart(selectedPage * count);
     setCurrentPage(selectedPage);
   };
-
+  if(!isConnected && !loading) return <div className="proposals-container"><div className="error-message">Connect wallet to continue!</div></div>
  
   return (
     <div className="proposals-container">
@@ -61,8 +62,9 @@ const ApprovedProposals: React.FC = () => {
         proposals.map((proposal) => (
           <div className="inner-proposal" key={proposal.id}>
             <Link href={`/proposals/${proposal.id}`}>
-              <h3 className="proposal-title">{proposal.title.substring(0, 100)}</h3>
-              <p className="proposal-description">{proposal.description.substring(0, 100)}...</p>
+            <p className="proposal-description"> {
+               sanitizeHtml(proposal.description.substring(0, 100), { allowedTags: [] })
+                }...</p>              <p className="proposal-description">{proposal.description.substring(0, 100)}...</p>
               <div className="proposal-details">
                 <span>Donate</span>
               </div>

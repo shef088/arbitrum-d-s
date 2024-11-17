@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Loader from '../../components/Loader';
 import { useAccount } from "wagmi";
 import { toast } from 'react-toastify';
+import sanitizeHtml from 'sanitize-html';
 
 const PendingProposals: React.FC = () => {
   const [proposals, setProposals] = useState<ProposalResponse[]>([]);
@@ -32,6 +33,7 @@ const PendingProposals: React.FC = () => {
       const { proposals: fetchedProposals, totalProposals } = await fetchNonExecutedProposals(start, count);
       setProposals(fetchedProposals);
       setTotalItems(totalProposals);
+      
       setError(null);
     } catch (err) {
       console.error("Failed to fetch pending proposals:", err);
@@ -51,7 +53,7 @@ const PendingProposals: React.FC = () => {
     setStart(selectedPage * count);
     setCurrentPage(selectedPage); // Update the current page
   };
-
+if(!isConnected && !loading) return <div className="proposals-container"><div className="error-message">Connect wallet to continue!</div></div>
  
   return (
     <div className="proposals-container">
@@ -65,7 +67,9 @@ const PendingProposals: React.FC = () => {
           <div className="inner-proposal" key={proposal.id}>
             <Link href={`/proposals/${proposal.id}`}>
               <h3 className="proposal-title">{proposal.title.substring(0, 100)}</h3>
-              <p className="proposal-description">{proposal.description.substring(0, 100)}...</p>
+              <p className="proposal-description"> {
+               sanitizeHtml(proposal.description.substring(0, 100), { allowedTags: [] })
+                }...</p>
               <div className="proposal-details">
                 <span>Votes For: {Number(proposal.votesFor)}</span>
                 <span>Votes Against: {Number(proposal.votesAgainst)}</span>
