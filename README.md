@@ -22,7 +22,11 @@ git add -A
 git commit -m 'ready for deployment'
 git push -u origin main
 
-
+//////////////
+git add -A
+git commit -m 'changes'
+git push -u origin main
+////////////////
 Testnet Tokens Faucet
 Fund Your Wallet Using a Faucet
 

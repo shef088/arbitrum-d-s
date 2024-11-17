@@ -34,7 +34,7 @@ const SearchProposals: React.FC = () => {
 
     try {
       setLoading(true);
-      const { proposals: fetchedProposals, totalProposals } = await fetchProposalsByTitle(title, start, count);
+      const { proposals: fetchedProposals, totalProposals } = await fetchProposalsByTitle(title.trim().toLowerCase(), start, count);
       setProposals(fetchedProposals);
       setTotalItems(totalProposals);
       setError(null);

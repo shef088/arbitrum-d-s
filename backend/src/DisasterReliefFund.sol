@@ -100,8 +100,10 @@ contract DisasterReliefFund {
         });
 
         userProposals[msg.sender].push(proposalCount);
-  // Hash the title to store it in the titleToProposalIds mapping
-    bytes32 titleHash = keccak256(abi.encodePacked(_title));
+  
+    // Normalize the title to lowercase and hash it
+    bytes32 titleHash = keccak256(abi.encodePacked(toLowerCase(_title)));
+  
     titleToProposalIds[titleHash].push(proposalCount);  // Store the proposal ID under the title hash
 
         emit ProposalCreated(proposalCount, _title, _description);
@@ -212,12 +214,26 @@ contract DisasterReliefFund {
 
         return (paginatedProposals, length);
     }
+function toLowerCase(string memory str) internal pure returns (string memory) {
+    bytes memory bStr = bytes(str);
+    bytes memory bLower = new bytes(bStr.length);
+    for (uint i = 0; i < bStr.length; i++) {
+        // Check if the character is uppercase
+        if ((bStr[i] >= 0x41) && (bStr[i] <= 0x5A)) {
+            // Convert to lowercase
+            bLower[i] = bytes1(uint8(bStr[i]) + 32);
+        } else {
+            bLower[i] = bStr[i];
+        }
+    }
+    return string(bLower);
+}
 
     function searchProposals(string memory _title, uint256 start, uint256 count) public view returns (Proposal[] memory, uint256) {
     require(start >= 0, "Start index must be non-negative");
     require(count >= 0, "Count must be non-negative");
-
-    bytes32 titleHash = keccak256(abi.encodePacked(_title));
+    bytes32 titleHash = keccak256(abi.encodePacked(toLowerCase(_title)));
+    
     uint256[] storage proposalIds = titleToProposalIds[titleHash];
     uint256 totalProposals = proposalIds.length;
 
