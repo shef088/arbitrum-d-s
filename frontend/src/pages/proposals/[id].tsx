@@ -318,12 +318,12 @@ const ProposalDetail: React.FC = () => {
       }
     }
   };
-  
+  if (loading) return <div className="proposal-detail-container"> <Loader /></div>
   if(!isConnected && !loading) return <div className="proposals-container"><div className="error-message">Connect wallet to continue!</div></div>
-  if (!proposal) return  <div className="proposal-detail-container"><p>No proposal data available.</p></div>;
+  if (!proposal ) return  <div className="proposal-detail-container"><p>No proposal data available.</p></div>;
   return (
     <div className="proposal-detail-container">
-      {loading &&  <Loader />}
+       
       {error && <div className="error-message">{error}</div>}
 
       <h2>Proposal Details</h2>
