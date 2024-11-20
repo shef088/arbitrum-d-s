@@ -17,7 +17,7 @@ foundryup
 ```
 
 ### Git Setup
-1. Add .gitignore files to the project:
+1.Add .gitignore files to the project:
 ```bash
 git add forum_dapp/.gitignore frontend/.gitignore
 git commit -m 'add.gitignore files'
@@ -54,7 +54,7 @@ forge create --rpc-url "arbitrumSepolia" --private-key "${PRIVATE_KEY}" --verifi
 ```
 
 ## Setup Frontend
-1. Install the frontend dependencies and run the following commands in the terminal
+1.Install the frontend dependencies and run the following commands in the terminal
 ```bash
 cd frontend
 yarn install
