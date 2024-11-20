@@ -38,7 +38,7 @@ cd backend
 forge build
 forge test
 ```
-2. Create a .env file and populate it with the necessary environment variables:
+2. Create a .env file and populate it with the necessary environment variables in the root of the backend folder:
 ```bash
 NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=YOUR_PROJECT_ID //Go and create a walletconnect project if you have not.
 NEXT_PUBLIC_DEPLOYED_CONTRACT_ADDRESS=YOUR_CONTRACT_ADDRESS
@@ -73,6 +73,7 @@ yarn dev
 ```
 
 
+
 ### Funding Your Wallet
 Sepolia ETH Faucet
 To fund your wallet with Sepolia ETH, visit one of the following faucets:
@@ -93,3 +94,8 @@ Create an automation upkeep and enter the smart contract address you want to aut
 Choose the function you want to automate and set the frequency.
 Confirm the transactions in your wallet.
 That's it! You should now have a fully set up project with a deployed contract on Arbitrum Sepolia and automation set up using Chainlink Keepers.
+
+
+## My already Deployed Smart Contract Address
+Smart Contract Address: 0xF8dC5472716f560c3704f5F95d2C2F077fCA8A3e
+ 
