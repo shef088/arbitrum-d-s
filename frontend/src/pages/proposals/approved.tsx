@@ -62,9 +62,10 @@ const ApprovedProposals: React.FC = () => {
         proposals.map((proposal) => (
           <div className="inner-proposal" key={proposal.id}>
             <Link href={`/proposals/${proposal.id}`}>
-            <p className="proposal-description"> {
+            <h3 className="proposal-title">{proposal.title.substring(0, 100)}</h3>
+              <p className="proposal-description"> {
                sanitizeHtml(proposal.description.substring(0, 100), { allowedTags: [] })
-                }...</p>              <p className="proposal-description">{proposal.description.substring(0, 100)}...</p>
+                }...</p>
               <div className="proposal-details">
                 <span>Donate</span>
               </div>

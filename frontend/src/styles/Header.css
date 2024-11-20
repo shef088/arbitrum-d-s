@@ -1,112 +1,126 @@
-header {
-  display: flex; /* Flexbox for layout */
-  justify-content: space-between; /* Space between logo and connect button */
-  align-items: center; /* Center items vertically */
-  background-color: #1e3a8a; /* Background color */
-  padding: 1rem 2rem; /* Spacing inside the header */
-  color: #f1f5f9; /* Text color */
-  font-family: Arial, sans-serif; /* Font family */
-  position: fixed; /* Fixed position */
-  top: 0; /* Stick to the top */
-  left: 0; /* Align to the left */
-  right: 0; /* Align to the right */
-  z-index: 1000; /* Ensure it stays above other content */
-  transition: transform 0.3s ease; /* Smooth transition */
+/* Main Header Styles */
+.header {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-color: #1e3a8a; 
+  color: #f1f5f9;
+  font-family: Arial, sans-serif;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  transition: transform 0.3s ease;
 }
 
 .header.hidden {
-  transform: translateY(-100%); /* Move the header out of view */
+  transform: translateY(-100%);
 }
 
 .header.visible {
-  transform: translateY(0); /* Move the header back into view */
+  transform: translateY(0);
 }
 
-
-/* Logo Styles */
-.logo {
-  margin: 0; /* Remove default margin */
-
+/* Title and Connect Button Box */
+.header-box {
+  display: flex; /* Use flexbox */
+  justify-content: space-between; /* Space between the title and the button */
+  align-items: center; /* Center the items vertically */
+  padding: 1rem;
 }
 
-.header h1 {
-  font-size: 1.5rem; /* Size of the logo text */
-  font-weight: bold; /* Bold font */
-  margin: 0; /* Remove default margin */
+/* Logo */
+.logo h1 {
+  font-size: 1.5rem;
   color: white;
+  margin: 0;
 }
 
-/* Connect Button Styles */
+/* Connect Button */
 .connect-btn {
-  margin-left: auto; /* Push connect button to the right */
-  display: flex; /* Flexbox for centering */
-  align-items: center; /* Center align */
+  margin-left: auto;
 }
 
-/* Navigation Styles */
+/* Main Navigation */
 .navigation {
-  display: flex; /* Flexbox for navigation */
-  gap: 1.5rem; /* Space between nav links */
-  justify-content: center; /* Center navigation items */
-  flex-wrap: wrap; /* Allow links to wrap to the next line */
-  padding: 0.5rem 0; /* Vertical padding for navigation */
-  width: 100%; /* Full width for navigation */
-  position: absolute; /* Position below header items */
-  left: 0; /* Align to the left */
-  right: 0; /* Align to the right */
-  top: 100%; /* Position below the header */
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 0.5rem 0;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
   background: #1e3a8a;
   color: black;
   border: 2px solid white;
 }
 
-/* Link Styles */
 .navigation a {
-  display: flex; /* Flexbox to align icon and text */
-  align-items: center; /* Center align items */
-  color: white; /* Link color */
-  text-decoration: none; /* Remove underline from links */
-  font-weight: 300;  
-  transition: color 0.3s ease; /* Smooth color transition */
+  display: flex;
+  align-items: center;
+  color: white;
+  text-decoration: none;
+  font-weight: 300;
+  transition: color 0.3s ease;
 }
 
-.navigation a svg {
-  margin-right: 0.2rem;  
+/* Second Navigation (visible only on small screens) */
+.navigation-second {
+  display: none; /* Initially hidden on large screens */
 }
+
+.navigation a {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem;
+  font-weight: 300;
+  transition: color 0.3s ease;
+}
+
 .navigation a:hover {
-  color: #a3bffa; /* Hover color for links */
-  text-shadow: 0 0 5px rgba(163, 191, 250, 0.5); /* Subtle glow effect on hover */
+  color: #a3bffa;
 }
-.navigation a.active {
-  color: white; /* Active link color */
-  font-weight: 500; /* Slightly bolder for visibility */
-  border-bottom: 2px solid white; /* Underline active link */
-  text-shadow: 0 0 5px rgba(163, 191, 250, 0.5); /* Subtle glow */
+
+/* Hamburger Icon */
+.hamburger {
+  display: none; /* Hidden by default on large screens */
+  cursor: pointer;
 }
+
 /* Responsive Styles */
 @media (max-width: 768px) {
-  .header {
-      padding: 1rem; /* Keep padding consistent */
+  .logo h1 {
+    font-size: 1.3em;
+  }
+  .hamburger {
+    display: block; /* Show hamburger on small screens */
+    padding: 1rem;
+    cursor: pointer;
   }
 
   .navigation {
-      flex-direction: column; /* Stack navigation links vertically */
-      width: 100%; /* Full width for nav */
-      position: static; /* Change position for stacking */
+    display: none; /* Hide main navigation on small screens */
   }
 
-  .navigation a {
-      width: 100%; /* Full width for links */
-      text-align: center; /* Center text in links */
+  .navigation-second {
+    display: flex; /* Show second navigation on small screens */
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    width: 100%;
+    background-color: #1e3a8a;
+  
   }
-}
-
-@media (max-width: 480px) {
-  .header {
-      padding: 0.5rem 1rem; /* Reduce padding on smaller screens */
-  }
-
-  .header h1 {
-      font-size: 1.25rem; /* Smaller font size for logo */
+  .navigation-second a{
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem;
+    font-weight: 300;
+    transition: color 0.3s ease;
   }
 }

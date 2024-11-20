@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css'; // Import Quill styles
 import { writeContract } from "@wagmi/core";
 import config from "../../wagmi";
 import { ABI, deployedAddress } from "../../contracts/deployed-contract";
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import { useAccount } from 'wagmi';
+import dynamic from 'next/dynamic';
+// import ReactQuill from 'react-quill';
 
+import 'react-quill/dist/quill.snow.css'; // Import Quill styles
+const QuillNoSSRWrapper = dynamic(() => import('react-quill'), {
+  ssr: false, // Disable server-side rendering for this component
+  loading: () => <p>Loading editor...</p>, // Optional: Show a fallback while loading
+});
 const CreateProposal: React.FC = () => {
   const router = useRouter();
   const [title, setTitle] = useState('');
@@ -51,7 +56,7 @@ const CreateProposal: React.FC = () => {
   return (
     <div className="create-proposal-container">
       <form onSubmit={handleSubmit}>
-        <h1>Create Proposal</h1>
+        <h1>Create Relief Proposal</h1>
         <div>
           <label>
             Title:
@@ -66,11 +71,12 @@ const CreateProposal: React.FC = () => {
         <div>
           <label>
             Description:
-            <ReactQuill
+            <QuillNoSSRWrapper
               value={description}
               onChange={setDescription} // Quill passes formatted text
               theme="snow"
             />
+              
           </label>
         </div>
         <div>

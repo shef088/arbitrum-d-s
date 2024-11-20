@@ -64,6 +64,7 @@
   color: #555;
   line-height: 1.6;
   margin-bottom: 10px;
+  word-wrap: break-word;
 }
 
 .proposal-details {

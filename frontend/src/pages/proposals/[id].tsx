@@ -129,7 +129,8 @@ const ProposalDetail: React.FC = () => {
 
       toast.success(`Successfully voted ${voteFor ? 'for' : 'against'} proposal ${proposal.title}`);
       // Refresh proposal data  
-      const foundProposal = await getProposalDetails()
+      // const foundProposal = await getProposalDetails()
+      window.location.reload()
        
     } catch (err) {
       console.error("Error voting:", err);
