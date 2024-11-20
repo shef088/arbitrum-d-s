@@ -36,7 +36,9 @@
   color: white;
   margin: 0;
 }
-
+.navigation a svg {
+  margin-right: 0.2rem;  
+}
 /* Connect Button */
 .connect-btn {
   margin-left: auto;
@@ -45,10 +47,9 @@
 /* Main Navigation */
 .navigation {
   display: flex;
-  gap: 1.5rem;
+  gap: 1.3rem;
   justify-content: center;
   flex-wrap: wrap;
-  padding: 0.5rem 0;
   width: 100%;
   position: absolute;
   left: 0;
@@ -66,6 +67,7 @@
   text-decoration: none;
   font-weight: 300;
   transition: color 0.3s ease;
+  padding: 0.1rem;
 }
 
 /* Second Navigation (visible only on small screens) */
@@ -73,14 +75,7 @@
   display: none; /* Initially hidden on large screens */
 }
 
-.navigation a {
-  color: white;
-  text-decoration: none;
-  padding: 0.5rem;
-  font-weight: 300;
-  transition: color 0.3s ease;
-}
-
+ 
 .navigation a:hover {
   color: #a3bffa;
 }
